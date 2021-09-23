@@ -1,0 +1,3 @@
+[submodule "extern/adm-utils"]
+	path = extern/adm-utils
+	url = https://github.com/Admer456/adm-utils.git

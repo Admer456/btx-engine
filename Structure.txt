@@ -1,0 +1,16 @@
+bin -> .exe and .dll outputs
+common -> common utility library and interfaces
+engine -> all engine stuff
+extern -> dependencies
+game -> non-engine stuff
+  L client -> client game
+  L server -> server game
+  L shared -> stuff that's shared between client and the server
+
+Binaries:
+- engine.exe (dedicated server can be launched with -dedicated)
+- game.dll (contains game and client code)
+- Depdendencies:
+   L SDL2.dll
+   L OpenAL32.dll
+
