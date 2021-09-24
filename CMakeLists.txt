@@ -6,7 +6,14 @@ project( BurekTechX )
 
 ## Some property stuff
 set_property( GLOBAL PROPERTY USE_FOLDERS ON )
-set( CMAKE_CXX_STANDARD 17 ) ## C++17 babyyyy
+## C++17's filesystem and inline static initialisers are pretty nice
+set( CMAKE_CXX_STANDARD 17 )
+
+## UNICODE, UNICODE, UNICODE
+if ( WIN32 )
+    add_compile_definitions( UNICODE )
+    add_compile_definitions( _UNICODE )
+endif()
 
 ## Options
 option( BTX_BUILD_GAME
