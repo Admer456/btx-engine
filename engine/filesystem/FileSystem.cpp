@@ -21,9 +21,6 @@ void FileSystem::Init( Path gameDirectory )
 	basePath = fs::current_path();
 	currentGamePath = gameDirectory;
 
-	baseDirectory = basePath.string();
-	currentGameDirectory = currentGamePath.string();
-
 	// Load addons
 	Mount( currentGamePath, true );
 }

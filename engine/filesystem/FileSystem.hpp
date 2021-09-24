@@ -16,9 +16,7 @@ private:
 	bool				ExistsInternal( Path path, const uint8_t& filterFlags ) const;
 
 private:
-	String				baseDirectory;
 	Path				basePath;
-	String				currentGameDirectory;
 	Path				currentGamePath;
 	std::vector<Path>	otherPaths; // other games, addons etc.
 };
