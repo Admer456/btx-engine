@@ -41,13 +41,15 @@ install( TARGETS BurekTechX
         RUNTIME DESTINATION ${BTX_ROOT}/bin/
         LIBRARY DESTINATION ${BTX_ROOT}/bin/ )
 
-## Copy SDL2.dll
 if ( WIN32 )
+    ## Copy SDL2.dll
     install( FILES ${BTX_ROOT}/extern/SDL/lib/SDL2.dll 
             DESTINATION ${BTX_ROOT}/bin/ )
-endif()
 
-## On Windows, place PDBs as well
-if ( WIN32 )
+    ## UNICODE, UNICODE, UNICODE
+    add_compile_definitions( UNICODE )
+    add_compile_definitions( _UNICODE )
+
+    ## On Windows, place PDBs as well
     install( FILES $<TARGET_PDB_FILE:BurekTechX> DESTINATION ${BTX_ROOT}/bin/ OPTIONAL )
 endif()
