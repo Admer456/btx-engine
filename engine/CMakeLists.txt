@@ -29,7 +29,7 @@ target_include_directories( BurekTechX PRIVATE
 
 ## Link against SDL2 libs and others
 target_link_libraries( BurekTechX 
-        ${BTX_ROOT}/extern/adm-utils/lib/AdmUtils.lib
+        ${BTX_ROOT}/extern/adm-utils/libs/AdmUtils.lib
         ${SDL_LIBRARY} )
 
 ## Output here
