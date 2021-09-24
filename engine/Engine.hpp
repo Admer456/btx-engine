@@ -1,6 +1,8 @@
 #pragma once
 
 class IEngine;
+class IFileSystem;
+class FileSystem;
 
 class Engine final : public IEngine
 {
@@ -15,4 +17,7 @@ public:
         static Engine engine;
         return engine;
     }
+private:
+    IFileSystem* fileSystem{ nullptr };
+    ICommon* common{ nullptr };
 };
