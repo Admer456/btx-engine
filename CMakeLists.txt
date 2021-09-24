@@ -28,6 +28,7 @@ set( BTX_ROOT ${CMAKE_CURRENT_SOURCE_DIR} )
 set( BTX_COMMON_SOURCES 
     ${BTX_ROOT}/common/interfaces/ICommon.hpp
     ${BTX_ROOT}/common/interfaces/IEngine.hpp
+    ${BTX_ROOT}/common/interfaces/IFileSystem.hpp
     ${BTX_ROOT}/common/interfaces/IGame.hpp
     ${BTX_ROOT}/common/Precompiled.hpp )
 
