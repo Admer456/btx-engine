@@ -3,6 +3,7 @@
 class ICommon;          // printing etc., Server and Client
 class IAnimationSystem; // animation,     Server and Client
 class ICollisionSystem; // collision,     Server and Client
+class IFileSystem;      // files, dirs    Server and Client
 class IMaterialManager; // materials,     Server and Client
 class IModelManager;    // models,        Server and Client
 class IPhysicsSystem;   // physics,       Server and Client
@@ -43,6 +44,7 @@ struct gameLibraryImports
     ICommon*            common{ nullptr };          // printing, system info
     IAnimationSystem*   animation{ nullptr };       // animation blending, playback...
     ICollisionSystem*   collision{ nullptr };       // raycasts, object-to-object tests...
+    IFileSystem*        fileSystem{ nullptr };      // files, directories
     IMaterialManager*   materialManager{ nullptr }; // textures, surface properties
     IModelManager*      modelManager{ nullptr };    // model mesh data, metadata
     IPhysicsSystem*     physics{ nullptr };         // dynamics, joints, ragdolls...

@@ -4,6 +4,8 @@ set( BTX_ENGINE_SOURCES
     ${BTX_COMMON_SOURCES}
     common/Common.hpp
     common/Common.cpp
+    filesystem/FileSystem.hpp
+    filesystem/FileSystem.cpp
     Engine.hpp
     Engine.cpp
     Main.cpp )
