@@ -2,6 +2,8 @@
 ## engine/* and commmon/*
 set( BTX_ENGINE_SOURCES 
     ${BTX_COMMON_SOURCES}
+    common/Common.hpp
+    common/Common.cpp
     Engine.hpp
     Engine.cpp
     Main.cpp )
