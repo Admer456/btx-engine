@@ -3,7 +3,7 @@
 class ICommon
 {
 public:
-    // Use va() if you wanna format it
+    // Use adm::format() if you wanna format it
     virtual void Printf( const char* string ) = 0;
     virtual void DPrintf( const char* string, int developerLevel ) = 0;
     virtual void Warning( const char* string ) = 0;
@@ -11,4 +11,8 @@ public:
 
     // Returns the current time since the app started running
     virtual float Time() const = 0;
+
+    // Is this a dedicated server?
+    virtual bool IsDedicatedServer() const = 0;
+
 };

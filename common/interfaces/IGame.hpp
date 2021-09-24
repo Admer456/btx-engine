@@ -1,14 +1,14 @@
 #pragma once
 
-class ICommon;          // printing etc., for Game and Client
-class IAnimationSystem; // animation,     for Game and Client
-class IAudioSystem;     // sound,         for Client
-class ICollisionSystem; // collision,     for Game and Client
-class IInputSystem;     // input,         for Client
-class IMaterialManager; // materials,     for Game and Client
-class IModelManager;    // models,        for Game and Client
-class IPhysicsSystem;   // physics,       for Game and Client
-class IRenderSystem;    // rendering,     for Client
+class ICommon;          // printing etc., Server and Client
+class IAnimationSystem; // animation,     Server and Client
+class ICollisionSystem; // collision,     Server and Client
+class IMaterialManager; // materials,     Server and Client
+class IModelManager;    // models,        Server and Client
+class IPhysicsSystem;   // physics,       Server and Client
+class IAudioSystem;     // sound,         Client
+class IInputSystem;     // input,         Client
+class IRenderSystem;    // rendering,     Client
 
 class IGame
 {
@@ -32,24 +32,26 @@ public:
 struct gameLibraryExports
 {
     IGame* game;
-    IClient* client;
+    IClient* client; // nullptr in dedicated server instances, server uses a dummy client implementation
 };
 
 // The game imports this stuff from the engine
 struct gameLibraryImports
 {
     // Shared stuff
-    ICommon*            common{ nullptr };
-    IAnimationSystem*   animation{ nullptr };
-    ICollisionSystem*   collision{ nullptr };
-    IMaterialManager*   materialManager{ nullptr };
-    IModelManager*      modelManager{ nullptr };
-    IPhysicsSystem*     physics{ nullptr };
+    // Both the server & client game use these
+    ICommon*            common{ nullptr };          // printing, system info
+    IAnimationSystem*   animation{ nullptr };       // animation blending, playback...
+    ICollisionSystem*   collision{ nullptr };       // raycasts, object-to-object tests...
+    IMaterialManager*   materialManager{ nullptr }; // textures, surface properties
+    IModelManager*      modelManager{ nullptr };    // model mesh data, metadata
+    IPhysicsSystem*     physics{ nullptr };         // dynamics, joints, ragdolls...
 
     // Client-specific stuff
-    IAudioSystem*       audio{ nullptr };
-    IInputSystem*       input{ nullptr };
-    IRenderSystem*      renderer{ nullptr };
+    // The serverside should never use these
+    IAudioSystem*       audio{ nullptr };           // sound sources, music, filters, reverb
+    IInputSystem*       input{ nullptr };           // keyboard & mouse input
+    IRenderSystem*      renderer{ nullptr };        // rendering of 3D models, 2D surfs, text etc.
 };
 
 // There will be an 'extern "C" gameLibraryExports* ExchangeGameInterface( gameLibraryImports* )
