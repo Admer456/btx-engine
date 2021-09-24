@@ -32,6 +32,10 @@ target_link_libraries( BurekTechX
         ${BTX_ROOT}/extern/adm-utils/libs/AdmUtils.lib
         ${SDL_LIBRARY} )
 
+## Precompiled headers
+target_precompile_headers( BurekTechX PRIVATE 
+        ${BTX_ROOT}/common/Precompiled.hpp )
+
 ## Output here
 install( TARGETS BurekTechX
         RUNTIME DESTINATION ${BTX_ROOT}/bin/
