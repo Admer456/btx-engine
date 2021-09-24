@@ -20,6 +20,7 @@ inline const String NullString = "";
 #include "common/interfaces/IFileSystem.hpp"
 #include "common/interfaces/IGame.hpp"
 
+#include "common/GameMetadata.hpp"
 
 // NO ENGINE-SPECIFIC HEADERS
 // Cuz' this is used by the game library as well
