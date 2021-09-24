@@ -12,11 +12,6 @@ public:
 
     bool RunFrame() override;
 
-    static Engine& GetInstance()
-    {
-        static Engine engine;
-        return engine;
-    }
 private:
     IFileSystem* fileSystem{ nullptr };
     ICommon* common{ nullptr };

@@ -1,11 +1,13 @@
-#include "common/interfaces/IEngine.hpp"
+#include "common/Precompiled.hpp"
+
+#include "filesystem/FileSystem.hpp"
 #include "Engine.hpp"
 
 #include <SDL.h>
 
 int main( int argc, char** argv )
 {
-    IEngine& engine = Engine::GetInstance();
+    IEngine& engine = adm::Singleton<Engine>::GetInstance();
 
     engine.Init( argc, argv );
 
