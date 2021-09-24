@@ -7,6 +7,7 @@ class Common : public ICommon
 {
 public:
     void        Init() override;
+    void        Shutdown() override;
 
     void        Print( const char* string ) override;
     void        DPrint( const char* string, int developerLevel ) override;

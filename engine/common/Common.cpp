@@ -9,6 +9,11 @@ void Common::Init()
 	systemTimer.Reset();
 }
 
+void Common::Shutdown()
+{
+
+}
+
 void Common::Print( const char* string )
 {
 	std::cout << string;

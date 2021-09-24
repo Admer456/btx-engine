@@ -4,6 +4,7 @@ class ICommon
 {
 public:
     virtual void    Init() = 0;
+    virtual void    Shutdown() = 0;
 
     // Use adm::format() if you wanna format it
     virtual void    Print( const char* string ) = 0;
