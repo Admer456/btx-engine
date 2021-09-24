@@ -1,5 +1,6 @@
 #include "common/Precompiled.hpp"
 
+#include "common/Common.hpp"
 #include "filesystem/FileSystem.hpp"
 #include "Engine.hpp"
 

@@ -6,27 +6,16 @@
 
 void Engine::Init( int argc, char** argv )
 {
-	common = new Common();
-	fileSystem = new FileSystem();
+	common.Init();
 
-	common->Init();
-	fileSystem->Init( "base" );
+	fileSystem.Init( "base" );
 
 }
 
 void Engine::Shutdown()
 {
-	if ( nullptr != common )
-	{
-		delete common;
-		common = nullptr;
-	}
-
-	if ( nullptr != fileSystem )
-	{
-		delete fileSystem;
-		fileSystem = nullptr;
-	}
+	common.Shutdown();
+	fileSystem.Shutdown();
 }
 
 bool Engine::RunFrame()

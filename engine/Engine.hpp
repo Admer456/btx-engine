@@ -13,6 +13,6 @@ public:
     bool RunFrame() override;
 
 private:
-    IFileSystem* fileSystem{ nullptr };
-    ICommon* common{ nullptr };
+    FileSystem fileSystem;
+    Common common;
 };
