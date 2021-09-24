@@ -28,6 +28,11 @@ void FileSystem::Init( Path gameDirectory )
 	Mount( currentGamePath, true );
 }
 
+void FileSystem::Shutdown()
+{
+	otherPaths.clear();
+}
+
 void FileSystem::Mount( Path otherGameDirectory, bool mountOthers )
 {
 	if ( !fs::exists( otherGameDirectory ) )

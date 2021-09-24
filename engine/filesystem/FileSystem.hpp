@@ -3,6 +3,7 @@ class FileSystem final : public IFileSystem
 {
 public:
 	void				Init( Path gameDirectory ) override;
+	void				Shutdown() override;
 
 	void				Mount( Path otherGameDirectory, bool mountOthers = false ) override;
 

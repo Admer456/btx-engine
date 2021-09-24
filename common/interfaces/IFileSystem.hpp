@@ -54,6 +54,7 @@ public:
 	};
 
 	virtual void Init( Path gameDirectory ) = 0;
+	virtual void Shutdown() = 0;
 
 	// @param mountOthers: Mount the games from otherGameDirectory/gamemeta.txt?
 	virtual void Mount( Path otherGameDirectory, bool mountOthers = false ) = 0;
