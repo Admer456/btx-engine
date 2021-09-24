@@ -1,5 +1,5 @@
-## Minimum is 3.12
-cmake_minimum_required( VERSION 3.12 )
+## Minimum is 3.16 for PCH support
+cmake_minimum_required( VERSION 3.16 )
 
 ## Project name
 project( BurekTechX )
