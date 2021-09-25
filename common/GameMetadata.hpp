@@ -20,9 +20,9 @@ public:
 private:
     void        Parse( File& gameMetaFile );
 
-    String      gameName;
-    String      gameDeveloper;
-    String      gamePublisher;
-    String      gameVersion;
-    std::vector<String> mountedGames;
+    String      gameName{ "unknown" };
+    String      gameDeveloper{ "unknown" };
+    String      gamePublisher{ "unknown" };
+    String      gameVersion{ "unknown" };
+    std::vector<String> mountedGames{};
 };
