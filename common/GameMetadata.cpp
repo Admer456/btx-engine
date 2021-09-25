@@ -51,6 +51,11 @@ void GameMetadata::Parse( File& gameMetaFile )
             continue;
         }
 
+        if ( token.empty() )
+        {
+            break;
+        }
+
         //gEngine.Common.Warning( adm::format( "Unknown token '%s'", token.c_str() ) );
     }
 
