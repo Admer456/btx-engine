@@ -14,6 +14,7 @@ public:
 
     // Returns the current time since the app started running
     virtual float   Time() const = 0;
+    virtual float   TimeMilliseconds() const = 0;
 
     // Is this a dedicated server?
     virtual bool    IsDedicatedServer() const = 0;

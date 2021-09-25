@@ -42,6 +42,11 @@ float Common::Time() const
 	return systemTimer.GetElapsed( adm::Timer::Seconds );
 }
 
+float Common::TimeMilliseconds() const
+{
+	return systemTimer.GetElapsed( adm::Timer::Milliseconds );
+}
+
 bool Common::IsDedicatedServer() const
 {
 	return false;
