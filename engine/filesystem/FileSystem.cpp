@@ -55,6 +55,13 @@ void FileSystem::Mount( Path otherGameDirectory, bool mountOthers )
 		}
 	}
 
+	GameMetadata gameMeta( otherGameDirectory/"gamemeta.txt" );
+	
+	printf( "FileSystem::Mount: Mounted game '%s'\n", gameMeta.GetName().data() );
+	printf( "                   Developer: %s\n", gameMeta.GetDeveloper().data() );
+	printf( "                   Publisher: %s\n", gameMeta.GetPublisher().data() );
+	printf( "                   Version: %s\n\n", gameMeta.GetVersion().data() );
+
 	// Add it
 	if ( otherGameDirectory != currentGamePath )
 	{
@@ -64,8 +71,6 @@ void FileSystem::Mount( Path otherGameDirectory, bool mountOthers )
 	// Mount other games that this one depends on
 	if ( mountOthers )
 	{
-		GameMetadata gameMeta( otherGameDirectory/"gamemeta.txt" );
-
 		for ( size_t i = 0; i < gameMeta.GetNumMountedGames(); i++ )
 		{
 			Mount( basePath/gameMeta.GetMountedGame(i) );
