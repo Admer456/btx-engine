@@ -68,7 +68,7 @@ void FileSystem::Mount( Path otherGameDirectory, bool mountOthers )
 
 		for ( size_t i = 0; i < gameMeta.GetNumMountedGames(); i++ )
 		{
-			Mount( otherGameDirectory/gameMeta.GetMountedGame(i) );
+			Mount( basePath/gameMeta.GetMountedGame(i) );
 		}
 	}
 }
