@@ -46,6 +46,7 @@ void Engine::Init( int argc, char** argv )
 
 	// Register static CVars et al
 	console.Init();
+	console.Setup( &common );
 
 	console.Print( "Initing the engine...\n" );
 

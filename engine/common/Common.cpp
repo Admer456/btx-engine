@@ -3,8 +3,6 @@
 #include "../console/Console.hpp"
 #include "Common.hpp"
 
-#include <iostream>
-
 CVar developer( "developer", "0", 0, "Developer mode" );
 
 void Common::Init()

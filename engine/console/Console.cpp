@@ -12,6 +12,8 @@ void Console::Init()
 {
 	gConsole = this;
 	CVar::RegisterAll();
+
+	buffer.Init();
 }
 
 void Console::Shutdown()
@@ -21,12 +23,17 @@ void Console::Shutdown()
 
 void Console::Print( const char* string )
 {
-	std::cout << string;
+	// This is for the dedicated server
+	Log( string );
+
+	// Console character buffer for clientside
+	// character printing
+	buffer.Write( string, common->Time() );
 }
 
 void Console::DPrint( const char* string, int developerLevel )
 {
-	if ( developerLevel >= developer.GetInt() )
+	if ( developerLevel >= common->DevLevel() )
 	{
 		Print( string );
 	}
@@ -34,12 +41,12 @@ void Console::DPrint( const char* string, int developerLevel )
 
 void Console::Warning( const char* string )
 {
-	std::cout << "WARNING: " << string;
+	Print( adm::format( "%sWARNING: %s\n", PrintYellow, string ) );
 }
 
 void Console::Error( const char* string )
 {
-	std::cout << "ERROR: " << string;
+	Print( adm::format( "%sERROR: %s\n", PrintRed, string ) );
 }
 
 void Console::Register( CVarBase* cvar )
@@ -76,4 +83,27 @@ CVarBase* Console::Find( StringRef name )
 	}
 
 	return nullptr;
+}
+
+void Console::Log( const char* string )
+{
+	char buffer[256];
+	size_t position = 0U;
+	size_t max = std::min( 256ULL, std::strlen( string ) );
+
+	for ( size_t i = 0U; i < max; i++ )
+	{
+		// Initiate the skipping
+		if ( string[i] == PrintColorIdentifier )
+		{
+			i += 3; // skip the $xyz sequence
+			continue; // does i += 1
+		}
+		// Store the character
+		buffer[position] = string[i];
+		position++;
+	}
+
+	buffer[position] = '\0';
+	std::cout << buffer;
 }

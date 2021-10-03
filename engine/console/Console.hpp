@@ -21,10 +21,20 @@ public:
 
 	CVarBase*	Find( StringRef name ) override;
 
+	void		Setup( ICommon* common )
+	{
+		this->common = common;
+	}
+
 	static inline CVarList EngineCVarList = CVarList();
 
 private:
+	void		Log( const char* string );
+
+private:
+	ConsoleBuffer buffer;
 	CVarList	cvarList;
+	ICommon*	common;
 };
 
 // There should be another one like this in the game DLL,
