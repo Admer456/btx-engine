@@ -7,12 +7,15 @@ class FileSystem;
 class Engine final : public IEngine
 {
 public:
-    void Init( int argc, char** argv ) override;
-    void Shutdown() override;
+    static int  Main( int argc, char** argv );
 
-    bool RunFrame() override;
+    void        Init( int argc, char** argv ) override;
+    void        Shutdown() override;
+
+    bool        RunFrame() override;
 
 private:
-    FileSystem fileSystem;
-    Common common;
+    Console     console;
+    Common      common;
+    FileSystem  fileSystem;
 };
