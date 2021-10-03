@@ -1,14 +1,17 @@
 #pragma once
 
-class ICore;          // printing etc., Server and Client
-class IAnimationSystem; // animation,     Server and Client
-class ICollisionSystem; // collision,     Server and Client
+// Shared systems
+class ICore;            // sysinfo etc.   Server and Client
+class IAnimation;       // animation,     Server and Client
+class ICollision;       // collision,     Server and Client
+class IConsole;         // cvars etc.     Server and Client
 class IFileSystem;      // files, dirs    Server and Client
 class IMaterialManager; // materials,     Server and Client
 class IModelManager;    // models,        Server and Client
-class IPhysicsSystem;   // physics,       Server and Client
-class IAudioSystem;     // sound,         Client
-class IInputSystem;     // input,         Client
+class IPhysics;         // physics,       Server and Client
+// Clientside-only systems
+class IAudio;           // sound,         Client
+class IInput;           // input,         Client
 class IRenderSystem;    // rendering,     Client
 
 class IGame
@@ -18,6 +21,7 @@ public:
     virtual void Shutdown() = 0;
 
     virtual void RunFrame( const float deltaTime ) = 0;
+    virtual void EmitGameState() = 0;
 };
 
 class IClient
@@ -27,6 +31,7 @@ public:
     virtual void Shutdown() = 0;
 
     virtual void RunFrame( const float deltaTime ) = 0;
+    virtual void RenderFrame() = 0;
 };
 
 // The engine imports this stuff
@@ -41,18 +46,19 @@ struct gameLibraryImports
 {
     // Shared stuff
     // Both the server & client game use these
-    ICore*              core{ nullptr };            // printing, system info
-    IAnimationSystem*   animation{ nullptr };       // animation blending, playback...
-    ICollisionSystem*   collision{ nullptr };       // raycasts, object-to-object tests...
+    ICore*              core{ nullptr };            // system info, timing...
+    IAnimation*         animation{ nullptr };       // animation blending, playback...
+    ICollision*         collision{ nullptr };       // raycasts, object-to-object tests...
+    IConsole*           console{ nullptr };         // printing, console vars, console commands...
     IFileSystem*        fileSystem{ nullptr };      // files, directories
     IMaterialManager*   materialManager{ nullptr }; // textures, surface properties
     IModelManager*      modelManager{ nullptr };    // model mesh data, metadata
-    IPhysicsSystem*     physics{ nullptr };         // dynamics, joints, ragdolls...
+    IPhysics*           physics{ nullptr };         // dynamics, joints, ragdolls...
 
     // Client-specific stuff
     // The serverside should never use these
-    IAudioSystem*       audio{ nullptr };           // sound sources, music, filters, reverb
-    IInputSystem*       input{ nullptr };           // keyboard & mouse input
+    IAudio*             audio{ nullptr };           // sound sources, music, filters, reverb
+    IInput*             input{ nullptr };           // keyboard & mouse input
     IRenderSystem*      renderer{ nullptr };        // rendering of 3D models, 2D surfs, text etc.
 };
 
