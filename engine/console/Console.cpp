@@ -28,12 +28,12 @@ void Console::Print( const char* string )
 
 	// Console character buffer for clientside
 	// character printing
-	buffer.Write( string, common->Time() );
+	buffer.Write( string, core->Time() );
 }
 
 void Console::DPrint( const char* string, int developerLevel )
 {
-	if ( developerLevel >= common->DevLevel() )
+	if ( developerLevel >= core->DevLevel() )
 	{
 		Print( string );
 	}

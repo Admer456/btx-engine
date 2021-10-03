@@ -1,7 +1,7 @@
 #include "common/Precompiled.hpp"
 
 #include "console/Console.hpp"
-#include "common/Common.hpp"
+#include "core/Core.hpp"
 #include "filesystem/FileSystem.hpp"
 #include "Engine.hpp"
 
@@ -42,18 +42,18 @@ int Engine::Main( int argc, char** argv )
 void Engine::Init( int argc, char** argv )
 {
 	// Timers and stuff
-	common.Init();
+	core.Init();
 
 	// Register static CVars et al
 	console.Init();
-	console.Setup( &common );
+	console.Setup( &core );
 
 	console.Print( "Initing the engine...\n" );
 
 	// Initialise the filesystem with the "base" folder
-	float startSeconds = common.TimeMilliseconds();
+	float startSeconds = core.TimeMilliseconds();
 	fileSystem.Init( "base" );
-	float endSeconds = common.TimeMilliseconds();
+	float endSeconds = core.TimeMilliseconds();
 
 	console.Print( adm::format( "Took %3.5f ms to load 'base'\n", endSeconds - startSeconds ) );
 
@@ -89,7 +89,7 @@ void Engine::Init( int argc, char** argv )
 
 	// CVar quick test
 	{
-		console.Print( adm::format( "Developer level: %i\n", common.DevLevel() ) );
+		console.Print( adm::format( "Developer level: %i\n", core.DevLevel() ) );
 
 		console.Execute( "engineTestVar1", "" );
 		console.Execute( "engineTestVar1", "sargen" );
@@ -107,7 +107,7 @@ void Engine::Shutdown()
 {
 	console.Print( "Shutting down...\n" );
 
-	common.Shutdown();
+	core.Shutdown();
 	console.Shutdown();
 	fileSystem.Shutdown();
 }
@@ -115,5 +115,5 @@ void Engine::Shutdown()
 bool Engine::RunFrame()
 {
 	std::this_thread::sleep_for( chrono::milliseconds( 200 ) );
-	return common.Time() < 1.0f;
+	return core.Time() < 1.0f;
 }

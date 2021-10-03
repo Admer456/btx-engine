@@ -2,10 +2,10 @@
 ## engine/* and commmon/*
 set( BTX_ENGINE_SOURCES 
     ${BTX_COMMON_SOURCES}
-    common/Common.hpp
-    common/Common.cpp
     console/Console.hpp
     console/Console.cpp
+    core/Core.hpp
+    core/Core.cpp
     console/ConsoleBuffer.hpp
     console/ConsoleBuffer.cpp
     filesystem/FileSystem.hpp

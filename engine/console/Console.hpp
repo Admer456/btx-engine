@@ -21,9 +21,9 @@ public:
 
 	CVarBase*	Find( StringRef name ) override;
 
-	void		Setup( ICommon* common )
+	void		Setup( ICore* core )
 	{
-		this->common = common;
+		this->core = core;
 	}
 
 	static inline CVarList EngineCVarList = CVarList();
@@ -34,7 +34,7 @@ private:
 private:
 	ConsoleBuffer buffer;
 	CVarList	cvarList;
-	ICommon*	common;
+	ICore*	core;
 };
 
 // There should be another one like this in the game DLL,

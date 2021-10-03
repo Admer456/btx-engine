@@ -1,9 +1,9 @@
 
 #pragma once
 
-class ICommon;
+class ICore;
 
-class Common : public ICommon
+class Core : public ICore
 {
 public:
     void        Init() override;

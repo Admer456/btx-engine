@@ -1,6 +1,6 @@
 #pragma once
 
-class ICommon
+class ICore
 {
 public:
     virtual void    Init() = 0;

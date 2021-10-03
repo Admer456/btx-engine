@@ -15,7 +15,7 @@ using File = std::fstream;
 inline const String NullString = "";
 
 // Include our interfaces tho'
-#include "common/interfaces/ICommon.hpp"
+#include "common/interfaces/ICore.hpp"
 #include "common/interfaces/IConsole.hpp"
 #include "common/interfaces/IEngine.hpp"
 #include "common/interfaces/IFileSystem.hpp"

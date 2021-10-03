@@ -16,6 +16,6 @@ public:
 
 private:
     Console     console;
-    Common      common;
+    Core        core;
     FileSystem  fileSystem;
 };

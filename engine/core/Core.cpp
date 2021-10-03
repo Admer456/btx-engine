@@ -1,41 +1,41 @@
 
 #include "common/Precompiled.hpp"
 #include "../console/Console.hpp"
-#include "Common.hpp"
+#include "Core.hpp"
 
 CVar developer( "developer", "0", 0, "Developer mode" );
 
-void Common::Init()
+void Core::Init()
 {
 	systemTimer.Reset();
 }
 
-void Common::Shutdown()
+void Core::Shutdown()
 {
 
 }
 
-int Common::DevLevel() const
+int Core::DevLevel() const
 {
 	return developer.GetInt();
 }
 
-float Common::Time() const
+float Core::Time() const
 {	
 	return systemTimer.GetElapsed( adm::Timer::Seconds );
 }
 
-float Common::TimeMilliseconds() const
+float Core::TimeMilliseconds() const
 {
 	return systemTimer.GetElapsed( adm::Timer::Milliseconds );
 }
 
-bool Common::IsDedicatedServer() const
+bool Core::IsDedicatedServer() const
 {	// No dedicated server code yet
 	return false;
 }
 
-bool Common::IsHost() const
+bool Core::IsHost() const
 {	// For now, we only got singleplayer
 	return true;
 }

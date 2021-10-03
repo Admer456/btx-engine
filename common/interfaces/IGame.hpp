@@ -1,6 +1,6 @@
 #pragma once
 
-class ICommon;          // printing etc., Server and Client
+class ICore;          // printing etc., Server and Client
 class IAnimationSystem; // animation,     Server and Client
 class ICollisionSystem; // collision,     Server and Client
 class IFileSystem;      // files, dirs    Server and Client
@@ -41,7 +41,7 @@ struct gameLibraryImports
 {
     // Shared stuff
     // Both the server & client game use these
-    ICommon*            common{ nullptr };          // printing, system info
+    ICore*              core{ nullptr };            // printing, system info
     IAnimationSystem*   animation{ nullptr };       // animation blending, playback...
     ICollisionSystem*   collision{ nullptr };       // raycasts, object-to-object tests...
     IFileSystem*        fileSystem{ nullptr };      // files, directories
