@@ -41,11 +41,15 @@ int Engine::Main( int argc, char** argv )
 
 void Engine::Init( int argc, char** argv )
 {
-	console.Init();
+	// Timers and stuff
 	common.Init();
+
+	// Register static CVars et al
+	console.Init();
 
 	common.Print( "Initing the engine...\n" );
 
+	// Initialise the filesystem with the "base" folder
 	float startSeconds = common.TimeMilliseconds();
 	fileSystem.Init( "base" );
 	float endSeconds = common.TimeMilliseconds();
@@ -102,8 +106,8 @@ void Engine::Shutdown()
 {
 	common.Print( "Shutting down...\n" );
 
-	console.Shutdown();
 	common.Shutdown();
+	console.Shutdown();
 	fileSystem.Shutdown();
 }
 
