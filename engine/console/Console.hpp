@@ -3,6 +3,8 @@
 
 class IConsole;
 
+#include "ConsoleBuffer.hpp"
+
 class Console final : public IConsole
 {
 public:

@@ -6,6 +6,8 @@ set( BTX_ENGINE_SOURCES
     common/Common.cpp
     console/Console.hpp
     console/Console.cpp
+    console/ConsoleBuffer.hpp
+    console/ConsoleBuffer.cpp
     filesystem/FileSystem.hpp
     filesystem/FileSystem.cpp
     Engine.hpp
