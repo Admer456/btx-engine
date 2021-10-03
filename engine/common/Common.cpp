@@ -1,8 +1,11 @@
 
 #include "common/Precompiled.hpp"
+#include "../console/Console.hpp"
 #include "Common.hpp"
 
 #include <iostream>
+
+CVar developer( "developer", "0", 0, "Developer mode" );
 
 void Common::Init()
 {
@@ -21,7 +24,7 @@ void Common::Print( const char* string )
 
 void Common::DPrint( const char* string, int developerLevel )
 {
-	if ( developerLevel >= developerVerbosity )
+	if ( developerLevel >= developer.GetInt() )
 	{
 		Print( string );
 	}
@@ -37,6 +40,11 @@ void Common::Error( const char* string )
 	std::cout << "ERROR: " << string;
 }
 
+int Common::DevLevel() const
+{
+	return developer.GetInt();
+}
+
 float Common::Time() const
 {	
 	return systemTimer.GetElapsed( adm::Timer::Seconds );
@@ -48,6 +56,11 @@ float Common::TimeMilliseconds() const
 }
 
 bool Common::IsDedicatedServer() const
-{
+{	// No dedicated server code yet
 	return false;
+}
+
+bool Common::IsHost() const
+{	// For now, we only got singleplayer
+	return true;
 }
