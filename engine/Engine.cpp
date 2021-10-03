@@ -32,7 +32,7 @@ int Engine::Main( int argc, char** argv )
 
 	while ( engine.RunFrame() )
 	{
-		engine.common.Print( "Ran a frame\n" );
+		engine.console.Print( "Ran a frame\n" );
 	}
 
 	engine.Shutdown();
@@ -47,48 +47,48 @@ void Engine::Init( int argc, char** argv )
 	// Register static CVars et al
 	console.Init();
 
-	common.Print( "Initing the engine...\n" );
+	console.Print( "Initing the engine...\n" );
 
 	// Initialise the filesystem with the "base" folder
 	float startSeconds = common.TimeMilliseconds();
 	fileSystem.Init( "base" );
 	float endSeconds = common.TimeMilliseconds();
 
-	common.Print( adm::format( "Took %3.5f ms to load 'base'\n", endSeconds - startSeconds ) );
+	console.Print( adm::format( "Took %3.5f ms to load 'base'\n", endSeconds - startSeconds ) );
 
 	// Filesystem quick test
 	{
 		if ( fileSystem.Exists( "base_file.txt", FileSystem::Path_File ) )
 		{
-			common.Print( "base_file.txt exists\n" );
+			console.Print( "base_file.txt exists\n" );
 		}
 		else
 		{
-			common.Print( "base_file.txt doesn't exist\n" );
+			console.Print( "base_file.txt doesn't exist\n" );
 		}
 
 		if ( fileSystem.Exists( "other_game_file.txt", FileSystem::Path_File ) )
 		{
-			common.Print( "other_game_file.txt exists\n" );
+			console.Print( "other_game_file.txt exists\n" );
 		}
 		else
 		{
-			common.Print( "other_game_file.txt doesn't exist\n" );
+			console.Print( "other_game_file.txt doesn't exist\n" );
 		}
 
 		if ( fileSystem.Exists( "other_game2_file.txt", FileSystem::Path_File ) )
 		{
-			common.Print( "other_game2_file.txt exists\n" );
+			console.Print( "other_game2_file.txt exists\n" );
 		}
 		else
 		{
-			common.Print( "other_game2_file.txt doesn't exist\n" );
+			console.Print( "other_game2_file.txt doesn't exist\n" );
 		}
 	}
 
 	// CVar quick test
 	{
-		common.Print( adm::format( "Developer level: %i\n", common.DevLevel() ) );
+		console.Print( adm::format( "Developer level: %i\n", common.DevLevel() ) );
 
 		console.Execute( "engineTestVar1", "" );
 		console.Execute( "engineTestVar1", "sargen" );
@@ -104,7 +104,7 @@ void Engine::Init( int argc, char** argv )
 
 void Engine::Shutdown()
 {
-	common.Print( "Shutting down...\n" );
+	console.Print( "Shutting down...\n" );
 
 	common.Shutdown();
 	console.Shutdown();

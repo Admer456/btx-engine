@@ -4,6 +4,8 @@
 
 #include <iostream>
 
+extern CVar developer;
+
 IConsole* gConsole = nullptr;
 
 void Console::Init()
@@ -15,6 +17,29 @@ void Console::Init()
 void Console::Shutdown()
 {
 	cvarList.clear();
+}
+
+void Console::Print( const char* string )
+{
+	std::cout << string;
+}
+
+void Console::DPrint( const char* string, int developerLevel )
+{
+	if ( developerLevel >= developer.GetInt() )
+	{
+		Print( string );
+	}
+}
+
+void Console::Warning( const char* string )
+{
+	std::cout << "WARNING: " << string;
+}
+
+void Console::Error( const char* string )
+{
+	std::cout << "ERROR: " << string;
 }
 
 void Console::Register( CVarBase* cvar )

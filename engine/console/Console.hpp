@@ -6,18 +6,23 @@ class IConsole;
 class Console final : public IConsole
 {
 public:
-	void Init() override;
-	void Shutdown() override;
+	void		Init() override;
+	void		Shutdown() override;
 
-	void Register( CVarBase* cvar ) override;
-	bool Execute( StringRef command, StringRef args ) override;
+	void        Print( const char* string ) override;
+	void        DPrint( const char* string, int developerLevel ) override;
+	void        Warning( const char* string ) override;
+	void        Error( const char* string ) override;
 
-	CVarBase* Find( StringRef name ) override;
+	void		Register( CVarBase* cvar ) override;
+	bool		Execute( StringRef command, StringRef args ) override;
+
+	CVarBase*	Find( StringRef name ) override;
 
 	static inline CVarList EngineCVarList = CVarList();
 
 private:
-	CVarList cvarList;
+	CVarList	cvarList;
 };
 
 // There should be another one like this in the game DLL,

@@ -17,29 +17,6 @@ void Common::Shutdown()
 
 }
 
-void Common::Print( const char* string )
-{
-	std::cout << string;
-}
-
-void Common::DPrint( const char* string, int developerLevel )
-{
-	if ( developerLevel >= developer.GetInt() )
-	{
-		Print( string );
-	}
-}
-
-void Common::Warning( const char* string )
-{
-	std::cout << "WARNING: " << string;
-}
-
-void Common::Error( const char* string )
-{
-	std::cout << "ERROR: " << string;
-}
-
 int Common::DevLevel() const
 {
 	return developer.GetInt();
