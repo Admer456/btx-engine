@@ -92,15 +92,16 @@ bool CVarBase::Execute( StringRef args )
 	// Empty args = checking for information
 	if ( args.empty() || !args.at(0) )
 	{
-		std::cout << "Current value: '" << varValue << "'" << std::endl << 
-			varDescription << std::endl;
+		std::cout << "'" << varName << "'" << std::endl <<
+			"  Value: '" << varValue << "'" << std::endl <<
+			"  Description: " << varDescription << std::endl;
 		return true;
 	}
 
 	// Users can't modify readonly CVars
 	if ( varFlags & CVar_ReadOnly )
 	{
-		std::cout << "This is a read-only CVar" << std::endl;
+		std::cout << "'" << varName << "' is a read-only CVar" << std::endl;
 		return false;
 	}
 
