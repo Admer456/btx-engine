@@ -16,9 +16,12 @@ inline const String NullString = "";
 
 // Include our interfaces tho'
 #include "common/interfaces/ICommon.hpp"
+#include "common/interfaces/IConsole.hpp"
 #include "common/interfaces/IEngine.hpp"
 #include "common/interfaces/IFileSystem.hpp"
 #include "common/interfaces/IGame.hpp"
+
+#include "common/console/CVar.hpp"
 
 #include "common/GameMetadata.hpp"
 

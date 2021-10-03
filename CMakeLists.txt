@@ -27,9 +27,12 @@ set( BTX_ROOT ${CMAKE_CURRENT_SOURCE_DIR} )
 ## Common .hpps
 set( BTX_COMMON_SOURCES 
     ${BTX_ROOT}/common/interfaces/ICommon.hpp
+    ${BTX_ROOT}/common/interfaces/IConsole.hpp
     ${BTX_ROOT}/common/interfaces/IEngine.hpp
     ${BTX_ROOT}/common/interfaces/IFileSystem.hpp
     ${BTX_ROOT}/common/interfaces/IGame.hpp
+    ${BTX_ROOT}/common/console/CVar.hpp
+    ${BTX_ROOT}/common/console/CVar.cpp
     ${BTX_ROOT}/common/GameMetadata.hpp
     ${BTX_ROOT}/common/GameMetadata.cpp
     ${BTX_ROOT}/common/Precompiled.hpp )
