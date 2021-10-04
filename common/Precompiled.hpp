@@ -5,12 +5,12 @@
 #include "extern/adm-utils/src/Precompiled.hpp"
 
 // Some usings & namespaces to shorten typing
-namespace fs = std::filesystem;
-namespace chrono = std::chrono;
-using Path = fs::path;
-using String = std::string;
-using StringRef = std::string_view;
-using File = std::fstream;
+namespace fs		= std::filesystem;
+namespace chrono	= std::chrono;
+using Path			= fs::path;
+using String		= std::string;
+using StringRef		= std::string_view;
+using File			= std::fstream;
 
 inline const String NullString = "";
 
