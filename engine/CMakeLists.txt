@@ -10,6 +10,8 @@ set( BTX_ENGINE_SOURCES
     console/ConsoleBuffer.cpp
     filesystem/FileSystem.hpp
     filesystem/FileSystem.cpp
+    input/Input.hpp
+    input/Input.cpp
     Engine.hpp
     Engine.cpp
     Main.cpp )

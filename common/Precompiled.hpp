@@ -20,9 +20,10 @@ inline const String NullString = "";
 #include "common/interfaces/IEngine.hpp"
 #include "common/interfaces/IFileSystem.hpp"
 #include "common/interfaces/IGame.hpp"
+#include "common/interfaces/IInput.hpp"
 
 #include "common/console/CVar.hpp"
-
+#include "common/input/InputBase.hpp"
 #include "common/GameMetadata.hpp"
 
 // NO ENGINE-SPECIFIC HEADERS

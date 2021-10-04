@@ -6,7 +6,9 @@
 /*
 	Just like CVars, inputs are registered automatically when constructed, like so:
 	InputKey forwardKey( "forward", Scancodes::W );
-	InputAxisBase mouseY( "mouseY", InputAxes::MouseY );
+	InputAxis mouseY( "mouseY", InputAxes::MouseY );
+
+    Keys use keyboard scancodes for international KB support. :)
 */
 
 // Indicators of whether a key was released or not
@@ -28,11 +30,13 @@ struct InputAxes
 	//...
 };
 
+constexpr int ScancodeUninitialized = -1;
+
 // Defined by: state, name, primary scancode binding, secondary scancode binding
 // Multiple keys can have the same bindings (e.g. vehicle forward is W and walk forward is W)
-class InputKeyBase;
+class InputKey;
 // Defined by: value, input binding
-class InputAxisBase;
+class InputAxis;
 
 class IInput
 {
@@ -40,10 +44,10 @@ public:
 	virtual void Init() = 0;
 	virtual void Shutdown() = 0;
 
-	// Polls for input updates
+	// Polls for input updates and updates all registered keys & axes
 	virtual void Update() = 0;
 
 	// Registers keys and axes for state updating
-	virtual void RegisterKey( InputKeyBase* key ) = 0;
-	virtual void RegisterAxis( InputAxisBase* axis ) = 0;
+	virtual void RegisterKey( InputKey* key ) = 0;
+	virtual void RegisterAxis( InputAxis* axis ) = 0;
 };
