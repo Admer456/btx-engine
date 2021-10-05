@@ -29,6 +29,7 @@ void Input::Shutdown()
 
 void Input::Update()
 {
+	/*
 	SDL_Event e;
 	while ( SDL_PollEvent( &e ) )
 	{
@@ -36,23 +37,22 @@ void Input::Update()
 		{
 
 		}
-	}
+	}*/
+
+	SDL_PumpEvents();
 
 	auto states = SDL_GetKeyboardState( nullptr );
 	for ( auto& key : keys )
 	{
-		bool primaryKeyMatch = states[key->GetPrimaryScancode()] != 0;
+		bool primaryKeyMatch = states[key->GetPrimaryScancode()];
 		bool secondaryKeyMatch = key->GetSecondaryScancode() != ScancodeUninitialized;
 		
 		if ( secondaryKeyMatch )
 		{
-			secondaryKeyMatch = states[key->GetSecondaryScancode()] != 0;
+			secondaryKeyMatch = states[key->GetSecondaryScancode()];
 		}
 
-		if ( primaryKeyMatch || secondaryKeyMatch )
-		{
-			key->Update( true );
-		}
+		key->Update( primaryKeyMatch || secondaryKeyMatch );
 	}
 }
 
