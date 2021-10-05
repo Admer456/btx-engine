@@ -4,6 +4,9 @@
 
 namespace fs = std::filesystem;
 
+// ============================
+// FileSystem::Init
+// ============================
 void FileSystem::Init( Path gameDirectory )
 {
 	String gameDirectoryStr = gameDirectory.string();
@@ -31,19 +34,25 @@ void FileSystem::Init( Path gameDirectory )
 	Mount( currentGamePath, true );
 }
 
+// ============================
+// FileSystem::Shutdown
+// ============================
 void FileSystem::Shutdown()
 {
 	console->Print( "FileSystem::Shutdown" );
 	otherPaths.clear();
 }
 
+// ============================
+// FileSystem::Mount
+// ============================
 void FileSystem::Mount( Path otherGameDirectory, bool mountOthers )
-{	
-	String otherGameDirectoryStr = 
+{
+	String otherGameDirectoryStr =
 		otherGameDirectory.is_absolute() ? // Paths that are already relative can be passed directly
 		otherGameDirectory.lexically_relative( basePath ).string() :
 		otherGameDirectory.string();
-	
+
 	console->Print( adm::format( "FileSystem::Mount: Mounting '%s'...", otherGameDirectoryStr.c_str() ) );
 
 	if ( !fs::exists( otherGameDirectory ) )
@@ -68,8 +77,9 @@ void FileSystem::Mount( Path otherGameDirectory, bool mountOthers )
 		}
 	}
 
+	// TODO: maybe pass this as a reference or return it even
 	GameMetadata gameMeta( otherGameDirectory/"gamemeta.txt" );
-	
+
 	console->Print( adm::format( "FileSystem::Mount: Mounted game '%s'", gameMeta.GetName().data() ) );
 	console->Print( adm::format( "                   Developer:   %s", gameMeta.GetDeveloper().data() ) );
 	console->Print( adm::format( "                   Publisher:   %s", gameMeta.GetPublisher().data() ) );
@@ -86,21 +96,30 @@ void FileSystem::Mount( Path otherGameDirectory, bool mountOthers )
 	{
 		for ( size_t i = 0; i < gameMeta.GetNumMountedGames(); i++ )
 		{
-			Mount( basePath/gameMeta.GetMountedGame(i) );
+			Mount( basePath/gameMeta.GetMountedGame( i ) );
 		}
 	}
 }
 
+// ============================
+// FileSystem::GetBaseDirectory
+// ============================
 const Path& FileSystem::GetBaseDirectory() const
 {
 	return basePath;
 }
 
+// ============================
+// FileSystem::GetCurrentGameDirectory
+// ============================
 const Path& FileSystem::GetCurrentGameDirectory() const
 {
 	return currentGamePath;
 }
 
+// ============================
+// FileSystem::Exists
+// ============================
 bool FileSystem::Exists( Path path, const uint8_t& filterFlags ) const
 {
 	// If it's absolute or similar, try finding that first
@@ -134,6 +153,9 @@ bool FileSystem::Exists( Path path, const uint8_t& filterFlags ) const
 	return false;
 }
 
+// ============================
+// FileSystem::ExistsInternal
+// ============================
 bool FileSystem::ExistsInternal( Path path, const uint8_t& filterFlags ) const
 {
 	bool exists = fs::exists( path );
