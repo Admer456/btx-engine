@@ -92,22 +92,22 @@ bool CVarBase::Execute( StringRef args )
 	// Empty args = checking for information
 	if ( args.empty() || !args.at(0) )
 	{
-		std::cout << "'" << varName << "'" << std::endl <<
-			"  Value: '" << varValue << "'" << std::endl <<
-			"  Description: " << varDescription << std::endl;
+		detail::gConsole->Print( adm::format( "CVar '%s' info:", varName.c_str() ) );
+		detail::gConsole->Print( adm::format( " L__Value: '%s'", varValue.c_str() ) );
+		detail::gConsole->Print( adm::format( " L__Description: '%s'", varDescription.c_str() ) );
 		return true;
 	}
 
 	// Users can't modify readonly CVars
 	if ( varFlags & CVar_ReadOnly )
 	{
-		std::cout << "'" << varName << "' is a read-only CVar" << std::endl;
+		detail::gConsole->Print( adm::format( "'%s' is a read-only CVar", varName.c_str() ) );
 		return false;
 	}
 
 	size_t firstSpace = args.find_first_of( ' ' );
 	SetString( args.substr( 0, firstSpace-1 ) );
 
-	std::cout << "'" << varName << "' is now '" << varValue << "'" << std::endl;
+	detail::gConsole->Print( adm::format( "'%s' is now '%s'", varName.c_str(), varValue.c_str() ) );
 	return true;
 }

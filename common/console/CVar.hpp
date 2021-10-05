@@ -69,7 +69,10 @@ using CVarList = std::vector<CVarBase*>;
 // It is defined in these places at the moment:
 // engine/console/Console.cpp
 // game/shared/Console.cpp (not actually there yet)
-extern IConsole* gConsole;
+namespace detail
+{
+	extern IConsole* gConsole;
+}
 
 template<CVarList& staticCVarList>
 class CVarTemplate : public CVarBase
@@ -84,7 +87,7 @@ public:
 		}
 		else
 		{
-			gConsole->Register( this );
+			detail::gConsole->Register( this );
 		}
 	}
 
@@ -97,7 +100,7 @@ public:
 		}
 		else
 		{
-			gConsole->Register( this );
+			detail::gConsole->Register( this );
 		}
 	}
 
@@ -106,7 +109,7 @@ public:
 	{
 		for ( auto& cvar : staticCVarList )
 		{
-			gConsole->Register( cvar );
+			detail::gConsole->Register( cvar );
 		}
 
 		RegisteredAllStatics = true;

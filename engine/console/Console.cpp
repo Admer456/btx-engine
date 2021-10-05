@@ -6,11 +6,14 @@
 
 extern CVar developer;
 
-IConsole* gConsole = nullptr;
+namespace detail
+{
+	IConsole* gConsole = nullptr;
+}
 
 void Console::Init()
 {
-	gConsole = this;
+	detail::gConsole = this;
 	CVar::RegisterAll();
 
 	buffer.Init();
