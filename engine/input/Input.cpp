@@ -9,6 +9,9 @@ namespace detail
 	IInput* gInput = nullptr;
 }
 
+// ============================
+// Input::Init
+// ============================
 void Input::Init()
 {
 	detail::gInput = this;
@@ -19,6 +22,9 @@ void Input::Init()
 	axes.clear();
 }
 
+// ============================
+// Input::Shutdown
+// ============================
 void Input::Shutdown()
 {
 	console->Print( "Input::Shutdown" );
@@ -27,6 +33,9 @@ void Input::Shutdown()
 	axes.clear();
 }
 
+// ============================
+// Input::Update
+// ============================
 void Input::Update()
 {
 	/*
@@ -46,7 +55,7 @@ void Input::Update()
 	{
 		bool primaryKeyMatch = states[key->GetPrimaryScancode()];
 		bool secondaryKeyMatch = key->GetSecondaryScancode() != ScancodeUninitialized;
-		
+
 		if ( secondaryKeyMatch )
 		{
 			secondaryKeyMatch = states[key->GetSecondaryScancode()];
@@ -56,6 +65,9 @@ void Input::Update()
 	}
 }
 
+// ============================
+// Input::RegisterKey
+// ============================
 void Input::RegisterKey( InputKey* key )
 {
 	for ( auto& localKey : keys )
@@ -71,6 +83,9 @@ void Input::RegisterKey( InputKey* key )
 	keys.push_back( key );
 }
 
+// ============================
+// Input::RegisterAxis
+// ============================
 void Input::RegisterAxis( InputAxis* axis )
 {
 	for ( auto& localAxis : axes )
