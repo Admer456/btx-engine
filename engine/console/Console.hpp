@@ -29,7 +29,9 @@ public:
 	static inline CVarList EngineCVarList = CVarList();
 
 private:
-	void		Log( const char* string );
+	void		LogLine( const char* string, const char* timeString );
+	void		Log( const char* string, const char* timeString );
+	char*		GenerateTimeString();
 
 private:
 	ConsoleBuffer buffer;
