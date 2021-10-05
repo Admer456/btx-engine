@@ -6,15 +6,19 @@ namespace fs = std::filesystem;
 
 void FileSystem::Init( Path gameDirectory )
 {
+	String gameDirectoryStr = gameDirectory.string();
+	
+	console->Print( adm::format( "FileSystem::Init: Initialising from base directory '%s'", gameDirectoryStr.c_str() ) );
+	
 	if ( !fs::exists( gameDirectory ) )
 	{
-		//gEngine.Common.Error( "Game directory doesn't exist" );
+		console->Error( adm::format( "FileSystem::Init: Base game directory '%s' doesn't exist", gameDirectoryStr.c_str() ) );
 		return;
 	}
 
 	if ( !fs::exists( gameDirectory/"gamemeta.txt" ) )
 	{
-		//gEngine.Common.Error( "Game directory doesn't have a gamemeta.txt" );
+		console->Error( adm::format( "FileSystem::Init: Base game directory '%s' doesn't have a gamemeta.txt", gameDirectoryStr.c_str() ) );
 		return;
 	}
 
@@ -27,6 +31,7 @@ void FileSystem::Init( Path gameDirectory )
 
 void FileSystem::Shutdown()
 {
+	console->Print( "FileSystem::Shutdown" );
 	otherPaths.clear();
 }
 
@@ -34,15 +39,14 @@ void FileSystem::Mount( Path otherGameDirectory, bool mountOthers )
 {
 	if ( !fs::exists( otherGameDirectory ) )
 	{
-		//std::string otherGame = otherGameDirectory.string();
-		//gEngine.Common.Warning( adm::format( "Game directory '%s' doesn't exist", otherGame.c_str() ) );
+		console->Warning( adm::format( "FileSystem::Mount: Game directory '%s' doesn't exist", otherGameDirectoryStr.c_str() ) );
 		return;
 	}
 
 	// Make sure it has a gamemeta.txt file
 	if ( !fs::exists( otherGameDirectory/"gamemeta.txt" ) )
 	{
-		//gEngine.Common.Warning( "Game directory doesn't have a gamemeta.txt" );
+		console->Warning( adm::format( "FileSystem::Mount: Game directory '%s' doesn't have a gamemeta.txt", otherGameDirectoryStr.c_str() ) );
 		return;
 	}
 
@@ -57,10 +61,10 @@ void FileSystem::Mount( Path otherGameDirectory, bool mountOthers )
 
 	GameMetadata gameMeta( otherGameDirectory/"gamemeta.txt" );
 	
-	printf( "FileSystem::Mount: Mounted game '%s'\n", gameMeta.GetName().data() );
-	printf( "                   Developer: %s\n", gameMeta.GetDeveloper().data() );
-	printf( "                   Publisher: %s\n", gameMeta.GetPublisher().data() );
-	printf( "                   Version: %s\n\n", gameMeta.GetVersion().data() );
+	console->Print( adm::format( "FileSystem::Mount: Mounted game '%s'", gameMeta.GetName().data() ) );
+	console->Print( adm::format( "                   Developer:   %s", gameMeta.GetDeveloper().data() ) );
+	console->Print( adm::format( "                   Publisher:   %s", gameMeta.GetPublisher().data() ) );
+	console->Print( adm::format( "                   Version:     %s", gameMeta.GetVersion().data() ) );
 
 	// Add it
 	if ( otherGameDirectory != currentGamePath )

@@ -12,6 +12,12 @@ public:
 
 	bool				Exists( Path, const uint8_t& filterFlags ) const override;
 
+	void				Setup( ICore* core, IConsole* console )
+	{
+		this->core = core;
+		this->console = console;
+	}
+
 private:
 	bool				ExistsInternal( Path path, const uint8_t& filterFlags ) const;
 
@@ -19,4 +25,7 @@ private:
 	Path				basePath;
 	Path				currentGamePath;
 	std::vector<Path>	otherPaths; // other games, addons etc.
+
+	ICore*				core{ nullptr };
+	IConsole*			console{ nullptr };
 };
