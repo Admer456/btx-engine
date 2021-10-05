@@ -177,7 +177,7 @@ void Console::Log( const char* string, const char* timeString )
 
 char* Console::GenerateTimeString()
 {
-	// hhh:mm:ss.ssss
+	// hh:mm:ss.ssss
 	static char buffer[32];
 	const float time = core->Time();
 
