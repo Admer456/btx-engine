@@ -14,8 +14,14 @@ public:
 
     bool        RunFrame() override;
 
+    static bool Command_Mount( StringRef args );
+    inline static CVar mount = CVar( "mount", Engine::Command_Mount, "Mounts a game. Usage: mount gameDirectoryName" );
+
 private:
     Console     console;
     Core        core;
     FileSystem  fileSystem;
+    Input       input;
+
+    SDL_Window* window{ nullptr };
 };

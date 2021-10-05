@@ -3,9 +3,11 @@
 #include "console/Console.hpp"
 #include "core/Core.hpp"
 #include "filesystem/FileSystem.hpp"
-#include "Engine.hpp"
+#include "input/Input.hpp"
 
+#include "SDL.h"
 #include <iostream>
+#include "Engine.hpp"
 
 int BTXMain( int argc, char** argv )
 {
@@ -16,13 +18,9 @@ CVar testVar1( "engineTestVar1", "sorgen", CVar_ReadOnly, "This is a test variab
 CVar testVar2( "engineTestVar2", "200", CVar_ReadOnly, "This is a test variable" );
 CVar testVar3( "engineTestVar3", "1", 0, "This is a test variable" );
 CVar testVar4( "engineTestVar4", "20.49", 0, "This is a test variable" );
-CVar testCommand( "testCommand", 
-				  []( StringRef args ) 
-				  { 
-					  std::cout << "You called testCommand" << std::endl;
-					  return true; 
-				  }, 
-				  "Does something" );
+
+InputKey inputType( "start_typing", SDL_SCANCODE_RETURN );
+InputKey inputExit( "quit", SDL_SCANCODE_ESCAPE );
 
 int Engine::Main( int argc, char** argv )
 {
@@ -32,7 +30,7 @@ int Engine::Main( int argc, char** argv )
 
 	while ( engine.RunFrame() )
 	{
-		engine.console.Print( "Ran a frame\n" );
+
 	}
 
 	engine.Shutdown();
@@ -41,79 +39,80 @@ int Engine::Main( int argc, char** argv )
 
 void Engine::Init( int argc, char** argv )
 {
+	SDL_Init( SDL_INIT_VIDEO | SDL_INIT_EVENTS );
+
 	// Timers and stuff
 	core.Init();
 
 	// Register static CVars et al
-	console.Init();
 	console.Setup( &core );
+	console.Init();
+	console.Print( "Initing the engine..." );
+	
+	// Regsiter keys etc.
+	input.Setup( &core, &console );
+	input.Init();
 
-	console.Print( "Initing the engine...\n" );
+	// Ideally this would be done in the client DLL :P
+	InputKey::RegisterAll();
+	InputAxis::RegisterAll();
 
 	// Initialise the filesystem with the "base" folder
-	float startSeconds = core.TimeMilliseconds();
-	fileSystem.Init( "base" );
-	float endSeconds = core.TimeMilliseconds();
+	Path currentExe = argv[0];
+	fileSystem.Setup( &core, &console );
+	fileSystem.Init( currentExe.filename().stem() );
 
-	console.Print( adm::format( "Took %3.5f ms to load 'base'\n", endSeconds - startSeconds ) );
+	// Raise a window
+	window = SDL_CreateWindow( "BurekTech X", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
+		800, 600, SDL_WINDOW_OPENGL );
 
-	// Filesystem quick test
-	{
-		if ( fileSystem.Exists( "base_file.txt", FileSystem::Path_File ) )
-		{
-			console.Print( "base_file.txt exists\n" );
-		}
-		else
-		{
-			console.Print( "base_file.txt doesn't exist\n" );
-		}
-
-		if ( fileSystem.Exists( "other_game_file.txt", FileSystem::Path_File ) )
-		{
-			console.Print( "other_game_file.txt exists\n" );
-		}
-		else
-		{
-			console.Print( "other_game_file.txt doesn't exist\n" );
-		}
-
-		if ( fileSystem.Exists( "other_game2_file.txt", FileSystem::Path_File ) )
-		{
-			console.Print( "other_game2_file.txt exists\n" );
-		}
-		else
-		{
-			console.Print( "other_game2_file.txt doesn't exist\n" );
-		}
-	}
-
-	// CVar quick test
-	{
-		console.Print( adm::format( "Developer level: %i\n", core.DevLevel() ) );
-
-		console.Execute( "engineTestVar1", "" );
-		console.Execute( "engineTestVar1", "sargen" );
-		console.Execute( "engineTestVar2", "" );
-		console.Execute( "engineTestVar2", "300" );
-		console.Execute( "engineTestVar3", "" );
-		console.Execute( "engineTestVar3", "3" );
-		console.Execute( "engineTestVar4", "" );
-		console.Execute( "engineTestVar4", "20.50" );
-		console.Execute( "testCommand", "" );
-	}
+	console.Print( adm::format( "Developer level: %i", core.DevLevel() ) );
 }
 
 void Engine::Shutdown()
 {
-	console.Print( "Shutting down...\n" );
-
-	core.Shutdown();
-	console.Shutdown();
+	console.Print( "Shutting down..." );
+	input.Shutdown();
 	fileSystem.Shutdown();
+	console.Shutdown();
+	core.Shutdown();
+
+	SDL_Quit();
 }
 
 bool Engine::RunFrame()
 {
-	std::this_thread::sleep_for( chrono::milliseconds( 200 ) );
-	return core.Time() < 1.0f;
+	std::this_thread::sleep_for( chrono::milliseconds( 16U ) );
+	input.Update();
+
+	if ( inputType.IsPressed() )
+	{
+		console.Print( "Enter your command:" );
+
+		String line;
+		std::getline( std::cin, line );
+
+		if ( !line.empty() )
+		{
+			adm::Lexer lex( line );
+			String command = lex.Next();
+			console.Execute( command, lex.Next() );
+		}
+	}
+
+	return !inputExit.IsPressed();
+}
+
+bool Engine::Command_Mount( StringRef args )
+{
+	Engine& self = adm::Singleton<Engine>::GetInstance();
+
+	if ( args.empty() )
+	{
+		self.console.Warning( "No arguments for mounting" );
+		return false;
+	}
+
+	self.fileSystem.Mount( args );
+	return true;
 }
