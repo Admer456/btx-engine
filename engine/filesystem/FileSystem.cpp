@@ -36,7 +36,14 @@ void FileSystem::Shutdown()
 }
 
 void FileSystem::Mount( Path otherGameDirectory, bool mountOthers )
-{
+{	
+	String otherGameDirectoryStr = 
+		otherGameDirectory.is_absolute() ? // Paths that are already relative can be passed directly
+		otherGameDirectory.lexically_relative( basePath ).string() :
+		otherGameDirectory.string();
+	
+	console->Print( adm::format( "FileSystem::Mount: Mounting '%s'...", otherGameDirectoryStr.c_str() ) );
+
 	if ( !fs::exists( otherGameDirectory ) )
 	{
 		console->Warning( adm::format( "FileSystem::Mount: Game directory '%s' doesn't exist", otherGameDirectoryStr.c_str() ) );
