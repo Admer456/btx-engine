@@ -21,6 +21,7 @@ void Console::Init()
 
 void Console::Shutdown()
 {
+	Print( "Console::Shutdown" );
 	cvarList.clear();
 }
 
@@ -70,7 +71,7 @@ bool Console::Execute( StringRef command, StringRef args )
 	CVarBase* cvar = Find( command );
 	if ( nullptr == cvar )
 	{
-		std::cout << "Cannot find " << command << std::endl;
+		Warning( adm::format( "Cannot find console command/variable '%s'", command.data() ) );
 		return false;
 	}
 
