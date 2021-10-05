@@ -4,13 +4,15 @@
 
 #include <iostream>
 
-extern CVar developer;
-
 namespace detail
 {
 	IConsole* gConsole = nullptr;
 }
 
+// ============================
+// Console::Init
+// Initialises engine CVars, game CVars are initialised separately
+// ============================
 void Console::Init()
 {
 	detail::gConsole = this;
@@ -19,12 +21,18 @@ void Console::Init()
 	buffer.Init();
 }
 
+// ============================
+// Console::Shutdown
+// ============================
 void Console::Shutdown()
 {
 	Print( "Console::Shutdown" );
 	cvarList.clear();
 }
 
+// ============================
+// Console::Print
+// ============================
 void Console::Print( const char* string )
 {
 	char* timeString = GenerateTimeString();
@@ -37,6 +45,9 @@ void Console::Print( const char* string )
 	buffer.Write( string, core->Time() );
 }
 
+// ============================
+// Console::DPrint
+// ============================
 void Console::DPrint( const char* string, int developerLevel )
 {
 	if ( developerLevel >= core->DevLevel() )
@@ -45,16 +56,25 @@ void Console::DPrint( const char* string, int developerLevel )
 	}
 }
 
+// ============================
+// Console::Warning
+// ============================
 void Console::Warning( const char* string )
 {
 	Print( adm::format( "%sWARNING: %s", PrintYellow, string ) );
 }
 
+// ============================
+// Console::Error
+// ============================
 void Console::Error( const char* string )
 {
 	Print( adm::format( "%sERROR: %s", PrintRed, string ) );
 }
 
+// ============================
+// Console::Register
+// ============================
 void Console::Register( CVarBase* cvar )
 {
 	// Can't have duplicates
@@ -66,6 +86,9 @@ void Console::Register( CVarBase* cvar )
 	cvarList.push_back( cvar );
 }
 
+// ============================
+// Console::Execute
+// ============================
 bool Console::Execute( StringRef command, StringRef args )
 {
 	CVarBase* cvar = Find( command );
@@ -78,6 +101,9 @@ bool Console::Execute( StringRef command, StringRef args )
 	return cvar->Execute( args );
 }
 
+// ============================
+// Console::Find
+// ============================
 CVarBase* Console::Find( StringRef name )
 {
 	for ( auto& cv : cvarList )
@@ -91,6 +117,11 @@ CVarBase* Console::Find( StringRef name )
 	return nullptr;
 }
 
+// ============================
+// Console::LogLine
+// Filters out $rgb colours in a string
+// and prints/logs it that way
+// ============================
 void Console::LogLine( const char* string, const char* timeString )
 {
 	char buffer[256];
@@ -102,7 +133,7 @@ void Console::LogLine( const char* string, const char* timeString )
 		// Initiate the skipping
 		if ( string[i] == PrintColorIdentifier )
 		{
-			i += 3; // skip the $xyz sequence
+			i += 3; // skip the $rgb sequence
 			continue; // does i += 1
 		}
 		// Store the character
@@ -115,6 +146,11 @@ void Console::LogLine( const char* string, const char* timeString )
 	std::cout << timeString << " | " << buffer << std::endl;
 }
 
+// ============================
+// Console::Log
+// Dissects a string into lines and prints
+// them separately with timestamps
+// ============================
 void Console::Log( const char* string, const char* timeString )
 {
 	size_t start = 0;
@@ -175,6 +211,9 @@ void Console::Log( const char* string, const char* timeString )
 	}
 }
 
+// ============================
+// Console::GenerateTimeString
+// ============================
 char* Console::GenerateTimeString()
 {
 	// hh:mm:ss.ssss
