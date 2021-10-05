@@ -34,7 +34,7 @@ private:
 private:
 	ConsoleBuffer buffer;
 	CVarList	cvarList;
-	ICore*	core;
+	ICore*		core{ nullptr };
 };
 
 // There should be another one like this in the game DLL,
