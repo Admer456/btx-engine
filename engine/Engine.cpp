@@ -27,6 +27,9 @@ CVar testVar4( "engineTestVar4", "20.49", 0, "This is a test variable" );
 InputKey inputType( "start_typing", SDL_SCANCODE_RETURN );
 InputKey inputExit( "quit", SDL_SCANCODE_ESCAPE );
 
+InputAxis mouseHorizontal( AxisCodes::MouseX );
+InputAxis mouseVertical( AxisCodes::MouseY );
+
 // ============================
 // Engine::Main
 // The place where it all started...
@@ -141,5 +144,21 @@ bool Engine::Command_Mount( StringRef args )
 	}
 
 	self.fileSystem.Mount( args );
+	return true;
+}
+
+// ============================
+// Engine::Command_ShowMouse
+// ============================
+bool Engine::Command_ShowMouse( StringRef args )
+{
+	Engine& self = adm::Singleton<Engine>::GetInstance();
+
+	float x = mouseHorizontal.GetValue();
+	float y = mouseVertical.GetValue();
+
+	self.console.Print( adm::format( "X = %3.2f", x ) );
+	self.console.Print( adm::format( "Y = %3.2f", y ) );
+
 	return true;
 }

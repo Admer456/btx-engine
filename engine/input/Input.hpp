@@ -19,9 +19,16 @@ public:
     }
 
 private:
+    void UpdateMouseAxisPointers();
+    InputAxis* FindAxis( const int& axisCode );
+
+private:
     std::vector<InputKey*> keys;
-    std::vector<InputAxis*> axes;
+    std::unordered_map<int, InputAxis*> axes;
 
     ICore* core{ nullptr };
     IConsole* console{ nullptr };
+
+    InputAxis* mouseHorizontalAxis = nullptr;
+    InputAxis* mouseVerticalAxis = nullptr;
 };

@@ -85,23 +85,35 @@ private:
 	int		state{ KeyInputState::Released };
 };
 
+struct AxisCodes
+{
+	static constexpr int MouseX = 0;
+	static constexpr int MouseY = 1;
+	static constexpr int MouseWheel = 2;
+};
+
 class InputAxis : public adm::InstanceChain<InputAxis>
 {
 public:
 	InputAxis() = default;
-	InputAxis( StringRef name, int axisCode )
-		: actionName( name ), axisType( axisCode )
+	InputAxis( int axisCode )
+		: axisType( axisCode )
 	{
+	}
+
+	void Update( float newValue )
+	{
+		value = newValue;
+	}
+
+	constexpr int GetCode() const
+	{
+		return axisType;
 	}
 
 	constexpr float GetValue() const
 	{
 		return value;
-	}
-
-	StringRef GetName() const
-	{
-		return actionName;
 	}
 
 public:
@@ -115,6 +127,5 @@ public:
 
 private:
 	int		axisType{ -1 };
-	String	actionName;
 	float	value{ 0.0f };
 };
