@@ -32,13 +32,13 @@ set_target_properties( BurekTechX PROPERTIES
 ## Includes
 target_include_directories( BurekTechX PRIVATE
         ${ADMUTIL_INCLUDE_DIRETORY}
-        ${SDL_INCLUDE_DIR}
+        ${SDL2_INCLUDE_DIRS}
         ${BTX_ROOT} )
 
 ## Link against SDL2 libs and others
 target_link_libraries( BurekTechX 
-        ${BTX_ROOT}/extern/adm-utils/libs/AdmUtils.lib
-        ${SDL_LIBRARY} )
+        AdmUtils
+        ${SDL2_LIBRARIES} )
 
 ## Precompiled headers
 target_precompile_headers( BurekTechX PRIVATE 
