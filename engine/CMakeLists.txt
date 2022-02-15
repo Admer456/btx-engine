@@ -54,10 +54,6 @@ if ( WIN32 )
     install( FILES ${BTX_ROOT}/extern/SDL/lib/SDL2.dll 
             DESTINATION ${BTX_ROOT}/bin/ )
 
-    ## UNICODE, UNICODE, UNICODE
-    add_compile_definitions( UNICODE )
-    add_compile_definitions( _UNICODE )
-
     ## On Windows, place PDBs as well
     install( FILES $<TARGET_PDB_FILE:BurekTechX> DESTINATION ${BTX_ROOT}/bin/ OPTIONAL )
 endif()
