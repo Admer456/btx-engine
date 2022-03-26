@@ -15,6 +15,7 @@ enum CVarFlags
 // - a default value
 // - flags (replicated, saved, server-only, read-only etc.)
 // - a description
+// 
 // Console commands are also CVars but with a special purpose, defined by:
 // - a name
 // - a function pointer

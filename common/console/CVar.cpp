@@ -1,6 +1,5 @@
 
 #include "common/Precompiled.hpp"
-#include <iostream>
 
 CVarBase::CVarBase( const char* name, const char* defaultValue, uint16_t flags, const char* description )
 	: varName(name), varValue(defaultValue), varFlags(flags), varDescription(description), isCommand(false)
@@ -89,25 +88,27 @@ bool CVarBase::Execute( StringRef args )
 		return conCommand( args );
 	}
 
+	IConsole& console = *detail::gConsole;
+
 	// Empty args = checking for information
 	if ( args.empty() || !args.at(0) )
 	{
-		detail::gConsole->Print( adm::format( "CVar '%s' info:", varName.c_str() ) );
-		detail::gConsole->Print( adm::format( " L__Value: '%s'", varValue.c_str() ) );
-		detail::gConsole->Print( adm::format( " L__Description: '%s'", varDescription.c_str() ) );
+		console.Print( adm::format( "CVar '%s' info:", varName.c_str() ) );
+		console.Print( adm::format( " L__Value: '%s'", varValue.c_str() ) );
+		console.Print( adm::format( " L__Description: '%s'", varDescription.c_str() ) );
 		return true;
 	}
 
 	// Users can't modify readonly CVars
 	if ( varFlags & CVar_ReadOnly )
 	{
-		detail::gConsole->Print( adm::format( "'%s' is a read-only CVar", varName.c_str() ) );
+		console.Print( adm::format( "'%s' is a read-only CVar", varName.c_str() ) );
 		return false;
 	}
 
 	size_t firstSpace = args.find_first_of( ' ' );
 	SetString( args.substr( 0, firstSpace-1 ) );
 
-	detail::gConsole->Print( adm::format( "'%s' is now '%s'", varName.c_str(), varValue.c_str() ) );
+	console.Print( adm::format( "'%s' is now '%s'", varName.c_str(), varValue.c_str() ) );
 	return true;
 }
