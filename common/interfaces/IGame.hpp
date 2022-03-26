@@ -9,40 +9,43 @@ class IConsole;         // cvars etc.     Server and Client
 class IFileSystem;      // files, dirs    Server and Client
 class IMaterialManager; // materials,     Server and Client
 class IModelManager;    // models,        Server and Client
+class INetwork;         // networking,    Server and Client
 class IPhysics;         // physics,       Server and Client
 // Clientside-only systems
 class IAudio;           // sound,         Client
 class IInput;           // input,         Client
 class IRenderSystem;    // rendering,     Client
 
+// Generic game interface. This is as simple as it gets, really
 class IGame
 {
 public:
     virtual void Init() = 0;
     virtual void Shutdown() = 0;
 
-    virtual void RunFrame( const float deltaTime ) = 0;
-    virtual void EmitGameState() = 0;
+    // The game may freely "delay" this
+    // E.g. the server game updates at 20 Hz, 
+    // while the client game updates every frame
+    virtual void Update() = 0;
 };
 
-class IClient
-{
-public:
-    virtual void Init() = 0;
-    virtual void Shutdown() = 0;
-
-    virtual void RunFrame( const float deltaTime ) = 0;
-    virtual void RenderFrame() = 0;
-};
-
-// The engine imports this stuff
+// The engine imports this stuff so it can update them
 struct gameLibraryExports
 {
-    IGame* game;
-    IClient* client; // nullptr in dedicated server instances, server uses a dummy client implementation
+    // nullptr potentially if you're implementing an SP-only game with no MP considerations
+    IGame* server{ nullptr };
+    // nullptr in dedicated server instances -> no renderer, no audio, no clientside FX
+    IGame* client{ nullptr };
 };
 
 // The game imports this stuff from the engine
+// The engine does not provide any type of save/load system, AI
+// system, level/scene system, none of that, it is completely up to
+// you to do it in whatever way you want
+// 
+// In fact, you are free to override any of these systems here in your
+// game, like the physics or networking system, if for whatever reason
+// you cannot modify the engine itself
 struct gameLibraryImports
 {
     // Shared stuff
@@ -54,6 +57,7 @@ struct gameLibraryImports
     IFileSystem*        fileSystem{ nullptr };      // files, directories
     IMaterialManager*   materialManager{ nullptr }; // textures, surface properties
     IModelManager*      modelManager{ nullptr };    // model mesh data, metadata
+    INetwork*           network{ nullptr };         // client-server relations, packets...
     IPhysics*           physics{ nullptr };         // dynamics, joints, ragdolls...
 
     // Client-specific stuff
