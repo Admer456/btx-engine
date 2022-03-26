@@ -1,4 +1,6 @@
 
+#pragma once
+
 class FileSystem final : public IFileSystem
 {
 public:
