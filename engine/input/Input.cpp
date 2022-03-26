@@ -88,8 +88,16 @@ void Input::Update()
 			// Update mouse axis handles
 			UpdateMouseAxisPointers();
 
-			mouseHorizontalAxis->Update( mouseX );
-			mouseVerticalAxis->Update( mouseY );
+			if ( nullptr != mouseHorizontalAxis )
+			{
+				mouseHorizontalAxis->Update( mouseX );
+			}
+			
+			if ( nullptr != mouseVerticalAxis )
+			{
+				mouseVerticalAxis->Update( mouseY );
+			}
+			
 			continue;
 		}
 

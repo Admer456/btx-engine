@@ -18,9 +18,6 @@ public:
     static bool Command_Mount( StringRef args );
     inline static CVar mount = CVar( "mount", Engine::Command_Mount, "Mounts a game. Usage: mount gameDirectoryName" );
 
-    static bool Command_ShowMouse( StringRef args );
-    inline static CVar showMouse = CVar( "showMouse", Engine::Command_ShowMouse, "Displays mouse XY" );
-
 private:
     Console     console;
     Core        core;
