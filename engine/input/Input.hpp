@@ -12,6 +12,8 @@ public:
     void RegisterKey( InputKey* key ) override;
     void RegisterAxis( InputAxis* axis ) override;
 
+    bool IsWindowClosing() const override;
+
     void Setup( ICore* core, IConsole* console )
     {
         this->core = core;
@@ -31,4 +33,6 @@ private:
 
     InputAxis* mouseHorizontalAxis = nullptr;
     InputAxis* mouseVerticalAxis = nullptr;
+
+    bool isWindowClosing = false;
 };

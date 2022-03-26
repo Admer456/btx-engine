@@ -14,9 +14,9 @@ namespace detail
 using AxisCodeHandlerFn = float( SDL_Event& e );
 struct AxisCodeHandler
 {
-	int axisCode{ 0 };
-	int sdlEventCode{ 0 };
-	AxisCodeHandlerFn* handlerFunction{ nullptr };
+	int axisCode{ 0 }; // our ID for this axis (AxisCodes::)
+	int sdlEventCode{ 0 }; // which event type to respond to
+	AxisCodeHandlerFn* handlerFunction{ nullptr }; // how to handle the event
 };
 
 // We will need to do something about joysticks and gamepads though,
@@ -67,10 +67,18 @@ void Input::Shutdown()
 // ============================
 void Input::Update()
 {
-	// Axis updates
+	// Axis updates and general event handling
+	// TODO: give the user callbacks to handle SDL events in the game DLL
 	SDL_Event e;
 	while ( SDL_PollEvent( &e ) )
 	{
+		// Handle window closing
+		if ( e.type == SDL_QUIT )
+		{
+			isWindowClosing = true;
+			continue;
+		}
+
 		// Obtain mouse motion here
 		if ( e.type == SDL_MOUSEMOTION )
 		{
@@ -107,15 +115,23 @@ void Input::Update()
 
 	// Key updates
 	auto states = SDL_GetKeyboardState( nullptr );
+	
+	// This lambda simplifies and automates primary, secondary, tertiary etc. keybinds
+	// Right now we only have primary and secondary binds, might add tertiary at some point
+	const auto KeyMatch = [states]( const int& scancode )
+	{
+		if ( scancode == ScancodeUninitialized )
+		{
+			return false;
+		}
+
+		return states[scancode] != 0;
+	};
+	
 	for ( auto& key : keys )
 	{
-		bool primaryKeyMatch = states[key->GetPrimaryScancode()];
-		bool secondaryKeyMatch = key->GetSecondaryScancode() != ScancodeUninitialized;
-
-		if ( secondaryKeyMatch )
-		{
-			secondaryKeyMatch = states[key->GetSecondaryScancode()];
-		}
+		bool primaryKeyMatch = KeyMatch( key->GetPrimaryScancode() );
+		bool secondaryKeyMatch = KeyMatch( key->GetSecondaryScancode() );
 
 		key->Update( primaryKeyMatch || secondaryKeyMatch );
 	}
@@ -161,6 +177,14 @@ void Input::RegisterAxis( InputAxis* axis )
 	}
 
 	axes[code] = axis;
+}
+
+// ============================
+// Input::IsWindowClosing
+// ============================
+bool Input::IsWindowClosing() const
+{
+	return isWindowClosing;
 }
 
 // ============================

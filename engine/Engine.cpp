@@ -127,7 +127,7 @@ bool Engine::RunFrame()
 		}
 	}
 
-	return !inputExit.IsPressed();
+	return !inputExit.IsPressed() && !input.IsWindowClosing();
 }
 
 // ============================

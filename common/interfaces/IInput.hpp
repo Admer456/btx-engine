@@ -50,4 +50,7 @@ public:
 	// Registers keys and axes for state updating
 	virtual void RegisterKey( InputKey* key ) = 0;
 	virtual void RegisterAxis( InputAxis* axis ) = 0;
+
+	// Did the user attempt to close the window?
+	virtual bool IsWindowClosing() const = 0;
 };
