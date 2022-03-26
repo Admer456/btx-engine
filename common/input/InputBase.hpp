@@ -12,7 +12,7 @@ class InputKey : public adm::InstanceChain<InputKey>
 {
 public:
 	InputKey() = default;
-	InputKey( StringRef name, int primaryCode, int secondaryCode = ScancodeUninitialized )
+	InputKey( StringRef name, int primaryCode = ScancodeUninitialized, int secondaryCode = ScancodeUninitialized )
 		: actionName( name ), primaryScancode( primaryCode ), secondaryScancode( secondaryCode )
 	{
 	}
