@@ -33,3 +33,6 @@ packages/
 
 #CMake-generated solutions and projects
 build/
+
+#Do not ignore SDL2 libs
+!extern/SDL/lib/*.lib
