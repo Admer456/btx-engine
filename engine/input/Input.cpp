@@ -41,7 +41,7 @@ constexpr size_t NumAxisHandlers = sizeof( axisHandlers ) / sizeof( AxisCodeHand
 // ============================
 // Input::Init
 // ============================
-void Input::Init()
+bool Input::Init()
 {
 	detail::gInput = this;
 
@@ -49,6 +49,8 @@ void Input::Init()
 
 	keys.clear();
 	axes.clear();
+
+	return true;
 }
 
 // ============================

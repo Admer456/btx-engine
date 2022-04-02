@@ -13,7 +13,7 @@ namespace detail
 // Console::Init
 // Initialises engine CVars, game CVars are initialised separately
 // ============================
-void Console::Init( int argc, char** argv )
+bool Console::Init( int argc, char** argv )
 {
 	ParseArguments( argc, argv );
 
@@ -21,6 +21,8 @@ void Console::Init( int argc, char** argv )
 	CVar::RegisterAll();
 
 	buffer.Init();
+
+	return true;
 }
 
 // ============================
@@ -30,6 +32,7 @@ void Console::Shutdown()
 {
 	Print( "Console::Shutdown" );
 	cvarList.clear();
+	arguments.Clear();
 }
 
 // ============================

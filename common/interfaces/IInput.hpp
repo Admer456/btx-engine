@@ -41,7 +41,7 @@ class InputAxis;
 class IInput
 {
 public:
-	virtual void Init() = 0;
+	virtual bool Init() = 0;
 	virtual void Shutdown() = 0;
 
 	// Polls for input updates and updates all registered keys & axes

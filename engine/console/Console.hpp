@@ -8,7 +8,7 @@ class IConsole;
 class Console final : public IConsole
 {
 public:
-	void		Init( int argc, char** argv ) override;
+	bool		Init( int argc, char** argv ) override;
 	void		Shutdown() override;
 
 	void        Print( const char* string ) override;

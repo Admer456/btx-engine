@@ -20,13 +20,13 @@ class IRenderSystem;    // rendering,     Client
 class IGame
 {
 public:
-    virtual void Init() = 0;
+    virtual bool Init() = 0;
     virtual void Shutdown() = 0;
 
     // The game may freely "delay" this
     // E.g. the server game updates at 20 Hz, 
     // while the client game updates every frame
-    virtual void Update() = 0;
+    virtual void Update( const float& deltaTime ) = 0;
 };
 
 // The engine imports this stuff so it can update them
@@ -48,6 +48,8 @@ struct gameLibraryExports
 // you cannot modify the engine itself
 struct gameLibraryImports
 {
+    int engineVersion{ 0 };
+
     // Shared stuff
     // Both the server & client game use these
     ICore*              core{ nullptr };            // system info, timing...

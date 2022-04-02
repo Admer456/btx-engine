@@ -8,9 +8,11 @@ CVar developer( "developer", "0", 0, "Developer mode" );
 // ============================
 // Core::Init
 // ============================
-void Core::Init()
+bool Core::Init()
 {
 	systemTimer.Reset();
+
+	return true;
 }
 
 // ============================

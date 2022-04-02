@@ -6,7 +6,7 @@ class ICore;
 class Core : public ICore
 {
 public:
-    void        Init() override;
+    bool        Init() override;
     void        Shutdown() override;
 
     int         DevLevel() const override;

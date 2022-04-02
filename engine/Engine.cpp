@@ -28,21 +28,24 @@ int Engine::Main( int argc, char** argv )
 {
 	Engine& engine = adm::Singleton<Engine>::GetInstance();
 
-	engine.Init( argc, argv );
+	if ( !engine.Init( argc, argv ) )
+	{
+		return 1;
+	}
 
 	while ( engine.RunFrame() )
 	{
 
 	}
 
-	engine.Shutdown();
+	engine.Shutdown( "normal shutdown" );
 	return 0;
 }
 
 // ============================
 // Engine::Init
 // ============================
-void Engine::Init( int argc, char** argv )
+bool Engine::Init( int argc, char** argv )
 {
 	SDL_Init( SDL_INIT_VIDEO | SDL_INIT_EVENTS );
 
@@ -54,23 +57,44 @@ void Engine::Init( int argc, char** argv )
 	console.Init( argc, argv );
 	console.Print( "Initing the engine..." );
 	
+	const adm::Dictionary& args = console.GetArguments();
+
 	// Register keys etc.
 	input.Setup( &core, &console );
-	input.Init();
+	if ( !input.Init() )
+	{
+		Shutdown( "input system failure" );
+		return false;
+	}
 
 	// This must also be done in the game DLL
 	InputKey::RegisterAll();
 	InputAxis::RegisterAll();
 
 	// Initialise the filesystem with the directory of the
-	// executable's name and the "base" directory
+	// game parameter and the "base" directory
 	Path currentExe = argv[0];
-	fileSystem.Setup( &core, &console );
-	fileSystem.Init( currentExe.filename().stem() );
+	// If no -game argument has been passed, use exename_game
+	String gameName = args.GetString( "-game" );
+	if ( gameName.empty() )
+	{
+		gameName = currentExe.filename().stem().string() + "_game";
+	}
 
-	// TODO: game DLL loading here
-	// Find game DLL, find its interface exchange function,
-	// exchange APIs and initialise stuff
+	// Filesystem initialisation
+	fileSystem.Setup( &core, &console );
+	if ( !fileSystem.Init( gameName ) )
+	{
+		Shutdown( "filesystem failure" );
+		return false;
+	}
+
+	// gameName/game.[dll|so]
+	if ( !LoadGameLibrary( gameName ) )
+	{
+		Shutdown( "game library failure" );
+		return false;
+	}
 
 	// TODO: argument parsing & execution here
 	// Things like dedicated server switches, startup CVars etc.
@@ -84,15 +108,17 @@ void Engine::Init( int argc, char** argv )
 	console.Print( "Window successfully created" );
 
 	console.Print( adm::format( "Developer level: %i", core.DevLevel() ) );
+
+	return true;
 }
 
 // ============================
 // Engine::Shutdown
 // Shuts down all subsystems in order of dependency
 // ============================
-void Engine::Shutdown()
+void Engine::Shutdown( const char* why )
 {
-	console.Print( "Shutting down..." );
+	console.Print( adm::format( "Engine: Shutting down, reason: %s", why ) );
 
 	input.Shutdown();
 	fileSystem.Shutdown();
@@ -176,5 +202,70 @@ bool Engine::Command_Mount( StringRef args )
 	}
 
 	self.fileSystem.Mount( args );
+	return true;
+}
+
+bool Engine::LoadGameLibrary( StringRef gameName )
+{
+	// Locating the game DLL
+	String gameLibraryPath = String( gameName ) + "/game";
+	if constexpr ( adm::Platform == adm::Platforms::Windows )
+	{
+		gameLibraryPath += ".dll";
+	}
+	else if constexpr ( adm::Platform == adm::Platforms::Linux )
+	{
+		gameLibraryPath += ".so";
+	}
+	else
+	{
+		console.Error( "Engine: Unsupported platform" );
+		return false;
+	}
+
+	console.Print( adm::format( "Engine: Loading game library '%s'...", gameLibraryPath.c_str() ) );
+
+	// Obtaining the interface exchange function
+	void* gameLibraryHandle = SDL_LoadObject( gameLibraryPath.c_str() );
+	if ( nullptr == gameLibraryHandle )
+	{
+		console.Error( adm::format( "Engine: Can't find game library: ", gameLibraryPath.c_str() ) );
+		return false;
+	}
+
+	GameInterfaceFunction* gameExchangeFunction = static_cast<GameInterfaceFunction*>(SDL_LoadFunction( gameLibraryHandle, GameInterfaceFunctionName ));
+	if ( nullptr == gameExchangeFunction )
+	{
+		console.Error( adm::format( "Engine: Can't find function '%s' in game library '%s'", GameInterfaceFunctionName, gameLibraryPath.c_str() ) );
+		return false;
+	}
+
+	// To save myself some typing
+	gameLibraryImports& gi = gameImports;
+	
+	gi.engineVersion = EngineVersion;
+	gi.core = &core;
+	gi.animation = nullptr;
+	gi.collision = nullptr;
+	gi.console = &console;
+	gi.fileSystem = &fileSystem;
+	gi.materialManager = nullptr;
+	gi.modelManager = nullptr;
+	gi.network = nullptr;
+	gi.physics = nullptr;
+
+	gi.audio = nullptr;
+	gi.input = &input;
+	gi.renderer = nullptr;
+
+	gameLibraryExports* gameExports = gameExchangeFunction( &gameImports );
+	if ( nullptr == gameExports )
+	{
+		console.Error( "Engine: Game library returned nullptr for its interface" );
+		return false;
+	}
+
+	console.Print( "Engine: Successfully loaded game library" );
+
 	return true;
 }

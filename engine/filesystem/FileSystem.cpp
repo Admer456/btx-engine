@@ -7,7 +7,7 @@ namespace fs = std::filesystem;
 // ============================
 // FileSystem::Init
 // ============================
-void FileSystem::Init( Path gameDirectory )
+bool FileSystem::Init( Path gameDirectory )
 {
 	String gameDirectoryStr = gameDirectory.string();
 	
@@ -16,13 +16,13 @@ void FileSystem::Init( Path gameDirectory )
 	if ( !fs::exists( gameDirectory ) )
 	{
 		console->Error( adm::format( "FileSystem::Init: Base game directory '%s' doesn't exist", gameDirectoryStr.c_str() ) );
-		return;
+		return false;
 	}
 
 	if ( !fs::exists( gameDirectory/"gamemeta.txt" ) )
 	{
 		console->Error( adm::format( "FileSystem::Init: Base game directory '%s' doesn't have a gamemeta.txt", gameDirectoryStr.c_str() ) );
-		return;
+		return false;
 	}
 
 	basePath = fs::current_path();
@@ -32,6 +32,8 @@ void FileSystem::Init( Path gameDirectory )
 	Mount( "base" );
 	// Load addons
 	Mount( currentGamePath, true );
+
+	return true;
 }
 
 // ============================

@@ -4,7 +4,7 @@
 class Input : public IInput
 {
 public:
-    void Init() override;
+    bool Init() override;
     void Shutdown() override;
 
     void Update() override;
