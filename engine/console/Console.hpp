@@ -8,7 +8,7 @@ class IConsole;
 class Console final : public IConsole
 {
 public:
-	void		Init() override;
+	void		Init( int argc, char** argv ) override;
 	void		Shutdown() override;
 
 	void        Print( const char* string ) override;
@@ -21,6 +21,8 @@ public:
 
 	CVarBase*	Find( StringRef name ) override;
 
+	const adm::Dictionary& GetArguments() const override;
+
 	void		Setup( ICore* core )
 	{
 		this->core = core;
@@ -29,6 +31,8 @@ public:
 	static inline CVarList EngineCVarList = CVarList();
 
 private:
+	void		ParseArguments( int argc, char** argv );
+
 	void		LogLine( const char* string, const char* timeString );
 	void		Log( const char* string, const char* timeString );
 	char*		GenerateTimeString();
@@ -36,6 +40,7 @@ private:
 private:
 	ConsoleBuffer buffer;
 	CVarList	cvarList;
+	adm::Dictionary arguments;
 	ICore*		core{ nullptr };
 };
 

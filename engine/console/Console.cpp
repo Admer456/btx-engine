@@ -13,8 +13,10 @@ namespace detail
 // Console::Init
 // Initialises engine CVars, game CVars are initialised separately
 // ============================
-void Console::Init()
+void Console::Init( int argc, char** argv )
 {
+	ParseArguments( argc, argv );
+
 	detail::gConsole = this;
 	CVar::RegisterAll();
 
@@ -115,6 +117,46 @@ CVarBase* Console::Find( StringRef name )
 	}
 
 	return nullptr;
+}
+
+// ============================
+// Console::GetArguments
+// ============================
+const adm::Dictionary& Console::GetArguments() const
+{
+	return arguments;
+}
+
+// ============================
+// Console::ParseArguments
+// ============================
+void Console::ParseArguments( int argc, char** argv )
+{
+	for ( int i = 0; i < argc; i++ )
+	{
+		const char* string = argv[argc];
+		const char* param = "";
+
+		// Args prefixed with - are switches
+		// Prefixed with + are commands
+		if ( string[0] == '-' || string[0] == '+' )
+		{
+			if ( i < argc - 1 )
+			{
+				param = argv[++argc];
+
+				// Switches and commands not always need a parameter
+				if ( param[0] == '-' || param[0] == '+' )
+				{
+					argc--;
+					param = "";
+				}
+			}
+		}
+
+		// In you go
+		arguments.SetCString( string, param );
+	}
 }
 
 // ============================

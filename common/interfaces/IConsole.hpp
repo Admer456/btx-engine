@@ -6,7 +6,7 @@ class CVarBase;
 class IConsole
 {
 public:
-    virtual void    Init() = 0;
+    virtual void    Init( int argc, char** argv ) = 0;
     virtual void    Shutdown() = 0;
 
     // Use adm::format() if you wanna format it
@@ -19,4 +19,6 @@ public:
     virtual bool    Execute( StringRef command, StringRef args ) = 0;
 
     virtual CVarBase* Find( StringRef name ) = 0;
+
+    virtual const adm::Dictionary& GetArguments() const = 0;
 };
