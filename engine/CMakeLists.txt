@@ -19,11 +19,10 @@ set( BTX_ENGINE_SOURCES
 ## Folder organisation
 source_group( TREE ${BTX_ROOT} FILES ${BTX_ENGINE_SOURCES} )
 
-## BTX.exe
+## Project
 add_executable( BurekTechX
         ${BTX_ENGINE_SOURCES} )
 
-## Output directory
 ## btx.exe
 set_target_properties( BurekTechX PROPERTIES
         OUTPUT_NAME "btx"
@@ -55,5 +54,6 @@ if ( WIN32 )
             DESTINATION ${BTX_ROOT}/bin/ )
 
     ## On Windows, place PDBs as well
-    install( FILES $<TARGET_PDB_FILE:BurekTechX> DESTINATION ${BTX_ROOT}/bin/ OPTIONAL )
+    install( FILES $<TARGET_PDB_FILE:BurekTechX> 
+        DESTINATION ${BTX_ROOT}/bin/ OPTIONAL )
 endif()
