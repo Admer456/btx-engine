@@ -17,7 +17,7 @@ static ClientGame GClient;
 static ServerGame GServer;
 
 // Extern "C" prevents name mangling
-extern "C" gameLibraryExports* ExchangeGameInterface( gameLibraryImports* engineLibraries )
+extern "C" ADM_EXPORT gameLibraryExports* ExchangeGameInterface( gameLibraryImports* engineLibraries )
 {
 	if ( nullptr == engineLibraries )
 	{
@@ -31,9 +31,25 @@ extern "C" gameLibraryExports* ExchangeGameInterface( gameLibraryImports* engine
 		return nullptr;
 	}
 
+	// Import stuff from the engine
 	Engine = engineLibraries;
 	detail::gConsole = Engine->console;
 
+	Core = Engine->core;
+	Animation = Engine->animation;
+	Collision = Engine->collision;
+	Console = Engine->console;
+	FileSystem = Engine->fileSystem;
+	MaterialManager = Engine->materialManager;
+	ModelManager = Engine->modelManager;
+	Network = Engine->network;
+	Physics = Engine->physics;
+
+	Audio = Engine->audio;
+	Input = Engine->input;
+	Renderer = Engine->renderer;
+
+	// Export stuff to the engine
 	GameExports.client = &GClient;
 	GameExports.server = &GServer;
 
