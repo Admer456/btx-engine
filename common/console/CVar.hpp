@@ -72,6 +72,7 @@ using CVarList = std::vector<CVarBase*>;
 // game/shared/Console.cpp (not actually there yet)
 namespace detail
 {
+	// TODO: get rid of this and use it as a template parameter, maybe?
 	extern IConsole* gConsole;
 }
 

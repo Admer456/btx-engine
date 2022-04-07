@@ -135,9 +135,15 @@ const adm::Dictionary& Console::GetArguments() const
 // ============================
 void Console::ParseArguments( int argc, char** argv )
 {
-	for ( int i = 0; i < argc; i++ )
+	// Skip the 1st argument - that is the path to the .exe
+	if ( argc == 1 )
 	{
-		const char* string = argv[argc];
+		return;
+	}
+
+	for ( int i = 1; i < argc; i++ )
+	{
+		const char* string = argv[i];
 		const char* param = "";
 
 		// Args prefixed with - are switches
@@ -146,12 +152,12 @@ void Console::ParseArguments( int argc, char** argv )
 		{
 			if ( i < argc - 1 )
 			{
-				param = argv[++argc];
+				param = argv[++i];
 
 				// Switches and commands not always need a parameter
 				if ( param[0] == '-' || param[0] == '+' )
 				{
-					argc--;
+					i--;
 					param = "";
 				}
 			}
@@ -241,6 +247,7 @@ void Console::Log( const char* string, const char* timeString )
 			end = (i == max-2) ? max : i;
 
 			// TODO: turn this into adm::SubString
+			// TODO: could've been done using memcpy
 			size_t s;
 			for ( s = 0; s < (end-start); s++ )
 			{
