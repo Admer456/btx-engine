@@ -120,6 +120,16 @@ void Engine::Shutdown( const char* why )
 {
 	console.Print( adm::format( "Engine: Shutting down, reason: %s", why ) );
 
+	if ( nullptr != serverGame )
+	{
+		serverGame->Shutdown();
+	}
+
+	if ( nullptr != clientGame )
+	{
+		clientGame->Shutdown();
+	}
+
 	input.Shutdown();
 	fileSystem.Shutdown();
 	console.Shutdown();
@@ -140,7 +150,6 @@ bool Engine::RunFrame()
 	// Update the keyboard state etc.
 	input.Update();
 
-	/*
 	// Updating the subsystems is delegated to the game and client.
 	// This is partly because I wanna give near full control to the game programmer.
 	// This is also because the server and client can have separate "worlds",
@@ -158,18 +167,16 @@ bool Engine::RunFrame()
 	// Simulate game frames in SP and MP if you're the host and if the server exports itself
 	// The game can simulate multiple frames per engine tick, but also the inverse,
 	// depends on the game programmer really
-	if ( isHost && nullptr != game )
+	if ( nullptr != serverGame )
 	{
-		// TODO: maybe rename this to serverGame and the latter to clientGame
-		game->RunFrame();
+		serverGame->Update( deltaTime );
 	}
 
 	// Simulate client frames if not a dedicated server
-	if ( isClient && nullptr != client )
+	if ( nullptr != clientGame )
 	{
-		client->RunFrame();
+		clientGame->Update( deltaTime );
 	}
-	*/
 
 	// Normally we'd have more updating stuff here, so syncTimeElapsed would be significantly larger
 	// But, if it works, it works
@@ -180,8 +187,8 @@ bool Engine::RunFrame()
 		std::this_thread::sleep_for( chrono::microseconds( syncTime - syncTimeElapsed ) );
 	}
 
-	const float syncTimePost = syncTimer.GetElapsed( adm::Timer::Milliseconds );
-
+	deltaTime = syncTimer.GetElapsed( adm::Timer::Milliseconds );
+	
 	return !input.IsWindowClosing();
 }
 
@@ -265,7 +272,33 @@ bool Engine::LoadGameLibrary( StringRef gameName )
 		return false;
 	}
 
-	console.Print( "Engine: Successfully loaded game library" );
+	serverGame = gameExports->server;
+	clientGame = gameExports->client;
 
+	if ( nullptr == serverGame )
+	{
+		console.Error( "Engine: ServerGame is null" );
+		return false;
+	}
+	
+	if ( !serverGame->Init() )
+	{
+		console.Error( "Engine: ServerGame failed to init" );
+		return false;
+	}
+
+	if ( nullptr == clientGame )
+	{
+		console.Error( "Engine: ClientGame is null" );
+		return false;
+	}
+
+	if ( !clientGame->Init() )
+	{
+		console.Error( "Engine: ClientGame failed to init" );
+		return false;
+	}
+
+	console.Print( "Engine: Successfully loaded game library" );
 	return true;
 }

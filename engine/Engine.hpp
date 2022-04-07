@@ -29,6 +29,7 @@ private:
 
     gameLibraryImports gameImports;
 
+    float       deltaTime{ 0.0f };
     IGame*      serverGame{ nullptr };
     IGame*      clientGame{ nullptr };
 
