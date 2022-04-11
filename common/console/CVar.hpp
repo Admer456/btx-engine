@@ -15,6 +15,7 @@ enum CVarFlags
 // - a default value
 // - flags (replicated, saved, server-only, read-only etc.)
 // - a description
+// - TODO: autocomplete, limits etc.?
 // 
 // Console commands are also CVars but with a special purpose, defined by:
 // - a name
@@ -45,11 +46,8 @@ public: // Construction site
 	void		SetCString( const char* value );
 	void		SetString( StringRef value );
 
-	// my_command my_argument my_argument2
-	// If my_command is a variable, then args is trimmed to just "my_argument"
-	// Otherwise, args is "my_argument my_argument2", and you're free to parse 
-	// it in any way you want
-	bool		Execute( StringRef args );
+protected:
+	bool		Execute( StringRef args, IConsole* console );
 
 protected:
 	bool        isCommand{ false };
@@ -62,25 +60,21 @@ protected:
 
 using CVarList = std::vector<CVarBase*>;
 
-// ------------------------------------------------------------------------
-// This is a little ugly, but, for the static CVars to work, we need this 
-// thing, where each module defines its own gConsole. It's fine here, 
-// because it'll only be defined twice: in the engine and in the game DLL
-// ------------------------------------------------------------------------
-// It is defined in these places at the moment:
-// engine/console/Console.cpp
-// game/shared/Console.cpp (not actually there yet)
-namespace detail
-{
-	// TODO: get rid of this and use it as a template parameter, maybe?
-	extern IConsole* gConsole;
-}
+// CVars are initialised statically, and registered right in the constructor. We do the template stuff here
+// to allow the CVars to be registered the exact same way across different modules. The only downside is that each
+// module will have to have its own alias for CVars:
+// 
+// using CVar = CVarTemplate<cvarList, gConsole>;
+// 
+// In this instance, there is only one for the engine, and one for the game DLL.
 
-template<CVarList& staticCVarList>
+// CVar template for automatic registration in the console system
+// The template only provides automatic registration functionality. For the rest, look at CVarBase
+template<CVarList& staticCVarList, IConsole*& console>
 class CVarTemplate : public CVarBase
 {
 public:
-	CVarTemplate( const char* name, const char* defaultValue, uint16_t flags, const char* description )
+	CVarTemplate( const char* name, const char* defaultValue = nullptr, uint16_t flags = 0, const char* description = "" )
 		: CVarBase( name, defaultValue, flags, description )
 	{
 		if ( !RegisteredAllStatics )
@@ -89,11 +83,11 @@ public:
 		}
 		else
 		{
-			detail::gConsole->Register( this );
+			console->Register( this );
 		}
 	}
 
-	CVarTemplate( const char* name, ConsoleCommandFn* function, const char* description )
+	CVarTemplate( const char* name, ConsoleCommandFn* function, const char* description = "" )
 		: CVarBase( name, function, description )
 	{
 		if ( !RegisteredAllStatics )
@@ -102,8 +96,17 @@ public:
 		}
 		else
 		{
-			detail::gConsole->Register( this );
+			console->Register( this );
 		}
+	}
+
+	// my_command my_argument my_argument2
+	// If my_command is a variable, then args is trimmed to just "my_argument"
+	// Otherwise, args is "my_argument my_argument2", and you're free to parse 
+	// it in any way you want
+	int Execute( StringRef args )
+	{
+		return Execute( args, console );
 	}
 
 	// Init-time CVars that were statically declared
@@ -111,7 +114,7 @@ public:
 	{
 		for ( auto& cvar : staticCVarList )
 		{
-			detail::gConsole->Register( cvar );
+			console->Register( cvar );
 		}
 
 		RegisteredAllStatics = true;
@@ -121,8 +124,7 @@ public:
 };
 
 // In game DLL:
-// using CVar = CVarTemplate<clientCVarList> (client)
-// using CVar = CVarTemplate<serverCVarList> (server)
+// using CVar = CVarTemplate<GameCVarList, Console>
 // 
 // In engine:
-// using CVar = CVarTemplate<Console::EngineCVarList>
+// using CVar = CVarTemplate<Console::EngineCVarList, Console::EngineConsole>

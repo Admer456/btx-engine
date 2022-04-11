@@ -81,34 +81,35 @@ void CVarBase::SetString( StringRef value )
 	varValue = value;
 }
 
-bool CVarBase::Execute( StringRef args )
+bool CVarBase::Execute( StringRef args, IConsole* console )
 {
 	if ( isCommand && nullptr != conCommand )
 	{
 		return conCommand( args );
 	}
 
-	IConsole& console = *detail::gConsole;
-
 	// Empty args = checking for information
 	if ( args.empty() || !args.at(0) )
 	{
-		console.Print( adm::format( "CVar '%s' info:", varName.c_str() ) );
-		console.Print( adm::format( " L__Value: '%s'", varValue.c_str() ) );
-		console.Print( adm::format( " L__Description: '%s'", varDescription.c_str() ) );
+		console->Print( adm::format( "CVar '%s' info:", varName.c_str() ) );
+		console->Print( adm::format( " L__Value: '%s'", varValue.c_str() ) );
+		if ( !varDescription.empty() )
+		{
+			console->Print( adm::format( " L__Description: '%s'", varDescription.c_str() ) );
+		}
 		return true;
 	}
 
 	// Users can't modify readonly CVars
 	if ( varFlags & CVar_ReadOnly )
 	{
-		console.Print( adm::format( "'%s' is a read-only CVar", varName.c_str() ) );
+		console->Print( adm::format( "'%s' is a read-only CVar", varName.c_str() ) );
 		return false;
 	}
 
 	size_t firstSpace = args.find_first_of( ' ' );
 	SetString( args.substr( 0, firstSpace-1 ) );
 
-	console.Print( adm::format( "'%s' is now '%s'", varName.c_str(), varValue.c_str() ) );
+	console->Print( adm::format( "'%s' is now '%s'", varName.c_str(), varValue.c_str() ) );
 	return true;
 }

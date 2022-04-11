@@ -8,8 +8,8 @@
 // The CVar system needs this for auto-registration
 namespace detail
 {
-	IConsole* gConsole = nullptr;
 	CVarList GameCVarList = CVarList();
+	IInput* gInput = nullptr;
 }
 
 static gameLibraryExports GameExports;
@@ -33,8 +33,8 @@ extern "C" ADM_EXPORT gameLibraryExports* ExchangeGameInterface( gameLibraryImpo
 
 	// Import stuff from the engine
 	Engine = engineLibraries;
-	detail::gConsole = Engine->console;
-
+	
+	// Less typing for game programmers in the end
 	Core = Engine->core;
 	Animation = Engine->animation;
 	Collision = Engine->collision;
@@ -48,6 +48,11 @@ extern "C" ADM_EXPORT gameLibraryExports* ExchangeGameInterface( gameLibraryImpo
 	Audio = Engine->audio;
 	Input = Engine->input;
 	Renderer = Engine->renderer;
+
+	detail::gInput = Input;
+
+	InputKey::RegisterAll();
+	InputAxis::RegisterAll();
 
 	// Export stuff to the engine
 	GameExports.client = &GClient;

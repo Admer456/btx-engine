@@ -26,7 +26,7 @@ public:
     // The game may freely "delay" this
     // E.g. the server game updates at 20 Hz, 
     // while the client game updates every frame
-    virtual void Update( const float& deltaTime ) = 0;
+    virtual void Update() = 0;
 };
 
 // The engine imports this stuff so it can update them

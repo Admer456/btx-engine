@@ -28,7 +28,9 @@ public:
 		this->core = core;
 	}
 
+	// Glue for the automatic CVar registration system - look at CVarTemplate
 	static inline CVarList EngineCVarList = CVarList();
+	static inline IConsole* EngineConsole = nullptr; // I trust that nobody will fiddle with this
 
 private:
 	void		ParseArguments( int argc, char** argv );
@@ -44,6 +46,5 @@ private:
 	ICore*		core{ nullptr };
 };
 
-// There should be another one like this in the game DLL,
-// potentially yet another one in the clientside portion of it
-using CVar = CVarTemplate<Console::EngineCVarList>;
+// There should be another one like this in the game DLL
+using CVar = CVarTemplate<Console::EngineCVarList, Console::EngineConsole>;

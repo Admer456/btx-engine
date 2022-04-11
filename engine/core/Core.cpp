@@ -50,6 +50,22 @@ float Core::TimeMilliseconds() const
 }
 
 // ============================
+// Core::DeltaTime
+// ============================
+float Core::DeltaTime() const
+{
+	return deltaTime;
+}
+
+// ============================
+// Core::SetDeltaTime
+// ============================
+void Core::SetDeltaTime( const float& newDeltaTime )
+{
+	deltaTime = newDeltaTime;
+}
+
+// ============================
 // Core::IsDedicatedServer
 // ============================
 bool Core::IsDedicatedServer() const

@@ -3,13 +3,6 @@
 
 #include "common/Precompiled.hpp"
 
-namespace detail
-{
-	extern CVarList GameCVarList;
-}
-
-using CVar = CVarTemplate<detail::GameCVarList>;
-
 inline gameLibraryImports* Engine = nullptr;
 
 // Copy pasted from gameLibraryImports as a convenience layer, less typing
@@ -31,3 +24,10 @@ inline IPhysics* Physics = nullptr;                 // dynamics, joints, ragdoll
 inline IAudio* Audio = nullptr;           // sound sources, music, filters, reverb
 inline IInput* Input = nullptr;           // keyboard & mouse input
 inline IRenderSystem* Renderer = nullptr; // rendering of 3D models, 2D surfs, text etc.
+
+namespace detail
+{
+	extern CVarList GameCVarList;
+}
+
+using CVar = CVarTemplate<detail::GameCVarList, Console>;
