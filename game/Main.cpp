@@ -8,7 +8,6 @@
 // The CVar system needs this for auto-registration
 namespace detail
 {
-	IConsole* gConsole = nullptr;
 	CVarList GameCVarList = CVarList();
 }
 
@@ -33,8 +32,8 @@ extern "C" ADM_EXPORT gameLibraryExports* ExchangeGameInterface( gameLibraryImpo
 
 	// Import stuff from the engine
 	Engine = engineLibraries;
-	detail::gConsole = Engine->console;
-
+	
+	// Less typing for game programmers in the end
 	Core = Engine->core;
 	Animation = Engine->animation;
 	Collision = Engine->collision;

@@ -4,11 +4,6 @@
 
 #include <iostream>
 
-namespace detail
-{
-	IConsole* gConsole = nullptr;
-}
-
 // ============================
 // Console::Init
 // Initialises engine CVars, game CVars are initialised separately
@@ -17,7 +12,7 @@ bool Console::Init( int argc, char** argv )
 {
 	ParseArguments( argc, argv );
 
-	detail::gConsole = this;
+	EngineConsole = this;
 	CVar::RegisterAll();
 
 	buffer.Init();
@@ -103,7 +98,7 @@ bool Console::Execute( StringRef command, StringRef args )
 		return false;
 	}
 
-	return cvar->Execute( args );
+	return cvar->Execute( args, this );
 }
 
 // ============================
