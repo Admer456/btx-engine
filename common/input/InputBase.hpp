@@ -87,7 +87,9 @@ private:
 
 struct AxisCodes
 {
+	// Absolute mouse X in the window, 0 to windowWidth, left to right
 	static constexpr int MouseX = 0;
+	// Absolute mouse Y in the window, 0 to windowHeight, top to bottom
 	static constexpr int MouseY = 1;
 	static constexpr int MouseWheel = 2;
 };

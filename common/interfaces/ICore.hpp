@@ -13,6 +13,8 @@ public:
     // Returns the current time since the app started running
     virtual float   Time() const = 0;
     virtual float   TimeMilliseconds() const = 0;
+    // Engine's delta time, from the start to the end of the last frame
+    virtual float   DeltaTime() const = 0;
 
     // Is this a dedicated server?
     // Usually, when this is true, the rendersystem, audiosystem

@@ -14,6 +14,9 @@ public:
     // Returns the current time since the app started running
     float       Time() const override;
     float       TimeMilliseconds() const override;
+    float       DeltaTime() const override;
+    // For the engine to set delta time
+    void        SetDeltaTime( const float& newDeltaTime );
 
     // Is this a dedicated server?
     bool        IsDedicatedServer() const override;
@@ -22,4 +25,5 @@ public:
 
 private:
     adm::Timer  systemTimer;
+    float deltaTime{ 0.0f };
 };

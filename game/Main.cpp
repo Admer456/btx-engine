@@ -9,6 +9,7 @@
 namespace detail
 {
 	CVarList GameCVarList = CVarList();
+	IInput* gInput = nullptr;
 }
 
 static gameLibraryExports GameExports;
@@ -47,6 +48,11 @@ extern "C" ADM_EXPORT gameLibraryExports* ExchangeGameInterface( gameLibraryImpo
 	Audio = Engine->audio;
 	Input = Engine->input;
 	Renderer = Engine->renderer;
+
+	detail::gInput = Input;
+
+	InputKey::RegisterAll();
+	InputAxis::RegisterAll();
 
 	// Export stuff to the engine
 	GameExports.client = &GClient;

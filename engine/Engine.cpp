@@ -169,13 +169,13 @@ bool Engine::RunFrame()
 	// depends on the game programmer really
 	if ( nullptr != serverGame )
 	{
-		serverGame->Update( deltaTime );
+		serverGame->Update();
 	}
 
 	// Simulate client frames if not a dedicated server
 	if ( nullptr != clientGame )
 	{
-		clientGame->Update( deltaTime );
+		clientGame->Update();
 	}
 
 	// Normally we'd have more updating stuff here, so syncTimeElapsed would be significantly larger
@@ -187,8 +187,9 @@ bool Engine::RunFrame()
 		std::this_thread::sleep_for( chrono::microseconds( syncTime - syncTimeElapsed ) );
 	}
 
-	deltaTime = syncTimer.GetElapsed( adm::Timer::Milliseconds );
-	
+	deltaTime = syncTimer.GetElapsed( adm::Timer::Seconds );
+	core.SetDeltaTime( deltaTime );
+
 	return !input.IsWindowClosing();
 }
 

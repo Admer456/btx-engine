@@ -7,5 +7,5 @@ public:
 	bool Init() override;
 	void Shutdown() override;
 
-	void Update( const float& deltaTime ) override;
+	void Update() override;
 };
