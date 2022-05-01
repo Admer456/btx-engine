@@ -8,7 +8,7 @@ namespace detail
 	extern IInput* gInput;
 }
 
-class InputKey : public adm::InstanceChain<InputKey>
+class InputKey : public adm::Chain<InputKey>
 {
 public:
 	InputKey() = default;
@@ -94,7 +94,7 @@ struct AxisCodes
 	static constexpr int MouseWheel = 2;
 };
 
-class InputAxis : public adm::InstanceChain<InputAxis>
+class InputAxis : public adm::Chain<InputAxis>
 {
 public:
 	InputAxis() = default;
