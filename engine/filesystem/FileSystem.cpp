@@ -25,11 +25,12 @@ bool FileSystem::Init( Path gameDirectory )
 		return false;
 	}
 
+	enginePath = "engine";
 	basePath = fs::current_path();
 	currentGamePath = gameDirectory;
 
-	// Mount the base path
-	Mount( "base" );
+	// The base path contains base engine
+	Mount( enginePath );
 	// Load addons
 	Mount( currentGamePath, true );
 
@@ -48,7 +49,7 @@ void FileSystem::Shutdown()
 // ============================
 // FileSystem::Mount
 // ============================
-void FileSystem::Mount( Path otherGameDirectory, bool mountOthers )
+bool FileSystem::Mount( Path otherGameDirectory, bool mountOthers )
 {
 	String otherGameDirectoryStr =
 		otherGameDirectory.is_absolute() ? // Paths that are already relative can be passed directly
@@ -60,14 +61,14 @@ void FileSystem::Mount( Path otherGameDirectory, bool mountOthers )
 	if ( !fs::exists( otherGameDirectory ) )
 	{
 		console->Warning( adm::format( "FileSystem::Mount: Game directory '%s' doesn't exist", otherGameDirectoryStr.c_str() ) );
-		return;
+		return false;
 	}
 
 	// Make sure it has a gamemeta.txt file
 	if ( !fs::exists( otherGameDirectory/"gamemeta.txt" ) )
 	{
 		console->Warning( adm::format( "FileSystem::Mount: Game directory '%s' doesn't have a gamemeta.txt", otherGameDirectoryStr.c_str() ) );
-		return;
+		return false;
 	}
 
 	// Make sure it's unique before proceeding
@@ -75,7 +76,7 @@ void FileSystem::Mount( Path otherGameDirectory, bool mountOthers )
 	{
 		if ( otherGameDirectory == path )
 		{
-			return;
+			return true;
 		}
 	}
 
@@ -98,9 +99,22 @@ void FileSystem::Mount( Path otherGameDirectory, bool mountOthers )
 	{
 		for ( size_t i = 0; i < gameMeta.GetNumMountedGames(); i++ )
 		{
-			Mount( basePath/gameMeta.GetMountedGame( i ) );
+			if ( !Mount( basePath/gameMeta.GetMountedGame( i ) ) )
+			{
+				console->Warning( adm::format( "FileSystem::Mount: Can't mount dependency '%s', you may have missing content!", gameMeta.GetMountedGame( i ) ));
+			}
 		}
 	}
+
+	return true;
+}
+
+// ============================
+// FileSystem::GetEngineDirectory
+// ============================
+const Path& FileSystem::GetEngineDirectory() const
+{
+	return enginePath;
 }
 
 // ============================
@@ -124,35 +138,43 @@ const Path& FileSystem::GetCurrentGameDirectory() const
 // ============================
 bool FileSystem::Exists( Path path, const uint8_t& filterFlags ) const
 {
+	return GetPathTo( path, filterFlags ).has_value();
+}
+
+// ============================
+// FileSystem::GetPathTo
+// ============================
+adm::Optional<Path> FileSystem::GetPathTo( Path destination, const uint8_t& filterFlags ) const
+{
 	// If it's absolute or similar, try finding that first
-	if ( ExistsInternal( path, filterFlags ) )
+	if ( ExistsInternal( destination, filterFlags ) )
 	{
-		return true;
+		return destination;
 	}
 
 	// Find it in the engine
-	if ( ExistsInternal( basePath/path, filterFlags ) )
+	if ( ExistsInternal( basePath/destination, filterFlags ) )
 	{
-		return true;
+		return basePath/destination;
 	}
 
 	// Find it in the current game dir
-	if ( ExistsInternal( basePath/currentGamePath/path, filterFlags ) )
+	if ( ExistsInternal( basePath/currentGamePath/destination, filterFlags ) )
 	{
-		return true;
+		return basePath/currentGamePath/destination;
 	}
 
 	// Check every dependent game dir
 	for ( const auto& otherGamePath : otherPaths )
 	{
-		if ( ExistsInternal( basePath/otherGamePath/path, filterFlags ) )
+		if ( ExistsInternal( basePath/otherGamePath/destination, filterFlags ) )
 		{
-			return true;
+			return basePath/otherGamePath/destination;
 		}
 	}
 
-	// We didn't find it...
-	return false;
+	// We didn't find it
+	return {};
 }
 
 // ============================

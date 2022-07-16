@@ -57,10 +57,19 @@ public:
 	virtual void Shutdown() = 0;
 
 	// @param mountOthers: Mount the games from otherGameDirectory/gamemeta.txt?
-	virtual void Mount( Path otherGameDirectory, bool mountOthers = false ) = 0;
+	// @returns true if it's successfully mounted, false if not
+	virtual bool Mount( Path otherGameDirectory, bool mountOthers = false ) = 0;
 
+	virtual const Path& GetEngineDirectory() const = 0;
 	virtual const Path& GetBaseDirectory() const = 0;
 	virtual const Path& GetCurrentGameDirectory() const = 0;
 
+	// @param path: The path to be checked
+	// @param filterFlags: Is the path a directory, a file, or what?
+	// @returns true if found in any of the mounted dirs, false if not
 	virtual bool Exists( Path path, const uint8_t& filterFlags = Path_All ) const = 0;
+
+	// @param destination: Relative path to the destination
+	// @returns Executable-relative path to the destination in one of the mounted dirs
+	virtual adm::Optional<Path> GetPathTo( Path destination, const uint8_t& filterFlags = Path_All ) const = 0;
 };

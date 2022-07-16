@@ -7,12 +7,15 @@ public:
 	bool				Init( Path gameDirectory ) override;
 	void				Shutdown() override;
 
-	void				Mount( Path otherGameDirectory, bool mountOthers = false ) override;
+	bool				Mount( Path otherGameDirectory, bool mountOthers = false ) override;
 
+	const Path&			GetEngineDirectory() const override;
 	const Path&			GetBaseDirectory() const override;
 	const Path&			GetCurrentGameDirectory() const override;
 
-	bool				Exists( Path, const uint8_t& filterFlags ) const override;
+	bool				Exists( Path path, const uint8_t& filterFlags ) const override;
+
+	adm::Optional<Path>	GetPathTo( Path destination, const uint8_t& filterFlags ) const override;
 
 	void				Setup( ICore* core, IConsole* console )
 	{
@@ -24,6 +27,7 @@ private:
 	bool				ExistsInternal( Path path, const uint8_t& filterFlags ) const;
 
 private:
+	Path				enginePath;
 	Path				basePath;
 	Path				currentGamePath;
 	std::vector<Path>	otherPaths; // other games, addons etc.
