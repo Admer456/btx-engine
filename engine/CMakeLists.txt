@@ -10,8 +10,11 @@ set( BTX_ENGINE_SOURCES
     console/ConsoleBuffer.cpp
     filesystem/FileSystem.hpp
     filesystem/FileSystem.cpp
+    input/AxisHandler.hpp
+    input/AxisWithDeviceId.hpp
     input/Input.hpp
     input/Input.cpp
+    input/InputObjects.hpp
     Engine.hpp
     Engine.cpp
     Main.cpp )

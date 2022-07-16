@@ -2,10 +2,6 @@
 #include "Precompiled.hpp"
 #include "ClientGame.hpp"
 
-// Absolute mouse position inside the window
-InputAxis iMouseX( AxisCodes::MouseX );
-InputAxis iMouseY( AxisCodes::MouseY );
-
 bool ClientGame::Init()
 {
 	Console->Print( "ClientGame::Init" );
@@ -21,10 +17,13 @@ void ClientGame::Update()
 {
 	static float timer = 0.0f;
 
+	const float mouseX = Input->GetAxis( InputAxisCode::MouseX );
+	const float mouseY = Input->GetAxis( InputAxisCode::MouseY );
+
 	if ( timer > 0.5f )
 	{
 		timer = 0.0f;
-		Console->Print( adm::format( "x: %3.2f, y: %3.2f", iMouseX.GetValue(), iMouseY.GetValue() ) );
+		Console->Print( adm::format( "x: %3.2f, y: %3.2f", mouseX, mouseY ) );
 	}
 
 	timer += Core->DeltaTime();

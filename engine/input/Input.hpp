@@ -1,6 +1,11 @@
 
 #pragma once
 
+struct AxisHandler;
+
+#include "InputObjects.hpp"
+#include "AxisWithDeviceId.hpp"
+
 class Input : public IInput
 {
 public:
@@ -9,8 +14,9 @@ public:
 
     void Update() override;
 
-    void RegisterKey( InputKey* key ) override;
-    void RegisterAxis( InputAxis* axis ) override;
+    float GetAxis( InputAxisCode::Enum axis, const int& deviceId ) const override;
+    InputKeyFlags GetButton( InputAxisCode::Enum button, const int& deviceId ) const override;
+    InputKeyFlags GetKey( const int& key ) const override;
 
     bool IsWindowClosing() const override;
 
@@ -21,18 +27,14 @@ public:
     }
 
 private:
-    void UpdateMouseAxisPointers();
-    InputAxis* FindAxis( const int& axisCode );
+    void UpdateMouseCoordinates();
 
 private:
-    std::vector<InputKey*> keys;
-    std::unordered_map<int, InputAxis*> axes;
+    std::vector<InputKey> keys;
+    std::unordered_map<AxisWithDeviceId, InputAxis> axes;
 
     ICore* core{ nullptr };
     IConsole* console{ nullptr };
-
-    InputAxis* mouseHorizontalAxis = nullptr;
-    InputAxis* mouseVerticalAxis = nullptr;
 
     bool isWindowClosing = false;
 };

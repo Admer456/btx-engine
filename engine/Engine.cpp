@@ -67,10 +67,6 @@ bool Engine::Init( int argc, char** argv )
 		return false;
 	}
 
-	// This must also be done in the game DLL
-	InputKey::RegisterAll();
-	InputAxis::RegisterAll();
-
 	// Initialise the filesystem with the directory of the
 	// game parameter and the "base" directory
 	Path currentExe = argv[0];

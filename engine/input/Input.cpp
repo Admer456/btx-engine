@@ -4,51 +4,56 @@
 
 #include "SDL.h"
 
-namespace detail
-{
-	IInput* gInput = nullptr;
-}
-
-// I found this to be the most elegant solution for now
-// We do not have many axes, so this is fine and manageable
-using AxisCodeHandlerFn = float( SDL_Event& e );
-struct AxisCodeHandler
-{
-	int axisCode{ 0 }; // our ID for this axis (AxisCodes::)
-	int sdlEventCode{ 0 }; // which event type to respond to
-	AxisCodeHandlerFn* handlerFunction{ nullptr }; // how to handle the event
-};
-
-// We will need to do something about joysticks and gamepads though,
-// because there can be multiple of them
-constexpr AxisCodeHandler axisHandlers[] =
-{
-	// Mouse X and Y are automatically handled if it's SDL_MOUSEMOTION
-	// We're just here for sake of checking the axis codes
-	{ AxisCodes::MouseX, SDL_MOUSEMOTION },
-	{ AxisCodes::MouseY, SDL_MOUSEMOTION },
-	// Mouse wheel handler is more complete
-	{
-		AxisCodes::MouseWheel, SDL_MOUSEWHEEL, []( SDL_Event& e ) 
-		{ 
-			return static_cast<float>(e.wheel.y); 
-		}
-	}
-};
-
-constexpr size_t NumAxisHandlers = sizeof( axisHandlers ) / sizeof( AxisCodeHandler );
+#include "AxisHandler.hpp"
 
 // ============================
 // Input::Init
 // ============================
 bool Input::Init()
 {
-	detail::gInput = this;
-
 	console->Print( "Input::Init" );
 
-	keys.clear();
-	axes.clear();
+	// Generate input objects for various keys
+	// It goes in ranges
+	const std::pair<InputKeyCode::Enum, InputKeyCode::Enum> KeyRanges[] =
+	{
+		std::make_pair( InputKeyCode::A, InputKeyCode::Z ),
+		std::make_pair( InputKeyCode::Number1, InputKeyCode::Number9 ),
+		std::make_pair( InputKeyCode::Return, InputKeyCode::Backslash ),
+		std::make_pair( InputKeyCode::Semicolon, InputKeyCode::CapsLock ),
+		std::make_pair( InputKeyCode::F1, InputKeyCode::F12 ),
+		std::make_pair( InputKeyCode::PrintScreen, InputKeyCode::NumLock ),
+		std::make_pair( InputKeyCode::KeyPadDivide, InputKeyCode::KeyPadPeriod ),
+		std::make_pair( InputKeyCode::NonUSBackslash, InputKeyCode::KeyPadEquals ),
+		std::make_pair( InputKeyCode::F13, InputKeyCode::F24 ),
+		std::make_pair( InputKeyCode::Execute, InputKeyCode::VolumeDown ),
+		std::make_pair( InputKeyCode::KeyPadComma, InputKeyCode::Language9 ),
+		std::make_pair( InputKeyCode::SystemRequirements, InputKeyCode::ExSel ),
+		std::make_pair( InputKeyCode::KeyPad00, InputKeyCode::KeyPadHexadecimal ),
+		std::make_pair( InputKeyCode::LeftCtrl, InputKeyCode::RightGUI )
+	};
+
+	keys.reserve( 256U );
+	for ( const auto& range : KeyRanges )
+	{
+		for ( int i = range.first; i <= range.second; i++ )
+		{
+			keys.emplace_back( i );
+		}
+	}
+
+	// Generate input objects for various axis codes
+	for ( const auto& handler : AxisHandlers )
+	{
+		axes[handler.axisCode] = InputAxis( handler.axisCode );
+		if ( handler.generateDeviceIds )
+		{
+			for ( int i = 1; i < 4; i++ )
+			{
+				axes[{handler.axisCode, i}] = InputAxis(handler.axisCode, i);
+			}
+		}
+	}
 
 	return true;
 }
@@ -81,112 +86,75 @@ void Input::Update()
 			continue;
 		}
 
-		// Obtain mouse motion here
-		if ( e.type == SDL_MOUSEMOTION )
+		// Try finding all handlers that correspond to this event
+		for ( const auto& handler : AxisHandlers )
 		{
-			int mouseX, mouseY;
-			SDL_GetMouseState( &mouseX, &mouseY );
-
-			// Update mouse axis handles
-			UpdateMouseAxisPointers();
-
-			if ( nullptr != mouseHorizontalAxis )
+			if ( handler.sdlEventCode != e.type )
 			{
-				mouseHorizontalAxis->Update( mouseX );
+				continue;
 			}
-			
-			if ( nullptr != mouseVerticalAxis )
-			{
-				mouseVerticalAxis->Update( mouseY );
-			}
-			
-			continue;
-		}
 
-		// Try to find a handler and execute it
-		for ( const auto& handler : axisHandlers )
-		{
-			if ( handler.sdlEventCode == e.type )
-			{
-				// Now that we found a handler, let's find an axis
-				// for it and update it with the needed value
-				InputAxis* axis = FindAxis( handler.axisCode );
-				if ( nullptr != axis && 
-					nullptr != handler.handlerFunction )
-				{
-					float newValue = handler.handlerFunction( e );
-					axis->Update( newValue );
-				}
-
-				break;
-			}
+			// Update the axis from the event data
+			InputAxis& axis = axes[handler.axisCode];
+			axis.Update( handler.handlerFunction( e, axis.GetDeviceId() ) );
 		}
 	}
+
+	UpdateMouseCoordinates();
 
 	// Key updates
 	auto states = SDL_GetKeyboardState( nullptr );
-	
-	// This lambda simplifies and automates primary, secondary, tertiary etc. keybinds
-	// Right now we only have primary and secondary binds, might add tertiary at some point
-	const auto KeyMatch = [states]( const int& scancode )
-	{
-		if ( scancode == ScancodeUninitialized )
-		{
-			return false;
-		}
 
-		return states[scancode] != 0;
-	};
-	
 	for ( auto& key : keys )
 	{
-		bool primaryKeyMatch = KeyMatch( key->GetPrimaryScancode() );
-		bool secondaryKeyMatch = KeyMatch( key->GetSecondaryScancode() );
+		const int code = key.GetScancode();
 
-		key->Update( primaryKeyMatch || secondaryKeyMatch );
+		key.Update( code != ScancodeUninitialized ? states[code] : false );
 	}
 }
 
 // ============================
-// Input::RegisterKey
+// Input::GetAxis
 // ============================
-void Input::RegisterKey( InputKey* key )
+float Input::GetAxis( InputAxisCode::Enum axis, const int& deviceId ) const
 {
-	for ( auto& localKey : keys )
+	auto iterator = axes.find( { axis, deviceId } );
+	if ( iterator == axes.end() )
 	{
-		if ( localKey->GetName() == key->GetName() )
-		{
-			console->Warning( adm::format( "Input::RegisterKey: Can't register existing key '%s'", key->GetName().data() ) );
-			return;
-		}
+		return 0.0f;
 	}
 
-	console->Print( adm::format( "Input::RegisterKey: Registered '%s'", key->GetName().data() ) );
-	keys.push_back( key );
+	return iterator->second.GetValue();
 }
 
 // ============================
-// Input::RegisterAxis
+// Input::GetButton
 // ============================
-void Input::RegisterAxis( InputAxis* axis )
+InputKeyFlags Input::GetButton( InputAxisCode::Enum button, const int& deviceId ) const
 {
-	int code = axis->GetCode();
-	if ( code < 0 || code > NumAxisHandlers )
+	auto iterator = axes.find( { button, deviceId } );
+	if ( iterator == axes.end() )
 	{
-		console->Warning( adm::format( "Input::RegisterAxis: Can't register axis with OOB axis code %i\n", code ) );
-		return;
+		return 0;
 	}
 
-	for ( auto& localAxis : axes )
+	return iterator->second.GetState();
+}
+
+// ============================
+// Input::GetKey
+// ============================
+InputKeyFlags Input::GetKey( const int& key ) const
+{
+	for ( const auto& keyObject : keys )
 	{
-		if ( localAxis.second->GetCode() == code )
+		if ( keyObject.GetScancode() == key )
 		{
-			console->Warning( adm::format( "Input::RegisterAxis: Can't register existing axis ", code ) );
-			return;
+			return keyObject.GetState();
 		}
 	}
 
-	axes[code] = axis;
+	return 0;
 }
 
 // ============================
@@ -198,28 +166,19 @@ bool Input::IsWindowClosing() const
 }
 
 // ============================
-// Input::UpdateMouse
+// Input::UpdateMouseCoordinates
 // ============================
-void Input::UpdateMouseAxisPointers()
+void Input::UpdateMouseCoordinates()
 {
-	if ( nullptr == mouseHorizontalAxis )
-	{
-		mouseHorizontalAxis = FindAxis( AxisCodes::MouseX );
-	}
+	int mouseX, mouseY, mouseRelativeX, mouseRelativeY;
+	const int mouseState = SDL_GetMouseState( &mouseX, &mouseY );
+	SDL_GetRelativeMouseState( &mouseRelativeX, &mouseRelativeY );
 
-	if ( nullptr == mouseVerticalAxis )
-	{
-		mouseVerticalAxis = FindAxis( AxisCodes::MouseY );
-	}
-}
+	// Need to shorten typing here
+	using iac = InputAxisCode;
 
-InputAxis* Input::FindAxis( const int& axisCode )
-{
-	auto find = axes.find( axisCode );
-	if ( find != axes.end() )
-	{
-		return find->second;
-	}
-
-	return nullptr;
+	axes[iac::MouseX].Update( mouseX );
+	axes[iac::MouseY].Update( mouseY );
+	axes[iac::MouseXRelative].Update( mouseRelativeX );
+	axes[iac::MouseYRelative].Update( mouseRelativeY );
 }

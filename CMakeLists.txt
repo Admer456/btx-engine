@@ -28,7 +28,6 @@ set( BTX_COMMON_SOURCES
     ${BTX_ROOT}/common/interfaces/IInput.hpp
     ${BTX_ROOT}/common/console/CVar.hpp
     ${BTX_ROOT}/common/console/CVar.cpp
-    ${BTX_ROOT}/common/input/InputBase.hpp
     ${BTX_ROOT}/common/GameMetadata.hpp
     ${BTX_ROOT}/common/GameMetadata.cpp
     ${BTX_ROOT}/common/Precompiled.hpp )
