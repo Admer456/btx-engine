@@ -263,20 +263,18 @@ void Console::Log( const char* string, const char* timeString )
 // ============================
 char* Console::GenerateTimeString()
 {
-	// hh:mm:ss.ssss
-	static char buffer[32];
+	// mmm:ss.ssss
+	static char buffer[16];
 	const float time = core->Time();
 
 	int iTime = time;
 	int seconds = time;
 	int minutes = seconds / 60;
-	int hours = minutes / 60;
 
-	minutes = minutes % 60;
 	seconds = seconds % 60;
 
 	float flSeconds = seconds + (time - iTime);
 
-	sprintf( buffer, "%02i:%02i:%06.3f", hours, minutes, flSeconds );
+	sprintf( buffer, "%03i:%06.3f", minutes, flSeconds );
 	return buffer;
 }
