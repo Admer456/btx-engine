@@ -1,11 +1,15 @@
 
 #pragma once
 
+struct gameLibraryImports;
+
 class IEngine
 {
 public:
 	virtual bool Init( int argc, char** argv ) = 0;
 	virtual void Shutdown( const char* why ) = 0;
+
+	virtual const gameLibraryImports& GetAPI() const = 0;
 
 	virtual bool RunFrame() = 0;
 };

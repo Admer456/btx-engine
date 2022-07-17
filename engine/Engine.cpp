@@ -61,6 +61,8 @@ bool Engine::Init( int argc, char** argv )
 		return false;
 	}
 
+	SetupAPIForExchange();
+
 	// gameName/game.[dll|so]
 	if ( !LoadGameLibrary( gameName ) )
 	{
@@ -108,6 +110,14 @@ void Engine::Shutdown( const char* why )
 	core.Shutdown();
 
 	SDL_Quit();
+}
+
+// ============================
+// Engine::GetAPI
+// ============================
+const gameLibraryImports& Engine::GetAPI() const
+{
+	return gameImports;
 }
 
 // ============================
@@ -220,23 +230,7 @@ bool Engine::LoadGameLibrary( StringRef gameName )
 		return false;
 	}
 
-	// To save myself some typing
-	gameLibraryImports& gi = gameImports;
 	
-	gi.engineVersion = EngineVersion;
-	gi.core = &core;
-	gi.animation = nullptr;
-	gi.collision = nullptr;
-	gi.console = &console;
-	gi.fileSystem = &fileSystem;
-	gi.materialManager = nullptr;
-	gi.modelManager = nullptr;
-	gi.network = nullptr;
-	gi.physics = nullptr;
-
-	gi.audio = nullptr;
-	gi.input = &input;
-	gi.renderer = nullptr;
 
 	gameLibraryExports* gameExports = gameExchangeFunction( &gameImports );
 	if ( nullptr == gameExports )
@@ -274,4 +268,25 @@ bool Engine::LoadGameLibrary( StringRef gameName )
 
 	console.Print( "Engine: Successfully loaded game library" );
 	return true;
+}
+
+void Engine::SetupAPIForExchange()
+{
+	// To save myself some typing
+	gameLibraryImports& gi = gameImports;
+
+	gi.engineVersion = EngineVersion;
+	gi.core = &core;
+	gi.animation = nullptr;
+	gi.collision = nullptr;
+	gi.console = &console;
+	gi.fileSystem = &fileSystem;
+	gi.materialManager = nullptr;
+	gi.modelManager = nullptr;
+	gi.network = nullptr;
+	gi.physics = nullptr;
+
+	gi.audio = nullptr;
+	gi.input = &input;
+	gi.renderer = nullptr;
 }

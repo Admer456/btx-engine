@@ -8,10 +8,10 @@ class FileSystem;
 class Engine final : public IEngine
 {
 public:
-	static int  Main( int argc, char** argv );
-
 	bool		Init( int argc, char** argv ) override;
 	void		Shutdown( const char* why ) override;
+
+	const gameLibraryImports& GetAPI() const override;
 
 	bool		RunFrame() override;
 
@@ -20,6 +20,8 @@ public:
 
 private:
 	bool		LoadGameLibrary( StringRef gameName );
+	// Populates gameImports with pointers to subsystems
+	void		SetupAPIForExchange();
 
 private:
 	Console		console;
