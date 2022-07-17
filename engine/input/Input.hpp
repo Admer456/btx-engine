@@ -9,32 +9,32 @@ struct AxisHandler;
 class Input : public IInput
 {
 public:
-    bool Init() override;
-    void Shutdown() override;
+	bool Init() override;
+	void Shutdown() override;
 
-    void Update() override;
+	void Update() override;
 
-    float GetAxis( InputAxisCode::Enum axis, const int& deviceId ) const override;
-    InputKeyFlags GetButton( InputAxisCode::Enum button, const int& deviceId ) const override;
-    InputKeyFlags GetKey( const int& key ) const override;
+	float GetAxis( InputAxisCode::Enum axis, const int& deviceId ) const override;
+	InputKeyFlags GetButton( InputAxisCode::Enum button, const int& deviceId ) const override;
+	InputKeyFlags GetKey( const int& key ) const override;
 
-    bool IsWindowClosing() const override;
+	bool IsWindowClosing() const override;
 
-    void Setup( ICore* core, IConsole* console )
-    {
-        this->core = core;
-        this->console = console;
-    }
-
-private:
-    void UpdateMouseCoordinates();
+	void Setup( ICore* core, IConsole* console )
+	{
+		this->core = core;
+		this->console = console;
+	}
 
 private:
-    std::vector<InputKey> keys;
-    std::unordered_map<AxisWithDeviceId, InputAxis> axes;
+	void UpdateMouseCoordinates();
 
-    ICore* core{ nullptr };
-    IConsole* console{ nullptr };
+private:
+	std::vector<InputKey> keys;
+	std::unordered_map<AxisWithDeviceId, InputAxis> axes;
 
-    bool isWindowClosing = false;
+	ICore* core{ nullptr };
+	IConsole* console{ nullptr };
+
+	bool isWindowClosing = false;
 };

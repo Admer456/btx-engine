@@ -17,30 +17,30 @@
 // will work just fine too, defaulting to the 1st device.
 struct AxisWithDeviceId
 {
-    AxisWithDeviceId( InputAxisCode::Enum code, int device = 0 )
-        : axisCode( code ), deviceId( device )
-    {
-    }
+	AxisWithDeviceId( InputAxisCode::Enum code, int device = 0 )
+		: axisCode( code ), deviceId( device )
+	{
+	}
 
-    size_t operator()() const noexcept
-    {
-        return axisCode + (1 << (10 + deviceId));
-    }
+	size_t operator()() const noexcept
+	{
+		return axisCode + (1 << (10 + deviceId));
+	}
 
-    bool operator==( const AxisWithDeviceId& other ) const
-    {
-        return axisCode == other.axisCode && deviceId == other.deviceId;
-    }
+	bool operator==( const AxisWithDeviceId& other ) const
+	{
+		return axisCode == other.axisCode && deviceId == other.deviceId;
+	}
 
-    InputAxisCode::Enum axisCode;
-    int deviceId;
+	InputAxisCode::Enum axisCode;
+	int deviceId;
 };
 
 template<>
 struct std::hash<AxisWithDeviceId>
 {
-    std::size_t operator()( AxisWithDeviceId const& other ) const noexcept
-    {
-        return other();
-    }
+	std::size_t operator()( AxisWithDeviceId const& other ) const noexcept
+	{
+		return other();
+	}
 };

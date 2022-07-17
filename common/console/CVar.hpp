@@ -33,11 +33,11 @@ public: // Construction site
 	friend class Console;
 
 	// Getters
-	int         GetInt() const;
-	float       GetFloat() const;
-	bool        GetBool() const;
-	const char* GetCString() const;
-	StringRef   GetString() const;
+	int			GetInt() const;
+	float		GetFloat() const;
+	bool		GetBool() const;
+	const char*	GetCString() const;
+	StringRef	GetString() const;
 
 	// Setters
 	void		SetInt( const int& value );
@@ -50,12 +50,12 @@ protected:
 	bool		Execute( StringRef args, IConsole* console );
 
 protected:
-	bool        isCommand{ false };
+	bool		isCommand{ false };
 	ConsoleCommandFn* conCommand{ nullptr };
-	String      varName;
-	String      varValue;
-	String      varDescription;
-	uint16_t    varFlags{ 0 };
+	String		varName;
+	String		varValue;
+	String		varDescription;
+	uint16_t	varFlags{ 0 };
 };
 
 using CVarList = std::vector<CVarBase*>;

@@ -4,10 +4,10 @@
 class IEngine
 {
 public:
-    virtual bool Init( int argc, char** argv ) = 0;
-    virtual void Shutdown( const char* why ) = 0;
+	virtual bool Init( int argc, char** argv ) = 0;
+	virtual void Shutdown( const char* why ) = 0;
 
-    virtual bool RunFrame() = 0;
+	virtual bool RunFrame() = 0;
 };
 
 // Rightmost 2 bytes -> tolerable changes that won't break the game
