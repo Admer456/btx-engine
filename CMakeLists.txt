@@ -9,10 +9,6 @@ set_property( GLOBAL PROPERTY USE_FOLDERS ON )
 ## C++17's filesystem and inline static initialisers are pretty nice
 set( CMAKE_CXX_STANDARD 17 )
 
-## Options
-option( BTX_BUILD_GAME
-        "Build game DLLs, disable if you're just writing a sourceport/engine fork" ON )
-
 ## Some cpps include like
 ## #include "common/Engine.hpp"
 ## So all projects will typically add this as an include dir
@@ -30,7 +26,8 @@ set( BTX_COMMON_SOURCES
     ${BTX_ROOT}/common/console/CVar.cpp
     ${BTX_ROOT}/common/GameMetadata.hpp
     ${BTX_ROOT}/common/GameMetadata.cpp
-    ${BTX_ROOT}/common/Precompiled.hpp )
+    ${BTX_ROOT}/common/Precompiled.hpp 
+    CACHE INTERNAL "" )
 
 ## ================================
 ## Dependencies
@@ -57,13 +54,5 @@ add_subdirectory( extern/adm-utils )
 set_target_properties( AdmUtils PROPERTIES
         FOLDER "Libs" )
 
-## ================================
-## Engine and game
-## ================================
 ## Add the engine
 add_subdirectory( engine )
-
-## Add the game
-if ( BTX_BUILD_GAME )
-    add_subdirectory( game )
-endif()

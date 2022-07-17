@@ -16,19 +16,18 @@ set( BTX_ENGINE_SOURCES
     input/Input.cpp
     input/InputObjects.hpp
     Engine.hpp
-    Engine.cpp
-    Main.cpp )
+    Engine.cpp )
 
 ## Folder organisation
 source_group( TREE ${BTX_ROOT} FILES ${BTX_ENGINE_SOURCES} )
 
 ## Project
-add_executable( BurekTechX
+add_library( BurekTechX SHARED
         ${BTX_ENGINE_SOURCES} )
 
 ## btx.exe
 set_target_properties( BurekTechX PROPERTIES
-        OUTPUT_NAME "btx"
+        OUTPUT_NAME "BtxEngine"
         FOLDER "Engine" )
 
 ## Includes
@@ -46,17 +45,21 @@ target_link_libraries( BurekTechX
 target_precompile_headers( BurekTechX PRIVATE 
         ${BTX_ROOT}/common/Precompiled.hpp )
 
+if ( NOT DEFINED BTX_BIN_DIRECTORY )
+        set( BTX_BIN_DIRECTORY ${BTX_ROOT}/bin )
+endif()
+
 ## Output here
 install( TARGETS BurekTechX
-        RUNTIME DESTINATION ${BTX_ROOT}/bin/
-        LIBRARY DESTINATION ${BTX_ROOT}/bin/ )
+        RUNTIME DESTINATION ${BTX_BIN_DIRECTORY}
+        LIBRARY DESTINATION ${BTX_BIN_DIRECTORY} )
 
 if ( WIN32 )
     ## Copy SDL2.dll
     install( FILES ${BTX_ROOT}/extern/SDL/lib/SDL2.dll 
-            DESTINATION ${BTX_ROOT}/bin/ )
+            DESTINATION ${BTX_BIN_DIRECTORY} )
 
     ## On Windows, place PDBs as well
     install( FILES $<TARGET_PDB_FILE:BurekTechX> 
-        DESTINATION ${BTX_ROOT}/bin/ OPTIONAL )
+        DESTINATION ${BTX_BIN_DIRECTORY} OPTIONAL )
 endif()

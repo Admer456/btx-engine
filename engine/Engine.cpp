@@ -8,38 +8,14 @@
 #include "SDL.h"
 #include "Engine.hpp"
 
-// ============================
-// BTXMain
-// extern-declared elsewhere so we don't have
-// to include engine headers there
-// ============================
-int BTXMain( int argc, char** argv )
-{
-	return Engine::Main( argc, argv );
-}
-
 CVar engine_tickRate( "engine_tickRate", "144", 0, "Ticks per second, acts as a framerate cap too" );
 
 // ============================
-// Engine::Main
-// The place where it all started...
+// GetEngineAPI
 // ============================
-int Engine::Main( int argc, char** argv )
+extern "C" ADM_EXPORT IEngine* GetEngineAPI()
 {
-	Engine& engine = adm::Singleton<Engine>::GetInstance();
-
-	if ( !engine.Init( argc, argv ) )
-	{
-		return 1;
-	}
-
-	while ( engine.RunFrame() )
-	{
-
-	}
-
-	engine.Shutdown( "normal shutdown" );
-	return 0;
+	return adm::Singleton<Engine>::GetInstancePtr();
 }
 
 // ============================
@@ -99,7 +75,7 @@ bool Engine::Init( int argc, char** argv )
 	// TODO: custom window title pls
 	console.Print( "Creating a window..." );
 	window = SDL_CreateWindow( "BurekTech X", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
-		800, 600, SDL_WINDOW_OPENGL );
+		800, 600, SDL_WINDOW_RESIZABLE );
 
 	console.Print( "Window successfully created" );
 
@@ -212,7 +188,7 @@ bool Engine::Command_Mount( StringRef args )
 bool Engine::LoadGameLibrary( StringRef gameName )
 {
 	// Locating the game DLL
-	String gameLibraryPath = String( gameName ) + "/game";
+	String gameLibraryPath = String( gameName ) + "/Game";
 	if constexpr ( adm::Platform == adm::Platforms::Windows )
 	{
 		gameLibraryPath += ".dll";

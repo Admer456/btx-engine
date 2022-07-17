@@ -16,3 +16,7 @@ public:
 // If you change anything about the game API or the game imports/exports,
 // absolutely change the leftmost engine version bytes
 constexpr int EngineVersion = 0x0001;
+
+// The launcher looks for this function
+using EngineImportFn = IEngine*();
+constexpr const char* EngineImportFunctionName = "GetEngineAPI";
