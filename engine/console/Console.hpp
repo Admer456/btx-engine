@@ -5,6 +5,8 @@ class IConsole;
 
 #include "ConsoleBuffer.hpp"
 
+using CVarMap = Map<StringView, CVarBase*>;
+
 class Console final : public IConsole
 {
 public:
@@ -17,9 +19,12 @@ public:
 	void        Error( const char* string ) override;
 
 	void		Register( CVarBase* cvar ) override;
-	bool		Execute( StringRef command, StringRef args ) override;
+	void		Unregister( CVarBase* cvar ) override;
 
-	CVarBase*	Find( StringRef name ) override;
+	bool		Execute( StringView command, StringView args ) override;
+	bool		Execute( StringView command, const Vector<StringView>& args ) override;
+
+	CVarBase*	Find( StringView name ) override;
 
 	const adm::Dictionary& GetArguments() const override;
 
@@ -41,8 +46,8 @@ private:
 
 private:
 	ConsoleBuffer buffer;
-	CVarList	cvarList;
-	adm::Dictionary arguments;
+	CVarMap		cvarList;
+	Dictionary	arguments;
 	ICore*		core{ nullptr };
 };
 

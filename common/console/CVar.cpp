@@ -45,7 +45,7 @@ const char* CVarBase::GetCString() const
 	return varValue.c_str();
 }
 
-StringRef CVarBase::GetString() const
+StringView CVarBase::GetString() const
 {
 	return varValue;
 }
@@ -76,12 +76,12 @@ void CVarBase::SetCString( const char* value )
 	varValue = value;
 }
 
-void CVarBase::SetString( StringRef value )
+void CVarBase::SetString( StringView value )
 {
 	varValue = value;
 }
 
-bool CVarBase::Execute( StringRef args, IConsole* console )
+bool CVarBase::Execute( const Vector<StringView>& args, IConsole* console )
 {
 	if ( isCommand && nullptr != conCommand )
 	{
@@ -89,7 +89,7 @@ bool CVarBase::Execute( StringRef args, IConsole* console )
 	}
 
 	// Empty args = checking for information
-	if ( args.empty() || !args.at(0) )
+	if ( args.empty() )
 	{
 		console->Print( adm::format( "CVar '%s' info:", varName.c_str() ) );
 		console->Print( adm::format( " L__Value: '%s'", varValue.c_str() ) );
@@ -107,8 +107,8 @@ bool CVarBase::Execute( StringRef args, IConsole* console )
 		return false;
 	}
 
-	size_t firstSpace = args.find_first_of( ' ' );
-	SetString( args.substr( 0, firstSpace-1 ) );
+	size_t firstSpace = args[0].find_first_of(' ');
+	SetString( args[0].substr( 0, firstSpace - 1 ) );
 
 	console->Print( adm::format( "'%s' is now '%s'", varName.c_str(), varValue.c_str() ) );
 	return true;

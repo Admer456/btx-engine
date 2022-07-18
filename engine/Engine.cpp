@@ -61,14 +61,8 @@ bool Engine::Init( int argc, char** argv )
 		return false;
 	}
 
+	// Initialise pointers for API exchange
 	SetupAPIForExchange();
-
-	// gameName/game.[dll|so]
-	if ( !LoadGameLibrary( gameName ) )
-	{
-		Shutdown( "game library failure" );
-		return false;
-	}
 
 	// TODO: argument parsing & execution here
 	// Things like dedicated server switches, startup CVars etc.
@@ -83,6 +77,8 @@ bool Engine::Init( int argc, char** argv )
 
 	console.Print( adm::format( "Developer level: %i", core.DevLevel() ) );
 
+	isRunning = true;
+
 	return true;
 }
 
@@ -92,17 +88,12 @@ bool Engine::Init( int argc, char** argv )
 // ============================
 void Engine::Shutdown( const char* why )
 {
+	if ( !isRunning )
+	{
+		return;
+	}
+
 	console.Print( adm::format( "Engine: Shutting down, reason: %s", why ) );
-
-	if ( nullptr != serverGame )
-	{
-		serverGame->Shutdown();
-	}
-
-	if ( nullptr != clientGame )
-	{
-		clientGame->Shutdown();
-	}
 
 	input.Shutdown();
 	fileSystem.Shutdown();
@@ -110,6 +101,8 @@ void Engine::Shutdown( const char* why )
 	core.Shutdown();
 
 	SDL_Quit();
+
+	isRunning = false;
 }
 
 // ============================
@@ -132,33 +125,12 @@ bool Engine::RunFrame()
 	// Update the keyboard state etc.
 	input.Update();
 
-	// Updating the subsystems is delegated to the game and client.
-	// This is partly because I wanna give near full control to the game programmer.
-	// This is also because the server and client can have separate "worlds",
-	// so to speak. The server has its own physics world, the client has its own, as a
-	// consequence of this engine's client-server design.
-	//
-	// For instance, on the server, rigid bodies may be simulated. On the client, these are
-	// received from the server and interpreted as kinematic bodies, and the client can potentially
-	// add rigid bodies for particle effects and other things that don't matter to the server.
-	//
-	// However, if one is writing a fully singleplayer game, then it is possible to simply
-	// implement the entire game on the client and call it a day. This is one nice thing about
-	// BTX's design IMO -Admer
-
-	// Simulate game frames in SP and MP if you're the host and if the server exports itself
-	// The game can simulate multiple frames per engine tick, but also the inverse,
-	// depends on the game programmer really
-	if ( nullptr != serverGame )
+	/*
+	for ( auto& application : applications )
 	{
-		serverGame->Update();
+		application->Update();
 	}
-
-	// Simulate client frames if not a dedicated server
-	if ( nullptr != clientGame )
-	{
-		clientGame->Update();
-	}
+	*/
 
 	// Normally we'd have more updating stuff here, so syncTimeElapsed would be significantly larger
 	// But, if it works, it works
@@ -181,7 +153,7 @@ bool Engine::RunFrame()
 // Implementation of the "mount"
 // console command
 // ============================
-bool Engine::Command_Mount( StringRef args )
+bool Engine::Command_Mount( const ConsoleCommandArgs& args )
 {
 	Engine& self = adm::Singleton<Engine>::GetInstance();
 
@@ -191,82 +163,7 @@ bool Engine::Command_Mount( StringRef args )
 		return false;
 	}
 
-	self.fileSystem.Mount( args );
-	return true;
-}
-
-bool Engine::LoadGameLibrary( StringRef gameName )
-{
-	// Locating the game DLL
-	String gameLibraryPath = String( gameName ) + "/Game";
-	if constexpr ( adm::Platform == adm::Platforms::Windows )
-	{
-		gameLibraryPath += ".dll";
-	}
-	else if constexpr ( adm::Platform == adm::Platforms::Linux )
-	{
-		gameLibraryPath += ".so";
-	}
-	else
-	{
-		console.Error( "Engine: Unsupported platform" );
-		return false;
-	}
-
-	console.Print( adm::format( "Engine: Loading game library '%s'...", gameLibraryPath.c_str() ) );
-
-	// Obtaining the interface exchange function
-	void* gameLibraryHandle = SDL_LoadObject( gameLibraryPath.c_str() );
-	if ( nullptr == gameLibraryHandle )
-	{
-		console.Error( adm::format( "Engine: Can't find game library: ", gameLibraryPath.c_str() ) );
-		return false;
-	}
-
-	GameInterfaceFunction* gameExchangeFunction = static_cast<GameInterfaceFunction*>(SDL_LoadFunction( gameLibraryHandle, GameInterfaceFunctionName ));
-	if ( nullptr == gameExchangeFunction )
-	{
-		console.Error( adm::format( "Engine: Can't find function '%s' in game library '%s'", GameInterfaceFunctionName, gameLibraryPath.c_str() ) );
-		return false;
-	}
-
-	
-
-	gameLibraryExports* gameExports = gameExchangeFunction( &gameImports );
-	if ( nullptr == gameExports )
-	{
-		console.Error( "Engine: Game library returned nullptr for its interface" );
-		return false;
-	}
-
-	serverGame = gameExports->server;
-	clientGame = gameExports->client;
-
-	if ( nullptr == serverGame )
-	{
-		console.Error( "Engine: ServerGame is null" );
-		return false;
-	}
-	
-	if ( !serverGame->Init() )
-	{
-		console.Error( "Engine: ServerGame failed to init" );
-		return false;
-	}
-
-	if ( nullptr == clientGame )
-	{
-		console.Error( "Engine: ClientGame is null" );
-		return false;
-	}
-
-	if ( !clientGame->Init() )
-	{
-		console.Error( "Engine: ClientGame failed to init" );
-		return false;
-	}
-
-	console.Print( "Engine: Successfully loaded game library" );
+	self.fileSystem.Mount( args[0] );
 	return true;
 }
 

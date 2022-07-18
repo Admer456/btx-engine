@@ -14,7 +14,7 @@ void ConsoleBuffer::Init()
 // ============================
 // ConsoleBuffer::Write
 // ============================
-void ConsoleBuffer::Write( StringRef text, float time )
+void ConsoleBuffer::Write( StringView text, float time )
 {
 	if ( buffer.size() >= MaxConsoleHistoryLines )
 	{

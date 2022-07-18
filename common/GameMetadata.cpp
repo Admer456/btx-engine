@@ -61,7 +61,7 @@ void GameMetadata::Parse( File& gameMetaFile )
 
 }
 
-StringRef GameMetadata::GetMountedGame( const size_t& index )
+StringView GameMetadata::GetMountedGame( const size_t& index )
 {
 	if ( index >= GetNumMountedGames() )
 	{

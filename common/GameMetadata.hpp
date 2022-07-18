@@ -9,12 +9,12 @@ public:
 	GameMetadata( Path filePath );
 	~GameMetadata();
 
-	StringRef	GetName() const { return gameName; }
-	StringRef	GetDeveloper() const { return gameDeveloper; }
-	StringRef	GetPublisher() const { return gamePublisher; }
-	StringRef	GetVersion() const { return gameVersion; }
+	StringView	GetName() const { return gameName; }
+	StringView	GetDeveloper() const { return gameDeveloper; }
+	StringView	GetPublisher() const { return gamePublisher; }
+	StringView	GetVersion() const { return gameVersion; }
 
-	StringRef	GetMountedGame( const size_t& index );
+	StringView	GetMountedGame( const size_t& index );
 	size_t		GetNumMountedGames() const;
 
 private:

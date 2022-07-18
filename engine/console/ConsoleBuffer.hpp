@@ -18,7 +18,7 @@ constexpr const char* PrintGrey		= "$aaa";
 class ConsoleString final
 {
 public:
-	ConsoleString( float time, StringRef textRef )
+	ConsoleString( float time, StringView textRef )
 		: submissionTime(time), text(textRef)
 	{
 
@@ -32,7 +32,7 @@ class ConsoleBuffer final
 {
 public:
 	void Init();
-	void Write( StringRef text, float time = 0.0f );
+	void Write( StringView text, float time = 0.0f );
 	// Temporarily here until we get the clientside + renderer
 	void Display( int offsetFromEnd, class IRenderFrontend* rf = nullptr ) {}
 

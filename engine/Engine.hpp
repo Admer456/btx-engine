@@ -15,11 +15,10 @@ public:
 
 	bool		RunFrame() override;
 
-	static bool Command_Mount( StringRef args );
+	static bool Command_Mount( const ConsoleCommandArgs& args );
 	inline static CVar mount = CVar( "mount", Engine::Command_Mount, "Mounts a game. Usage: mount gameDirectoryName" );
 
 private:
-	bool		LoadGameLibrary( StringRef gameName );
 	// Populates gameImports with pointers to subsystems
 	void		SetupAPIForExchange();
 
@@ -32,8 +31,7 @@ private:
 	gameLibraryImports gameImports;
 
 	float		deltaTime{ 0.0f };
-	IGame*		serverGame{ nullptr };
-	IGame*		clientGame{ nullptr };
+	bool		isRunning{ false };
 
 	SDL_Window* window{ nullptr };
 };

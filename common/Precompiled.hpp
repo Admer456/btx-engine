@@ -8,9 +8,8 @@
 namespace fs = std::filesystem;
 namespace chrono = std::chrono;
 
+using namespace adm;
 // Ideally all of these would be in adm::, but yea, that's something for later
-using String = adm::String;
-using StringRef = adm::StringView;
 using Path = fs::path;
 using File = std::fstream;
 

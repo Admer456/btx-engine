@@ -17,6 +17,8 @@ bool Console::Init( int argc, char** argv )
 
 	buffer.Init();
 
+	cvarList.reserve( 1024U );
+
 	return true;
 }
 
@@ -77,19 +79,69 @@ void Console::Error( const char* string )
 // ============================
 void Console::Register( CVarBase* cvar )
 {
+	if ( nullptr == cvar )
+	{
+		return;
+	}
+
 	// Can't have duplicates
 	if ( Find( cvar->varName ) )
 	{
 		return;
 	}
 
-	cvarList.push_back( cvar );
+	cvarList[cvar->varName] = cvar;
+}
+
+// ============================
+// Console::Unregister
+// ============================
+void Console::Unregister( CVarBase* cvar )
+{
+	// Can't have duplicates
+	if ( !Find( cvar->varName ) )
+	{
+		return;
+	}
+
+	cvarList[cvar->varName] = nullptr;
 }
 
 // ============================
 // Console::Execute
 // ============================
-bool Console::Execute( StringRef command, StringRef args )
+bool Console::Execute( StringView command, StringView args )
+{
+	Lexer lex( args );
+	lex.SetDelimiters( Lexer::DelimitersSimple );
+
+	// Simple parsing
+	ConsoleCommandArgs commandArgs;
+	while ( !lex.IsEndOfFile() )
+	{
+		String token = lex.Next();
+		if ( token.empty() )
+		{
+			break;
+		}
+
+		commandArgs.push_back( lex.Next() );
+	}
+
+	CVarBase* cvar = Find( command );
+	if ( nullptr == cvar )
+	{
+		Warning( adm::format( "Cannot find console command/variable '%s'", command.data() ) );
+		return false;
+	}
+
+	return cvar->Execute( commandArgs, this );
+}
+
+// ============================
+// Console::Execute
+// ============================
+bool Console::Execute( StringView command, const Vector<StringView>& args )
 {
 	CVarBase* cvar = Find( command );
 	if ( nullptr == cvar )
@@ -104,17 +156,15 @@ bool Console::Execute( StringRef command, StringRef args )
 // ============================
 // Console::Find
 // ============================
-CVarBase* Console::Find( StringRef name )
+CVarBase* Console::Find( StringView name )
 {
-	for ( auto& cv : cvarList )
+	auto result = cvarList.find( name );
+	if ( result == cvarList.end() )
 	{
-		if ( cv->varName == name )
-		{
-			return cv;
-		}
+		return nullptr;
 	}
 
-	return nullptr;
+	return result->second;
 }
 
 // ============================

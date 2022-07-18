@@ -1,7 +1,8 @@
 
 #pragma once
 
-using ConsoleCommandFn = bool( StringRef args );
+using ConsoleCommandArgs = Vector<StringView>;
+using ConsoleCommandFn = bool( const ConsoleCommandArgs& args );
 
 enum CVarFlags
 {
@@ -37,17 +38,17 @@ public: // Construction site
 	float		GetFloat() const;
 	bool		GetBool() const;
 	const char*	GetCString() const;
-	StringRef	GetString() const;
+	StringView	GetString() const;
 
 	// Setters
 	void		SetInt( const int& value );
 	void		SetFloat( const float& value );
 	void		SetBool( const bool& value );
 	void		SetCString( const char* value );
-	void		SetString( StringRef value );
+	void		SetString( StringView value );
 
 protected:
-	bool		Execute( StringRef args, IConsole* console );
+	bool		Execute( const Vector<StringView>& args, IConsole* console );
 
 protected:
 	bool		isCommand{ false };
@@ -58,7 +59,7 @@ protected:
 	uint16_t	varFlags{ 0 };
 };
 
-using CVarList = std::vector<CVarBase*>;
+using CVarList = Vector<CVarBase*>;
 
 // CVars are initialised statically, and registered right in the constructor. We do the template stuff here
 // to allow the CVars to be registered the exact same way across different modules. The only downside is that each
@@ -100,11 +101,21 @@ public:
 		}
 	}
 
+	~CVarTemplate()
+	{
+		if ( nullptr == console )
+		{
+			return;
+		}
+
+		console->Unregister( this );
+	}
+
 	// my_command my_argument my_argument2
 	// If my_command is a variable, then args is trimmed to just "my_argument"
 	// Otherwise, args is "my_argument my_argument2", and you're free to parse 
 	// it in any way you want
-	int Execute( StringRef args )
+	int Execute( StringView args )
 	{
 		return Execute( args, console );
 	}
@@ -118,6 +129,18 @@ public:
 		}
 
 		RegisteredAllStatics = true;
+	}
+
+	// Unregister static CVars
+	// CVars that are members of classes should get unregistered automatically there
+	static void UnregisterAll()
+	{
+		for ( auto& cvar : staticCVarList )
+		{
+			console->Unregister( cvar );
+		}
+
+		RegisteredAllStatics = false;
 	}
 
 	inline static bool RegisteredAllStatics = false;
