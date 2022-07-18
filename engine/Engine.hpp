@@ -11,7 +11,7 @@ public:
 	bool		Init( int argc, char** argv ) override;
 	void		Shutdown( const char* why ) override;
 
-	const gameLibraryImports& GetAPI() const override;
+	const EngineAPI& GetAPI() const override;
 
 	bool		RunFrame() override;
 
@@ -19,7 +19,7 @@ public:
 	inline static CVar mount = CVar( "mount", Engine::Command_Mount, "Mounts a game. Usage: mount gameDirectoryName" );
 
 private:
-	// Populates gameImports with pointers to subsystems
+	// Populates engineAPI with pointers to subsystems
 	void		SetupAPIForExchange();
 
 private:
@@ -28,7 +28,7 @@ private:
 	FileSystem	fileSystem;
 	Input		input;
 
-	gameLibraryImports gameImports;
+	EngineAPI	engineAPI;
 
 	float		deltaTime{ 0.0f };
 	bool		isRunning{ false };

@@ -20,8 +20,11 @@ inline const String NullString = "";
 #include "common/interfaces/IConsole.hpp"
 #include "common/interfaces/IEngine.hpp"
 #include "common/interfaces/IFileSystem.hpp"
-#include "common/interfaces/IGame.hpp"
 #include "common/interfaces/IInput.hpp"
+#include "common/interfaces/IPluginSystem.hpp"
+
+#include "common/interfaces/plugins/IPlugin.hpp"
+#include "common/interfaces/plugins/IApplication.hpp"
 
 #include "common/console/CVar.hpp"
 #include "common/GameMetadata.hpp"

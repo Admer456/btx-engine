@@ -2,41 +2,19 @@
 #pragma once
 
 // Shared systems
-class ICore;            // sysinfo etc.   Server and Client
-class IAnimation;       // animation,     Server and Client
-class ICollision;       // collision,     Server and Client
-class IConsole;         // cvars etc.     Server and Client
-class IFileSystem;      // files, dirs    Server and Client
-class IMaterialManager; // materials,     Server and Client
-class IModelManager;    // models,        Server and Client
-class INetwork;         // networking,    Server and Client
-class IPhysics;         // physics,       Server and Client
+class ICore;            // sysinfo etc.
+class IAnimation;       // animation
+class ICollision;       // collision
+class IConsole;         // cvars etc.
+class IFileSystem;      // files, dirs
+class IMaterialManager; // materials
+class IModelManager;    // models
+class INetwork;         // networking
+class IPhysics;         // physics
 // Clientside-only systems
-class IAudio;           // sound,         Client
-class IInput;           // input,         Client
-class IRenderSystem;    // rendering,     Client
-
-// Generic game interface. This is as simple as it gets, really
-class IGame
-{
-public:
-	virtual bool Init() = 0;
-	virtual void Shutdown() = 0;
-
-	// The game may freely "delay" this
-	// E.g. the server game updates at 20 Hz, 
-	// while the client game updates every frame
-	virtual void Update() = 0;
-};
-
-// The engine imports this stuff so it can update them
-struct gameLibraryExports
-{
-	// nullptr potentially if you're implementing an SP-only game with no MP considerations
-	IGame* server{ nullptr };
-	// nullptr in dedicated server instances -> no renderer, no audio, no clientside FX
-	IGame* client{ nullptr };
-};
+class IAudio;           // sound
+class IInput;           // input
+class IRenderSystem;    // rendering
 
 // The game imports this stuff from the engine
 // The engine does not provide any type of save/load system, AI
@@ -46,7 +24,7 @@ struct gameLibraryExports
 // In fact, you are free to override any of these systems here in your
 // game, like the physics or networking system, if for whatever reason
 // you cannot modify the engine itself
-struct gameLibraryImports
+struct EngineAPI
 {
 	int engineVersion{ 0 };
 
@@ -83,7 +61,54 @@ struct gameLibraryImports
 	IRenderSystem* renderer{ nullptr };
 };
 
-// There will be an 'extern "C" gameLibraryExports* ExchangeGameInterface( gameLibraryImports* )
+class IPlugin
+{
+public:
+	virtual bool Init( const EngineAPI& api ) = 0;
+	virtual void Shutdown() = 0;
+
+	// Overridden by individual plugins
+	virtual const char* GetPluginName() const = 0;
+
+	// Overridden by plugin types, e.g. IApplication
+	virtual const char* GetInterfaceName() const = 0;
+};
+
+using PluginFactoryFunction = IPlugin*();
+
+class PluginRegistry final
+{
+public:
+	PluginRegistry( const int& engineVersion )
+		: engineVersion( engineVersion )
+	{
+	}
+
+	template<typename PluginType>
+	PluginRegistry& Register()
+	{
+		factories.push_back( []()
+		{ 
+			IPlugin* plugin = new PluginType();
+			return plugin;
+		} );
+
+		return *this;
+	}
+
+	const int& GetEngineVersion() const
+	{
+		return engineVersion;
+	}
+
+private:
+	int engineVersion{ 0 };
+	Vector<PluginFactoryFunction*> factories;
+};
+
+// There will be an 'ADM_API PluginRegistry GetPluginRegistry()'
 // in the game DLL. It exports the client and the server game, while importing stuff from the engine
-constexpr const char* GameInterfaceFunctionName = "ExchangeGameInterface";
-using GameInterfaceFunction = gameLibraryExports * (gameLibraryImports*);
+constexpr const char* PluginInterfaceFunctionName = "GetPluginRegistry";
+using PluginInterfaceFunction = PluginRegistry*();
+
+

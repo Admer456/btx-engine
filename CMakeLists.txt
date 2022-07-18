@@ -20,8 +20,10 @@ set( BTX_COMMON_SOURCES
     ${BTX_ROOT}/common/interfaces/IConsole.hpp
     ${BTX_ROOT}/common/interfaces/IEngine.hpp
     ${BTX_ROOT}/common/interfaces/IFileSystem.hpp
-    ${BTX_ROOT}/common/interfaces/IGame.hpp
     ${BTX_ROOT}/common/interfaces/IInput.hpp
+    ${BTX_ROOT}/common/interfaces/IPluginSystem.hpp
+    ${BTX_ROOT}/common/interfaces/plugins/IApplication.hpp
+    ${BTX_ROOT}/common/interfaces/plugins/IPlugin.hpp
     ${BTX_ROOT}/common/console/CVar.hpp
     ${BTX_ROOT}/common/console/CVar.cpp
     ${BTX_ROOT}/common/GameMetadata.hpp

@@ -108,9 +108,9 @@ void Engine::Shutdown( const char* why )
 // ============================
 // Engine::GetAPI
 // ============================
-const gameLibraryImports& Engine::GetAPI() const
+const EngineAPI& Engine::GetAPI() const
 {
-	return gameImports;
+	return engineAPI;
 }
 
 // ============================
@@ -167,23 +167,23 @@ bool Engine::Command_Mount( const ConsoleCommandArgs& args )
 	return true;
 }
 
+// ============================
+// Engine::SetupAPIForExchange
+// ============================
 void Engine::SetupAPIForExchange()
 {
-	// To save myself some typing
-	gameLibraryImports& gi = gameImports;
+	engineAPI.engineVersion = EngineVersion;
+	engineAPI.core = &core;
+	engineAPI.animation = nullptr;
+	engineAPI.collision = nullptr;
+	engineAPI.console = &console;
+	engineAPI.fileSystem = &fileSystem;
+	engineAPI.materialManager = nullptr;
+	engineAPI.modelManager = nullptr;
+	engineAPI.network = nullptr;
+	engineAPI.physics = nullptr;
 
-	gi.engineVersion = EngineVersion;
-	gi.core = &core;
-	gi.animation = nullptr;
-	gi.collision = nullptr;
-	gi.console = &console;
-	gi.fileSystem = &fileSystem;
-	gi.materialManager = nullptr;
-	gi.modelManager = nullptr;
-	gi.network = nullptr;
-	gi.physics = nullptr;
-
-	gi.audio = nullptr;
-	gi.input = &input;
-	gi.renderer = nullptr;
+	engineAPI.audio = nullptr;
+	engineAPI.input = &input;
+	engineAPI.renderer = nullptr;
 }
