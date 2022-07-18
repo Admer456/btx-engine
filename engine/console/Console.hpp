@@ -13,10 +13,10 @@ public:
 	bool		Init( int argc, char** argv ) override;
 	void		Shutdown() override;
 
-	void        Print( const char* string ) override;
-	void        DPrint( const char* string, int developerLevel ) override;
-	void        Warning( const char* string ) override;
-	void        Error( const char* string ) override;
+	void		Print( const char* string ) override;
+	void		DPrint( const char* string, int developerLevel ) override;
+	void		Warning( const char* string ) override;
+	void		Error( const char* string ) override;
 
 	void		Register( CVarBase* cvar ) override;
 	void		Unregister( CVarBase* cvar ) override;
