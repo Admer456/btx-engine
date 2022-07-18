@@ -11,6 +11,7 @@ class IMaterialManager; // materials
 class IModelManager;    // models
 class INetwork;         // networking
 class IPhysics;         // physics
+class IPluginSystem;    // plugins
 // Clientside-only systems
 class IAudio;           // sound
 class IInput;           // input
@@ -49,6 +50,8 @@ struct EngineAPI
 	INetwork* network{ nullptr };
 	// Dynamics, joints, ragdolls...
 	IPhysics* physics{ nullptr };
+	// Management of plugin libraries
+	IPluginSystem* pluginSystem{ nullptr };
 
 	// Client-specific stuff
 	// The serverside should never use these
@@ -110,5 +113,3 @@ private:
 // in the game DLL. It exports the client and the server game, while importing stuff from the engine
 constexpr const char* PluginInterfaceFunctionName = "GetPluginRegistry";
 using PluginInterfaceFunction = PluginRegistry*();
-
-
