@@ -104,6 +104,11 @@ public:
 		return engineVersion;
 	}
 
+	const Vector<PluginFactoryFunction*>& GetFactories() const
+	{
+		return factories;
+	}
+
 private:
 	int engineVersion{ 0 };
 	Vector<PluginFactoryFunction*> factories;
