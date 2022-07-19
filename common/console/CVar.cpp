@@ -101,14 +101,13 @@ bool CVarBase::Execute( const Vector<StringView>& args, IConsole* console )
 	}
 
 	// Users can't modify readonly CVars
-	if ( varFlags & CVar_ReadOnly )
+	if ( varFlags & CVarFlags::ReadOnly )
 	{
 		console->Print( adm::format( "'%s' is a read-only CVar", varName.c_str() ) );
 		return false;
 	}
 
-	size_t firstSpace = args[0].find_first_of(' ');
-	SetString( args[0].substr( 0, firstSpace - 1 ) );
+	SetString( args[0] );
 
 	console->Print( adm::format( "'%s' is now '%s'", varName.c_str(), varValue.c_str() ) );
 	return true;

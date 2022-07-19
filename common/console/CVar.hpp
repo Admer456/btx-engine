@@ -4,11 +4,21 @@
 using ConsoleCommandArgs = Vector<StringView>;
 using ConsoleCommandFn = bool( const ConsoleCommandArgs& args );
 
-enum CVarFlags
+struct CVarFlags
 {
-	CVar_Saved      = 1 << 1, // saved to a file, so it's the same in all sessions
-	CVar_ReadOnly   = 1 << 2, // cannot be modified
-	CVar_Replicated = 1 << 3, // replicated from server to clients
+	enum Enum : uint16_t
+	{
+		// Saved to a file, so it's the same in all sessions
+		Saved = 1 << 0,
+		// Cannot be modified
+		ReadOnly = 1 << 1,
+		// Replicated from server to clients
+		Replicated = 1 << 2,
+		// Appears on the serverside
+		Server = 1 << 3,
+		// Appears on the clientside
+		Client = 1 << 4
+	};
 };
 
 // CVars are defined by the following:
@@ -71,7 +81,8 @@ using CVarList = Vector<CVarBase*>;
 
 // CVar template for automatic registration in the console system
 // The template only provides automatic registration functionality. For the rest, look at CVarBase
-template<CVarList& staticCVarList, IConsole*& console>
+// @param Slot: Separates CVar lists
+template<IConsole*& console, int Slot = 0>
 class CVarTemplate : public CVarBase
 {
 public:
@@ -80,7 +91,7 @@ public:
 	{
 		if ( !RegisteredAllStatics )
 		{
-			staticCVarList.push_back( this );
+			StaticCVarList.push_back( this );
 		}
 		else
 		{
@@ -93,7 +104,7 @@ public:
 	{
 		if ( !RegisteredAllStatics )
 		{
-			staticCVarList.push_back( this );
+			StaticCVarList.push_back( this );
 		}
 		else
 		{
@@ -115,7 +126,7 @@ public:
 	// If my_command is a variable, then args is trimmed to just "my_argument"
 	// Otherwise, args is "my_argument my_argument2", and you're free to parse 
 	// it in any way you want
-	int Execute( StringView args )
+	bool Execute( const Vector<StringView>& args )
 	{
 		return Execute( args, console );
 	}
@@ -123,7 +134,7 @@ public:
 	// Init-time CVars that were statically declared
 	static void RegisterAll()
 	{
-		for ( auto& cvar : staticCVarList )
+		for ( auto& cvar : StaticCVarList )
 		{
 			console->Register( cvar );
 		}
@@ -135,7 +146,7 @@ public:
 	// CVars that are members of classes should get unregistered automatically there
 	static void UnregisterAll()
 	{
-		for ( auto& cvar : staticCVarList )
+		for ( auto& cvar : StaticCVarList )
 		{
 			console->Unregister( cvar );
 		}
@@ -143,11 +154,12 @@ public:
 		RegisteredAllStatics = false;
 	}
 
+	inline static CVarList StaticCVarList = CVarList();
 	inline static bool RegisteredAllStatics = false;
 };
 
 // In game DLL:
-// using CVar = CVarTemplate<GameCVarList, Console>
+// using CVar = CVarTemplate<Console>
 // 
 // In engine:
-// using CVar = CVarTemplate<Console::EngineCVarList, Console::EngineConsole>
+// using CVar = CVarTemplate<Console::EngineConsole>

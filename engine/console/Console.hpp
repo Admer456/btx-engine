@@ -34,7 +34,6 @@ public:
 	}
 
 	// Glue for the automatic CVar registration system - look at CVarTemplate
-	static inline CVarList EngineCVarList = CVarList();
 	static inline IConsole* EngineConsole = nullptr; // I trust that nobody will fiddle with this
 
 private:
@@ -52,4 +51,4 @@ private:
 };
 
 // There should be another one like this in the game DLL
-using CVar = CVarTemplate<Console::EngineCVarList, Console::EngineConsole>;
+using CVar = CVarTemplate<Console::EngineConsole>;
