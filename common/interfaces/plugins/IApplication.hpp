@@ -14,4 +14,6 @@ public:
 
 	// Called every frame
 	virtual void Update() = 0;
+
+	static constexpr const char* Name = "IApplication";
 };

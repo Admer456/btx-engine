@@ -75,6 +75,8 @@ public:
 
 	// Overridden by plugin types, e.g. IApplication
 	virtual const char* GetInterfaceName() const = 0;
+
+	static constexpr const char* Name = "IPlugin";
 };
 
 using PluginFactoryFunction = IPlugin*();
