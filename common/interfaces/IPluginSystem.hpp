@@ -2,46 +2,40 @@
 #pragma once
 
 class IPlugin;
-
-struct PluginMetadata
-{
-	String pluginName;
-	String implementedInterface;
-};
-
-struct PluginLibraryMetadata
-{
-	String name;
-	String author;
-	String description;
-	int version;
-	String versionDate;
-	Vector<PluginMetadata> pluginInfo;
-};
-
-// I hope to God you won't actually use ~4 billion plugins
-using PluginLibraryHandle = uint32_t;
-constexpr PluginLibraryHandle PluginLibraryInvalid = ~0U;
+class PluginList;
+class PluginLibrary;
+class PluginLibraryMetadata;
 
 class IPluginSystem
 {
 public:
-	virtual bool Init() = 0;
+	virtual bool Init( const Vector<String>& pluginsToLoad ) = 0;
 	virtual void Shutdown() = 0;
 
 	// Reads plugin metadata and loads a plugin DLL
 	// One plugin library may load multiple plugins
-	virtual PluginLibraryHandle LoadPluginLibrary( Path libraryPath ) = 0;
+	// @param libraryPath: directory of the metadata file
+	// @returns nullptr if the path is not valid or if it's missing
+	// needed files, otherwise returns a valid PluginLibrary
+	virtual PluginLibrary* LoadPluginLibrary( Path library ) = 0;
 
 	// Gets plugin library info
-	virtual const PluginLibraryMetadata& GetPluginLibraryMetadata( PluginLibraryHandle libraryHandle ) const = 0;
 	virtual const PluginLibraryMetadata& GetPluginLibraryMetadata( const IPlugin* plugin ) const = 0;
 
 	// Shuts down the plugin and unloads the DLL
-	virtual void UnloadPluginLibrary( PluginLibraryHandle libraryHandle ) = 0;
+	// After this, libraryHandle is no longer valid
+	virtual void UnloadPluginLibrary( const PluginLibrary* pluginLibrary ) = 0;
+
+	// Utility that exectues something foreach plugin 
+	// that implements pluginType (e.g. IApplication)
+	template<typename pluginType = IPlugin>
+	void ForEachPluginOfType( std::function<void( pluginType* )> function )
+	{
+		GetPluginList( pluginType::Name ).ForEach<pluginType>( function );
+	}
 
 	// Gets a list of plugins that implement interfaceName
-	virtual const LinkedList<IPlugin*>& GetPluginList( const char* interfaceName ) const = 0;
+	virtual PluginList& GetPluginList( const char* interfaceName ) = 0;
 	
 	// Gets a plugin instance by name
 	template<typename pluginType>
