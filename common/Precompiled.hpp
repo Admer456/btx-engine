@@ -27,6 +27,10 @@ inline const String NullString = "";
 #include "common/interfaces/plugins/IApplication.hpp"
 
 #include "common/console/CVar.hpp"
+#include "common/pluginsystem/PluginLibraryMetadata.hpp"
+#include "common/pluginsystem/PluginLibrary.hpp"
+#include "common/pluginsystem/PluginList.hpp"
+#include "common/EngineConfig.hpp"
 #include "common/GameMetadata.hpp"
 
 // NO ENGINE-SPECIFIC HEADERS
