@@ -32,7 +32,7 @@ set_target_properties( BurekTechX PROPERTIES
 
 ## Includes
 target_include_directories( BurekTechX PRIVATE
-        ${ADMUTIL_INCLUDE_DIRETORY}
+        AdmUtils
         ${SDL2_INCLUDE_DIRS}
         ${BTX_ROOT} )
 
