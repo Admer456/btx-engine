@@ -7,7 +7,7 @@ namespace fs = std::filesystem;
 // ============================
 // FileSystem::Init
 // ============================
-bool FileSystem::Init( Path gameDirectory )
+bool FileSystem::Init( Path gameDirectory, Path engineDirectory )
 {
 	String gameDirectoryStr = gameDirectory.string();
 	
@@ -19,20 +19,29 @@ bool FileSystem::Init( Path gameDirectory )
 		return false;
 	}
 
-	if ( !fs::exists( gameDirectory/"gamemeta.txt" ) )
+	if ( !fs::exists( gameDirectory/"gameConfig.json" ) )
 	{
-		console->Error( adm::format( "FileSystem::Init: Base game directory '%s' doesn't have a gamemeta.txt", gameDirectoryStr.c_str() ) );
+		console->Error( adm::format( "FileSystem::Init: Base game directory '%s' doesn't have a gameConfig.json", gameDirectoryStr.c_str() ) );
 		return false;
 	}
 
-	enginePath = "engine";
+	enginePath = engineDirectory;
 	basePath = fs::current_path();
 	currentGamePath = gameDirectory;
 
 	// The base path contains base engine
-	Mount( enginePath );
-	// Load addons
-	Mount( currentGamePath, true );
+	if ( !MountInternal( enginePath, false, false, true ) )
+	{
+		console->Error( adm::format( "FileSystem::Init: Engine directory '%s' doesn't exist", enginePath.c_str() ) );
+		return false;
+	}
+
+	// Load game, mounted games & addons
+	if ( !MountInternal( currentGamePath, true, true, false ) )
+	{
+		console->Error( adm::format( "FileSystem::Init: Game directory '%s' doesn't exist", currentGamePath.c_str() ) );
+		return false;
+	}
 
 	return true;
 }
@@ -51,62 +60,23 @@ void FileSystem::Shutdown()
 // ============================
 bool FileSystem::Mount( Path otherGameDirectory, bool mountOthers )
 {
-	String otherGameDirectoryStr =
-		otherGameDirectory.is_absolute() ? // Paths that are already relative can be passed directly
-		otherGameDirectory.lexically_relative( basePath ).string() :
-		otherGameDirectory.string();
+	return MountInternal( otherGameDirectory, mountOthers, false, false );
+}
 
-	console->Print( adm::format( "FileSystem::Mount: Mounting '%s'...", otherGameDirectoryStr.c_str() ) );
+// ============================
+// FileSystem::GetCurrentGameMetadata
+// ============================
+const GameMetadata& FileSystem::GetCurrentGameMetadata() const
+{
+	return gameMetadata;
+}
 
-	if ( !fs::exists( otherGameDirectory ) )
-	{
-		console->Warning( adm::format( "FileSystem::Mount: Game directory '%s' doesn't exist", otherGameDirectoryStr.c_str() ) );
-		return false;
-	}
-
-	// Make sure it has a gamemeta.txt file
-	if ( !fs::exists( otherGameDirectory/"gamemeta.txt" ) )
-	{
-		console->Warning( adm::format( "FileSystem::Mount: Game directory '%s' doesn't have a gamemeta.txt", otherGameDirectoryStr.c_str() ) );
-		return false;
-	}
-
-	// Make sure it's unique before proceeding
-	for ( const auto& path : otherPaths )
-	{
-		if ( otherGameDirectory == path )
-		{
-			return true;
-		}
-	}
-
-	// TODO: maybe pass this as a reference or return it even
-	GameMetadata gameMeta( otherGameDirectory/"gamemeta.txt" );
-
-	console->Print( adm::format( "FileSystem::Mount: Mounted game '%s'", gameMeta.GetName().data() ) );
-	console->Print( adm::format( "                   Developer:   %s", gameMeta.GetDeveloper().data() ) );
-	console->Print( adm::format( "                   Publisher:   %s", gameMeta.GetPublisher().data() ) );
-	console->Print( adm::format( "                   Version:     %s", gameMeta.GetVersion().data() ) );
-
-	// Add it
-	if ( otherGameDirectory != currentGamePath )
-	{
-		otherPaths.push_back( otherGameDirectory );
-	}
-
-	// Mount other games that this one depends on
-	if ( mountOthers )
-	{
-		for ( size_t i = 0; i < gameMeta.GetNumMountedGames(); i++ )
-		{
-			if ( !Mount( basePath/gameMeta.GetMountedGame( i ) ) )
-			{
-				console->Warning( adm::format( "FileSystem::Mount: Can't mount dependency '%s', you may have missing content!", gameMeta.GetMountedGame( i ) ));
-			}
-		}
-	}
-
-	return true;
+// ============================
+// FileSystem::GetMountedGameMetadatas
+// ============================
+const Vector<GameMetadata>& FileSystem::GetMountedGameMetadatas() const
+{
+	return otherMetadatas;
 }
 
 // ============================
@@ -136,15 +106,15 @@ const Path& FileSystem::GetCurrentGameDirectory() const
 // ============================
 // FileSystem::Exists
 // ============================
-bool FileSystem::Exists( Path path, const uint8_t& filterFlags ) const
+bool FileSystem::Exists( Path path, const uint8_t& filterFlags, bool noMountedDirectories ) const
 {
-	return GetPathTo( path, filterFlags ).has_value();
+	return GetPathTo( path, filterFlags, noMountedDirectories ).has_value();
 }
 
 // ============================
 // FileSystem::GetPathTo
 // ============================
-adm::Optional<Path> FileSystem::GetPathTo( Path destination, const uint8_t& filterFlags ) const
+adm::Optional<Path> FileSystem::GetPathTo( Path destination, const uint8_t& filterFlags, bool noMountedDirectories ) const
 {
 	// If it's absolute or similar, try finding that first
 	if ( ExistsInternal( destination, filterFlags ) )
@@ -152,16 +122,15 @@ adm::Optional<Path> FileSystem::GetPathTo( Path destination, const uint8_t& filt
 		return destination;
 	}
 
-	// Find it in the engine
-	if ( ExistsInternal( basePath/destination, filterFlags ) )
-	{
-		return basePath/destination;
-	}
-
 	// Find it in the current game dir
 	if ( ExistsInternal( basePath/currentGamePath/destination, filterFlags ) )
 	{
 		return basePath/currentGamePath/destination;
+	}
+
+	if ( noMountedDirectories )
+	{
+		return {};
 	}
 
 	// Check every dependent game dir
@@ -173,8 +142,82 @@ adm::Optional<Path> FileSystem::GetPathTo( Path destination, const uint8_t& filt
 		}
 	}
 
+	// Find it in the engine
+	if ( ExistsInternal( basePath / destination, filterFlags ) )
+	{
+		return basePath / destination;
+	}
+
 	// We didn't find it
 	return {};
+}
+
+// ============================
+// FileSystem::MountInternal
+// ============================
+bool FileSystem::MountInternal( Path otherGameDirectory, bool mountOthers, bool mountingMainGame, bool mountingEngine )
+{
+	String otherGameDirectoryStr =
+		otherGameDirectory.is_absolute() ? // Paths that are already relative can be passed directly
+		otherGameDirectory.lexically_relative( basePath ).string() :
+		otherGameDirectory.string();
+
+	console->Print( adm::format( "FileSystem::Mount: Mounting '%s'...", otherGameDirectoryStr.c_str() ) );
+
+	if ( !fs::exists( otherGameDirectory ) )
+	{
+		console->Warning( adm::format( "FileSystem::Mount: Game directory '%s' doesn't exist", otherGameDirectoryStr.c_str() ) );
+		return false;
+	}
+
+	// Make sure it's unique before proceeding
+	for ( const auto& path : otherPaths )
+	{
+		if ( otherGameDirectory == path )
+		{
+			return true;
+		}
+	}
+
+	// The engine does not require a game config
+	if ( !mountingEngine )
+	{
+		GameMetadata gameMeta( otherGameDirectory/"gameConfig.json" );
+		if ( !gameMeta )
+		{
+			console->Warning( adm::format( "FileSystem::Mount: Game directory '%s' doesn't have a gameConfig.json", otherGameDirectoryStr.c_str() ) );
+			return false;
+		}
+
+		console->Print( adm::format( "FileSystem::Mount: Mounted game '%s'", gameMeta.GetName().data() ) );
+		console->Print( adm::format( "                   Developer:   %s", gameMeta.GetDeveloper().data() ) );
+		console->Print( adm::format( "                   Publisher:   %s", gameMeta.GetPublisher().data() ) );
+		console->Print( adm::format( "                   Version:     %s", gameMeta.GetVersion().data() ) );
+
+		if ( mountingMainGame )
+		{
+			gameMetadata = gameMeta;
+		}
+		else
+		{
+			otherMetadatas.push_back( gameMeta );
+			otherPaths.push_back( otherGameDirectory );
+		}
+
+		// Mount other games that this one depends on
+		if ( mountOthers )
+		{
+			for ( StringView mountedGame : gameMeta.GetMountedGames() )
+			{
+				if ( !MountInternal( basePath/mountedGame, false, false, false ) )
+				{
+					console->Warning( adm::format( "FileSystem::Mount: Can't mount dependency '%s', you may have missing content!", mountedGame.data() ) );
+				}
+			}
+		}
+	}
+
+	return true;
 }
 
 // ============================

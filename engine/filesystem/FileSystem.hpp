@@ -4,18 +4,21 @@
 class FileSystem final : public IFileSystem
 {
 public:
-	bool				Init( Path gameDirectory ) override;
+	bool				Init( Path gameDirectory, Path engineDirectory ) override;
 	void				Shutdown() override;
 
 	bool				Mount( Path otherGameDirectory, bool mountOthers = false ) override;
+
+	const				GameMetadata& GetCurrentGameMetadata() const;
+	const				Vector<GameMetadata>& GetMountedGameMetadatas() const;
 
 	const Path&			GetEngineDirectory() const override;
 	const Path&			GetBaseDirectory() const override;
 	const Path&			GetCurrentGameDirectory() const override;
 
-	bool				Exists( Path path, const uint8_t& filterFlags ) const override;
+	bool				Exists( Path path, const uint8_t& filterFlags, bool noMountedDirectories ) const override;
 
-	adm::Optional<Path>	GetPathTo( Path destination, const uint8_t& filterFlags ) const override;
+	Optional<Path>		GetPathTo( Path destination, const uint8_t& filterFlags, bool noMountedDirectories ) const override;
 
 	void				Setup( ICore* core, IConsole* console )
 	{
@@ -24,13 +27,17 @@ public:
 	}
 
 private:
+	bool				MountInternal( Path otherGameDirectory, bool mountOthers, bool mountingMainGame, bool mountingEngine );
 	bool				ExistsInternal( Path path, const uint8_t& filterFlags ) const;
 
 private:
 	Path				enginePath;
 	Path				basePath;
 	Path				currentGamePath;
-	std::vector<Path>	otherPaths; // other games, addons etc.
+	Vector<Path>		otherPaths; // other games, addons etc.
+
+	GameMetadata		gameMetadata;
+	Vector<GameMetadata> otherMetadatas;
 
 	ICore*				core{ nullptr };
 	IConsole*			console{ nullptr };
