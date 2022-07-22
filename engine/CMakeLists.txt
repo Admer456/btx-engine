@@ -15,6 +15,8 @@ set( BTX_ENGINE_SOURCES
     input/Input.hpp
     input/Input.cpp
     input/InputObjects.hpp
+    pluginsystem/PluginSystem.hpp
+    pluginsystem/PluginSystem.cpp
     Engine.hpp
     Engine.cpp )
 
