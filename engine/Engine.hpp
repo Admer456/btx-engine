@@ -1,10 +1,6 @@
 
 #pragma once
 
-class IEngine;
-class IFileSystem;
-class FileSystem;
-
 class Engine final : public IEngine
 {
 public:
@@ -21,14 +17,18 @@ public:
 private:
 	// Populates engineAPI with pointers to subsystems
 	void		SetupAPIForExchange();
+	// Once loaded, this will initialise all plugins
+	bool		InitialisePlugins();
 
 private:
 	Console		console;
 	Core		core;
 	FileSystem	fileSystem;
 	Input		input;
+	PluginSystem pluginSystem;
 
 	EngineAPI	engineAPI;
+	EngineConfig engineConfig;
 
 	float		deltaTime{ 0.0f };
 	bool		isRunning{ false };

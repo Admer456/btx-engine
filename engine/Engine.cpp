@@ -4,6 +4,7 @@
 #include "core/Core.hpp"
 #include "filesystem/FileSystem.hpp"
 #include "input/Input.hpp"
+#include "pluginsystem/PluginSystem.hpp"
 
 #include "SDL.h"
 #include "Engine.hpp"
@@ -23,8 +24,8 @@ extern "C" ADM_EXPORT IEngine* GetEngineAPI()
 // ============================
 bool Engine::Init( int argc, char** argv )
 {
-	SDL_Init( SDL_INIT_VIDEO | SDL_INIT_EVENTS );
-
+	int sdlResult = SDL_Init( SDL_INIT_VIDEO | SDL_INIT_EVENTS );
+	
 	// Timers and stuff
 	core.Init();
 
@@ -33,7 +34,23 @@ bool Engine::Init( int argc, char** argv )
 	console.Init( argc, argv );
 	console.Print( "Initing the engine..." );
 	
+	// If this somehow happens, congrats
+	if ( sdlResult < 0 )
+	{
+		console.Error( adm::format( "SDL2 error: %s", SDL_GetError() ) );
+		Shutdown( "SDL2 failure" );
+		return false;
+	}
+
 	const adm::Dictionary& args = console.GetArguments();
+
+	// Load the engine config file
+	engineConfig = EngineConfig( "engineConfig.json" );
+	if ( !engineConfig )
+	{
+		Shutdown( "engineConfig.json is missing" );
+		return false;
+	}
 
 	// Register keys etc.
 	input.Setup( &core, &console );
@@ -46,23 +63,34 @@ bool Engine::Init( int argc, char** argv )
 	// Initialise the filesystem with the directory of the
 	// game parameter and the "base" directory
 	Path currentExe = argv[0];
-	// If no -game argument has been passed, use exename_game
-	String gameName = args.GetString( "-game" );
-	if ( gameName.empty() )
-	{
-		gameName = currentExe.filename().stem().string() + "_game";
-	}
+	// If no -game argument has been passed, use engineConfig.json::gameFolder
+	String gameName = args.GetString( "-game", engineConfig.GetGameFolder().data() );
 
 	// Filesystem initialisation
 	fileSystem.Setup( &core, &console );
-	if ( !fileSystem.Init( gameName ) )
+	if ( !fileSystem.Init( gameName, engineConfig.GetEngineFolder() ) )
 	{
 		Shutdown( "filesystem failure" );
 		return false;
 	}
 
+	// Load gameConfig.json, mount the game's addons and load all needed plugins
+	pluginSystem.Setup( &core, &console, &fileSystem );
+	if ( !pluginSystem.Init( fileSystem.GetCurrentGameMetadata().GetPluginLibraries() ) )
+	{
+		Shutdown( "plugin system failure" );
+		return false;
+	}
+
 	// Initialise pointers for API exchange
 	SetupAPIForExchange();
+
+	// Initialise application plugins and give them the engine API
+	if ( !InitialisePlugins() )
+	{
+		Shutdown( "plugin failure" );
+		return false;
+	}
 
 	// TODO: argument parsing & execution here
 	// Things like dedicated server switches, startup CVars etc.
@@ -95,6 +123,7 @@ void Engine::Shutdown( const char* why )
 
 	console.Print( adm::format( "Engine: Shutting down, reason: %s", why ) );
 
+	pluginSystem.Shutdown();
 	input.Shutdown();
 	fileSystem.Shutdown();
 	console.Shutdown();
@@ -125,13 +154,12 @@ bool Engine::RunFrame()
 	// Update the keyboard state etc.
 	input.Update();
 
-	/*
-	for ( auto& application : applications )
-	{
-		application->Update();
-	}
-	*/
-
+	// Update games, apps, tools etc.
+	pluginSystem.ForEachPluginOfType<IApplication>( []( IApplication* plugin )
+		{
+			plugin->Update();
+		} );
+	
 	// Normally we'd have more updating stuff here, so syncTimeElapsed would be significantly larger
 	// But, if it works, it works
 	const int syncTime = (1000.0f / engine_tickRate.GetFloat()) * 1000.0f;
@@ -182,8 +210,37 @@ void Engine::SetupAPIForExchange()
 	engineAPI.modelManager = nullptr;
 	engineAPI.network = nullptr;
 	engineAPI.physics = nullptr;
+	engineAPI.pluginSystem = &pluginSystem;
 
 	engineAPI.audio = nullptr;
 	engineAPI.input = &input;
 	engineAPI.renderer = nullptr;
+}
+
+// ============================
+// Engine::InitialisePlugins
+// ============================
+bool Engine::InitialisePlugins()
+{
+	bool applicationPluginsFailed = false;
+	String applicationPluginErrorString = "Engine::Init: These plugins failed to initialise:\n";
+	applicationPluginErrorString.reserve( 256U );
+
+	pluginSystem.ForEachPluginOfType<IApplication>( [&]( IApplication* plugin )
+		{
+			if ( !plugin->Init( GetAPI() ) )
+			{
+				applicationPluginErrorString += "  * " + String( plugin->GetPluginName() ) + "\n";
+				applicationPluginsFailed = true;
+			}
+		} );
+
+	if ( applicationPluginsFailed )
+	{
+		applicationPluginErrorString += "Resolve the plugin errors and try again.";
+		console.Error( applicationPluginErrorString.c_str() );
+		return false;
+	}
+
+	return true;
 }
