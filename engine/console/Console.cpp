@@ -28,6 +28,7 @@ bool Console::Init( int argc, char** argv )
 void Console::Shutdown()
 {
 	Print( "Console::Shutdown" );
+	CVar::UnregisterAll();
 	cvarList.clear();
 	arguments.Clear();
 }
@@ -104,7 +105,7 @@ void Console::Unregister( CVarBase* cvar )
 		return;
 	}
 
-	cvarList[cvar->varName] = nullptr;
+	cvarList.erase( cvar->varName );
 }
 
 // ============================
