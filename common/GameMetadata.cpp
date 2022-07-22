@@ -3,75 +3,26 @@
 
 GameMetadata::GameMetadata( Path filePath )
 {
-	File fileStream( filePath );
-	Parse( fileStream );
-}
-
-GameMetadata::~GameMetadata()
-{
-	mountedGames.clear();
-}
-
-void GameMetadata::Parse( File& gameMetaFile )
-{
-	adm::Lexer lexer( gameMetaFile );
-
-	std::string token;
-	while ( !lexer.IsEndOfFile() )
+	json jsonData = adm::ParseJSON( filePath.string() );
+	if ( jsonData.empty() )
 	{
-		token = lexer.Next();
-
-		if ( token == "gameTitle" )
-		{
-			gameName = lexer.Next();
-			continue;
-		}
-
-		if ( token == "gameDeveloper" )
-		{
-			gameDeveloper = lexer.Next();
-			continue;
-		}
-
-		if ( token == "gamePublisher" )
-		{
-			gamePublisher = lexer.Next();
-			continue;
-		}
-
-		if ( token == "gameVersion" )
-		{
-			gameVersion = lexer.Next();
-			continue;
-		}
-
-		if ( token == "mount" )
-		{
-			mountedGames.push_back( lexer.Next() );
-			continue;
-		}
-
-		if ( token.empty() )
-		{
-			break;
-		}
-
-		//gEngine.Common.Warning( adm::format( "Unknown token '%s'", token.c_str() ) );
+		return;
 	}
 
-}
-
-StringView GameMetadata::GetMountedGame( const size_t& index )
-{
-	if ( index >= GetNumMountedGames() )
+	gameName = jsonData.value( "gameName", "unknown" );
+	gameDeveloper = jsonData.value( "gameDeveloper", "unknown" );
+	gamePublisher = jsonData.value( "gamePublisher", "unknown" );
+	gameVersion = jsonData.value( "gameVersion", "unknown" );
+	
+	for ( const auto& plugin : jsonData["plugins"] )
 	{
-		return NullString;
+		pluginLibraries.push_back( plugin );
 	}
 
-	return mountedGames.at( index );
-}
+	for ( const auto& mount : jsonData["mounts"] )
+	{
+		mountedGames.push_back( mount );
+	}
 
-size_t GameMetadata::GetNumMountedGames() const
-{
-	return mountedGames.size();
+	parsedCorrectly = true;
 }

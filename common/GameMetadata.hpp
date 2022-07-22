@@ -1,28 +1,33 @@
 
 #pragma once
 
-// A class that parses gamemeta.txt files
+// A class that parses gameConfig.json files
 class GameMetadata final
 {
 public:
-	// Assumes that filePath is valid
+	GameMetadata() = default;
 	GameMetadata( Path filePath );
-	~GameMetadata();
+	GameMetadata( const GameMetadata& metadata ) = default;
+	GameMetadata( GameMetadata&& metadata ) = default;
 
 	StringView	GetName() const { return gameName; }
 	StringView	GetDeveloper() const { return gameDeveloper; }
 	StringView	GetPublisher() const { return gamePublisher; }
 	StringView	GetVersion() const { return gameVersion; }
 
-	StringView	GetMountedGame( const size_t& index );
-	size_t		GetNumMountedGames() const;
+	const Vector<String>& GetMountedGames() const { return mountedGames; }
+	const Vector<String>& GetPluginLibraries() const { return pluginLibraries; }
+
+	operator bool() const { return parsedCorrectly; }
+	GameMetadata& operator=( const GameMetadata& metadata ) = default;
+	GameMetadata& operator=( GameMetadata&& metadata ) = default;
 
 private:
-	void		Parse( File& gameMetaFile );
-
-	String		gameName{ "unknown" };
-	String		gameDeveloper{ "unknown" };
-	String		gamePublisher{ "unknown" };
-	String		gameVersion{ "unknown" };
-	std::vector<String> mountedGames{};
+	String		gameName;
+	String		gameDeveloper;
+	String		gamePublisher;
+	String		gameVersion;
+	Vector<String> mountedGames;
+	Vector<String> pluginLibraries;
+	bool		parsedCorrectly{ false };
 };
