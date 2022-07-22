@@ -26,6 +26,11 @@ set( BTX_COMMON_SOURCES
     ${BTX_ROOT}/common/interfaces/plugins/IPlugin.hpp
     ${BTX_ROOT}/common/console/CVar.hpp
     ${BTX_ROOT}/common/console/CVar.cpp
+    ${BTX_ROOT}/common/pluginsystem/PluginLibrary.hpp
+    ${BTX_ROOT}/common/pluginsystem/PluginLibrary.cpp
+    ${BTX_ROOT}/common/pluginsystem/PluginLibraryMetadata.hpp
+    ${BTX_ROOT}/common/pluginsystem/PluginLibraryMetadata.cpp
+    ${BTX_ROOT}/common/pluginsystem/PluginList.hpp
     ${BTX_ROOT}/common/GameMetadata.hpp
     ${BTX_ROOT}/common/GameMetadata.cpp
     ${BTX_ROOT}/common/Precompiled.hpp 
