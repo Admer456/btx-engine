@@ -96,7 +96,9 @@ public:
 		else
 		{
 			console->Register( this );
+			isRegistered = true;
 		}
+		
 	}
 
 	CVarTemplate( const char* name, ConsoleCommandFn* function, const char* description = "" )
@@ -109,17 +111,20 @@ public:
 		else
 		{
 			console->Register( this );
+			isRegistered = true;
 		}
+		
 	}
 
 	~CVarTemplate()
 	{
-		if ( nullptr == console )
+		if ( nullptr == console || !isRegistered )
 		{
 			return;
 		}
 
 		console->Unregister( this );
+		isRegistered = false;
 	}
 
 	// my_command my_argument my_argument2
@@ -137,6 +142,7 @@ public:
 		for ( auto& cvar : StaticCVarList )
 		{
 			console->Register( cvar );
+			static_cast<CVarTemplate*>(cvar)->isRegistered = true;
 		}
 
 		RegisteredAllStatics = true;
@@ -149,6 +155,7 @@ public:
 		for ( auto& cvar : StaticCVarList )
 		{
 			console->Unregister( cvar );
+			static_cast<CVarTemplate*>(cvar)->isRegistered = false;
 		}
 
 		RegisteredAllStatics = false;
@@ -156,6 +163,9 @@ public:
 
 	inline static CVarList StaticCVarList = CVarList();
 	inline static bool RegisteredAllStatics = false;
+
+private:
+	bool isRegistered = false;
 };
 
 // In game DLL:
