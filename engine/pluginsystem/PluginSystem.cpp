@@ -43,21 +43,6 @@ bool PluginSystem::Init( const Vector<String>& pluginsToLoad )
 void PluginSystem::Shutdown()
 {
 	pluginInterfaceMap.clear();
-
-	// This is a bit of a hack
-	// PluginLibrary needs to be destroyed before Library,
-	// else there will be veeeeery funky memory issues
-	// In pairs, first is always destroyed, and then second
-	for ( auto& pluginLibrary : pluginLibraries )
-	{
-		for ( auto& plugin : pluginLibrary.second.GetPlugins() )
-		{
-			plugin->Shutdown();
-		}
-
-		pluginLibrary.second.GetPlugins().clear();
-	}
-
 	pluginLibraries.clear();
 }
 
@@ -68,6 +53,9 @@ PluginLibrary* PluginSystem::LoadPluginLibrary( Path libraryPath )
 {
 	// Maybe there should be a prefix system
 	// console->PushPrefix( "PluginSystem::LoadPluginLibrary: " );
+
+	String libraryPathStr = libraryPath.string();
+	console->Print( adm::format( "PluginSystem::LoadPluginLibrary: loading plugin library '%s'...", libraryPathStr.c_str() ) );
 
 	// Make sure the plugin directory exists
 	auto realPath = fileSystem->GetPathTo( libraryPath, IFileSystem::Path_Directory );
@@ -141,11 +129,13 @@ PluginLibrary* PluginSystem::LoadPluginLibrary( Path libraryPath )
 		return nullptr;
 	};
 
-	pluginLibraries.emplace_back( std::make_pair( std::move( pluginModule ), PluginLibrary( registry, pluginJson, libraryMetadataPath ) ) );
+	console->Print( adm::format( "PluginSystem::LoadPluginLibrary: successfully loaded '%s'", libraryPathStr.c_str() ) );
 
-	AddPluginsToInterfaceMap( pluginLibraries.back().second );
+	pluginLibraries.emplace_back( PluginLibrary( registry, pluginJson, libraryMetadataPath ), std::move( pluginModule ) );
 
-	return &pluginLibraries.back().second;
+	AddPluginsToInterfaceMap( pluginLibraries.back().pluginLibrary );
+
+	return &pluginLibraries.back().pluginLibrary;
 }
 
 // ============================
@@ -155,7 +145,7 @@ const PluginLibraryMetadata& PluginSystem::GetPluginLibraryMetadata( const IPlug
 {
 	for ( const auto& pluginPair : pluginLibraries )
 	{
-		const PluginLibrary& pluginLibrary = pluginPair.second;
+		const PluginLibrary& pluginLibrary = pluginPair.pluginLibrary;
 
 		for ( const auto& pluginInternal : pluginLibrary.GetPlugins() )
 		{
@@ -181,9 +171,9 @@ void PluginSystem::UnloadPluginLibrary( const PluginLibrary* pluginLibrary )
 
 	for ( const auto& pair : pluginLibraries )
 	{
-		if ( &pair.second == pluginLibrary )
+		if ( &pair.pluginLibrary == pluginLibrary )
 		{
-			RemovePluginsFromInterfaceMap( pair.second );
+			RemovePluginsFromInterfaceMap( pair.pluginLibrary );
 			pluginLibraries.remove( pair );
 			break;
 		}
@@ -211,7 +201,7 @@ IPlugin* PluginSystem::GetPluginByNameRaw( StringView pluginName ) const
 {
 	for ( const auto& pair : pluginLibraries )
 	{
-		for ( const auto& plugin : pair.second.GetPlugins() )
+		for ( const auto& plugin : pair.pluginLibrary.GetPlugins() )
 		{
 			if ( pluginName == plugin->GetPluginName() )
 			{
@@ -254,9 +244,9 @@ PluginLibrary* PluginSystem::GetPluginLibrary( Path metadataPath )
 {
 	for ( auto& pair : pluginLibraries )
 	{
-		if ( pair.second.GetMetadataPath() == metadataPath )
+		if ( pair.pluginLibrary.GetMetadataPath() == metadataPath )
 		{
-			return &pair.second;
+			return &pair.pluginLibrary;
 		}
 	}
 

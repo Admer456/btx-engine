@@ -1,6 +1,29 @@
 
 #pragma once
 
+// Replacement for std::pair<Library, PluginLibrary> for
+// less ambiguity (first vs. second in std::pair)
+struct PluginLibraryPair
+{
+	PluginLibraryPair( PluginLibrary&& pluginLibrary, Library&& pluginModule )
+		: pluginLibrary( std::move( pluginLibrary ) ),
+		pluginModule( std::move( pluginModule ) )
+	{
+	}
+
+	// Constructed first, destructed last
+	Library pluginModule;
+	// Constructed last, destructed first
+	PluginLibrary pluginLibrary;
+
+	// Needed for std::list
+	bool operator==( const PluginLibraryPair& pair ) const
+	{
+		return &pluginLibrary == &pair.pluginLibrary &&
+			&pluginModule == &pair.pluginModule;
+	}
+};
+
 class PluginSystem final : public IPluginSystem
 {
 public:
@@ -34,7 +57,7 @@ private:
 	//LinkedList<Library> pluginModules;
 	//LinkedList<PluginLibrary> pluginLibraries;
 	
-	LinkedList<std::pair<Library, PluginLibrary>> pluginLibraries;
+	LinkedList<PluginLibraryPair> pluginLibraries;
 
 	// pluginInterfaceMap["IApplication"] would give us
 	// all plugins that implement IApplication for example
