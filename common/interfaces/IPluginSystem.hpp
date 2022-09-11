@@ -26,9 +26,12 @@ public:
 	// After this, libraryHandle is no longer valid
 	virtual void UnloadPluginLibrary( const PluginLibrary* pluginLibrary ) = 0;
 
-	// Utility that exectues something foreach plugin 
-	// that implements pluginType (e.g. IApplication)
-	template<typename pluginType = IPlugin>
+	// Execute 'function' for each plugin
+	virtual void ForEachPlugin( std::function<void( IPlugin* )> function ) = 0;
+
+	// Execute 'function' for each plugin that implements pluginType
+	// Does not work with downcasting, so IPlugin won't pick up any plugins, use ForEachPlugin for that
+	template<typename pluginType>
 	void ForEachPluginOfType( std::function<void( pluginType* )> function )
 	{
 		GetPluginList( pluginType::Name ).ForEach<pluginType>( function );

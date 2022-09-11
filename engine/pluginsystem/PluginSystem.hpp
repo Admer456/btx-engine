@@ -43,6 +43,8 @@ public:
 
 	void UnloadPluginLibrary( const PluginLibrary* pluginLibrary ) override;
 
+	void ForEachPlugin( std::function<void( IPlugin* )> function ) override;
+
 	PluginList& GetPluginList( const char* interfaceName ) override;
 
 	IPlugin* GetPluginByNameRaw( StringView pluginName ) const override;

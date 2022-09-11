@@ -181,6 +181,20 @@ void PluginSystem::UnloadPluginLibrary( const PluginLibrary* pluginLibrary )
 }
 
 // ============================
+// PluginSystem::ForEachPlugin
+// ============================
+void PluginSystem::ForEachPlugin( std::function<void( IPlugin* )> function )
+{
+	for ( auto& pluginLibraryElement : pluginLibraries )
+	{
+		for ( auto& plugin : pluginLibraryElement.pluginLibrary.GetPlugins() )
+		{
+			function( plugin.get() );
+		}
+	}
+}
+
+// ============================
 // PluginSystem::GetPluginList
 // ============================
 PluginList& PluginSystem::GetPluginList( const char* interfaceName )

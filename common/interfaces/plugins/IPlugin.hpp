@@ -87,6 +87,12 @@ public:
 	// Each plugin type must have this thing here, for the
 	// purposes of IPluginSystem::ForEachPluginOfType
 	static constexpr const char* Name = "IPlugin";
+
+	template<typename otherPluginType>
+	bool IsInterface()
+	{
+		return StringView( otherPluginType::Name ) == GetInterfaceName();
+	}
 };
 
 using PluginFactoryFunction = IPlugin*();
