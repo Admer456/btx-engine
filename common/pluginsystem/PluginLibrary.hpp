@@ -42,7 +42,7 @@ private:
 
 private:
 	const PluginRegistry* registry{ nullptr };
+	Vector<UniquePtr<IPlugin>> plugins;
 	PluginLibraryMetadata metadata;
 	Path metadataPath;
-	Vector<UniquePtr<IPlugin>> plugins;
 };
