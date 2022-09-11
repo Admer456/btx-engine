@@ -222,24 +222,55 @@ void Engine::SetupAPIForExchange()
 // ============================
 bool Engine::InitialisePlugins()
 {
-	bool applicationPluginsFailed = false;
-	String applicationPluginErrorString = "Engine::Init: These plugins failed to initialise:\n";
-	applicationPluginErrorString.reserve( 256U );
-
-	pluginSystem.ForEachPluginOfType<IApplication>( [&]( IApplication* plugin )
-		{
-			if ( !plugin->Init( GetAPI() ) )
-			{
-				applicationPluginErrorString += "  * " + String( plugin->GetPluginName() ) + "\n";
-				applicationPluginsFailed = true;
-			}
-		} );
-
-	if ( applicationPluginsFailed )
+	// Load plugins
 	{
-		applicationPluginErrorString += "Resolve the plugin errors and try again.";
-		console.Error( applicationPluginErrorString.c_str() );
-		return false;
+		bool pluginsFailed = false;
+		String pluginErrorString = "Engine::Init: These plugins failed to initialise:\n";
+		pluginErrorString.reserve( 256U );
+
+		pluginSystem.ForEachPlugin( [&]( IPlugin* plugin )
+			{
+				if ( plugin->IsInterface<IApplication>() )
+				{
+					return;
+				}
+
+				if ( !plugin->Init( GetAPI() ) )
+				{
+					pluginErrorString += "  * " + String( plugin->GetPluginName() ) + "\n";
+					pluginsFailed = true;
+				}
+			} );
+
+		if ( pluginsFailed )
+		{
+			pluginErrorString += "Resolve the plugin errors and try again.";
+			console.Error( pluginErrorString.c_str() );
+			return false;
+		}
+	}
+
+	// Now that base plugins have loaded, it's time to initialise any applications/games
+	{
+		bool applicationPluginsFailed = false;
+		String applicationPluginErrorString = "Engine::Init: These applications failed to initialise:\n";
+		applicationPluginErrorString.reserve( 256U );
+
+		pluginSystem.ForEachPluginOfType<IApplication>( [&]( IApplication* plugin )
+			{
+				if ( !plugin->Init( GetAPI() ) )
+				{
+					applicationPluginErrorString += "  * " + String( plugin->GetPluginName() ) + "\n";
+					applicationPluginsFailed = true;
+				}
+			} );
+
+		if ( applicationPluginsFailed )
+		{
+			applicationPluginErrorString += "Resolve the application errors and try again.";
+			console.Error( applicationPluginErrorString.c_str() );
+			return false;
+		}
 	}
 
 	return true;
