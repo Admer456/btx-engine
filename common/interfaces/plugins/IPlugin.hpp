@@ -64,6 +64,14 @@ struct EngineAPI
 	IRenderSystem* renderer{ nullptr };
 };
 
+// It is not advised to create an inheritance tree from IPlugin
+// At most you may have 2 layers of inheritance: IPlugin -> ISpecificPluginType -> Implementation
+// One more between IPlugin and ISpecificPluginType and I'm putting zero-width spaces into your code :)
+
+// IPlugin, base interface for all plugins
+// Typically a plugin interface would inherit from this, e.g. IApplication,
+// then an actual plugin would implement IApplication. The plugin system
+// itself does not care for that, it only needs to call the methods in IPlugin.
 class IPlugin
 {
 public:
@@ -76,6 +84,8 @@ public:
 	// Overridden by plugin types, e.g. IApplication
 	virtual const char* GetInterfaceName() const = 0;
 
+	// Each plugin type must have this thing here, for the
+	// purposes of IPluginSystem::ForEachPluginOfType
 	static constexpr const char* Name = "IPlugin";
 };
 
