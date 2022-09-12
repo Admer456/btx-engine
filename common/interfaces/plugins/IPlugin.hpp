@@ -3,14 +3,10 @@
 
 // Shared systems
 class ICore;            // sysinfo etc.
-class IAnimation;       // animation
-class ICollision;       // collision
 class IConsole;         // cvars etc.
 class IFileSystem;      // files, dirs
 class IMaterialManager; // materials
 class IModelManager;    // models
-class INetwork;         // networking
-class IPhysics;         // physics
 class IPluginSystem;    // plugins
 // Clientside-only systems
 class IAudio;           // sound
