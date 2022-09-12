@@ -7,13 +7,8 @@
 class IApplication : public IPlugin
 {
 public:
-	const char* GetInterfaceName() const
-	{
-		return "IApplication";
-	}
+	DeclarePluginInterface( IApplication );
 
 	// Called every frame
 	virtual void Update() = 0;
-
-	static constexpr const char* Name = "IApplication";
 };

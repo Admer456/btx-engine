@@ -83,6 +83,13 @@ public:
 	}
 };
 
+#define DeclarePluginInterface( name ) \
+static constexpr const char* Name = #name; \
+const char* GetInterfaceName() const override final \
+{ \
+	return #name; \
+}
+
 using PluginFactoryFunction = IPlugin*();
 
 class PluginRegistry final
