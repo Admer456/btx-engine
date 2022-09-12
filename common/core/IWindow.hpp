@@ -64,6 +64,7 @@ public:
 	virtual bool GetFullscreen() const = 0;
 	virtual void SetVideoMode( const WindowVideoMode& mode ) = 0;
 	virtual WindowVideoMode GetVideoMode() const = 0;
+	virtual Vector<WindowVideoMode> GetAvailableVideoModes() const = 0;
 
 	// Windowed functionality
 

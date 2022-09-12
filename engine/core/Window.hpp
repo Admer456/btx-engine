@@ -13,6 +13,7 @@ public:
 	bool GetFullscreen() const override;
 	void SetVideoMode( const WindowVideoMode& mode ) override;
 	WindowVideoMode GetVideoMode() const override;
+	Vector<WindowVideoMode> GetAvailableVideoModes() const override;
 
 	void Maximise() override;
 	void Minimise() override;

@@ -1,4 +1,6 @@
 
+#include "common/Precompiled.hpp"
+
 #include "SDL_video.h"
 #include "SDL_syswm.h"
 
@@ -109,6 +111,46 @@ WindowVideoMode Window::GetVideoMode() const
 	mode.format = WindowFormats.Find( SDL_PixelFormatEnum( dm.format ) );
 
 	return mode;
+}
+
+// ============================
+// Window::GetAvailableVideoModes
+// ============================
+Vector<WindowVideoMode> Window::GetAvailableVideoModes() const
+{
+	Vector<WindowVideoMode> videoModes{};
+	const int displayIndex = GetDisplayIndex();
+
+	const auto sdlDisplayModeToVideoMode = []( SDL_DisplayMode dm ) -> WindowVideoMode
+	{
+		WindowVideoMode mode;
+
+		mode.width = dm.w;
+		mode.height = dm.h;
+		mode.refreshRate = dm.refresh_rate;
+		mode.format = WindowFormats.Find( SDL_PixelFormatEnum( dm.format ) );
+
+		return mode;
+	};
+
+	int numModes = SDL_GetNumDisplayModes( displayIndex );
+	if ( numModes > 1 )
+	{
+		videoModes.reserve( numModes );
+		SDL_DisplayMode dm;
+
+		for ( int i = 0; i < numModes; i++ )
+		{
+			if ( SDL_GetDisplayMode( displayIndex, i, &dm ) == 0 )
+			{
+				videoModes.push_back( sdlDisplayModeToVideoMode( dm ) );
+			}
+		}
+
+		videoModes.shrink_to_fit();
+	}
+
+	return videoModes;
 }
 
 // ============================
