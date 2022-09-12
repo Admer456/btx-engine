@@ -14,8 +14,6 @@ public:
 	virtual bool RunFrame() = 0;
 };
 
-
-
 // Rightmost 2 bytes -> tolerable changes that won't break the game
 // Leftmost 2 bytes -> breaking changes that will break the game
 //

@@ -56,9 +56,6 @@ private:
 	PluginLibrary* GetPluginLibrary( Path metadataPath );
 
 private:
-	//LinkedList<Library> pluginModules;
-	//LinkedList<PluginLibrary> pluginLibraries;
-	
 	LinkedList<PluginLibraryPair> pluginLibraries;
 
 	// pluginInterfaceMap["IApplication"] would give us

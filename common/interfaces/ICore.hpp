@@ -4,6 +4,7 @@
 struct WindowCreateDesc;
 class IWindow;
 
+// System abstraction layer
 class ICore
 {
 public:

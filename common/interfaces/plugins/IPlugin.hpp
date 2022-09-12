@@ -21,10 +21,6 @@ class IRenderSystem;    // rendering
 // The engine does not provide any type of save/load system, AI
 // system, level/scene system, none of that, it is completely up to
 // you to do it in whatever way you want
-// 
-// In fact, you are free to override any of these systems here in your
-// game, like the physics or networking system, if for whatever reason
-// you cannot modify the engine itself
 struct EngineAPI
 {
 	int engineVersion{ 0 };
@@ -34,10 +30,6 @@ struct EngineAPI
 
 	// System info, timing...
 	ICore* core{ nullptr };
-	// Animation blending, playback...
-	IAnimation* animation{ nullptr };
-	// Raycasts, object-to-object tests...
-	ICollision* collision{ nullptr };
 	// Printing, console vars, console commands...
 	IConsole* console{ nullptr };
 	// Files, directories
@@ -46,10 +38,6 @@ struct EngineAPI
 	IMaterialManager* materialManager{ nullptr };
 	// Model mesh data, metadata
 	IModelManager* modelManager{ nullptr };
-	// Client-server relations, packets...
-	INetwork* network{ nullptr };
-	// Dynamics, joints, ragdolls...
-	IPhysics* physics{ nullptr };
 	// Management of plugin libraries
 	IPluginSystem* pluginSystem{ nullptr };
 

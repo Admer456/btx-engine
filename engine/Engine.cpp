@@ -199,14 +199,10 @@ void Engine::SetupAPIForExchange()
 {
 	engineAPI.engineVersion = EngineVersion;
 	engineAPI.core = &core;
-	engineAPI.animation = nullptr;
-	engineAPI.collision = nullptr;
 	engineAPI.console = &console;
 	engineAPI.fileSystem = &fileSystem;
 	engineAPI.materialManager = nullptr;
 	engineAPI.modelManager = nullptr;
-	engineAPI.network = nullptr;
-	engineAPI.physics = nullptr;
 	engineAPI.pluginSystem = &pluginSystem;
 
 	if ( !core.IsHeadless() )

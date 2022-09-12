@@ -200,6 +200,7 @@ void Console::ParseArguments( int argc, char** argv )
 			{
 				param = argv[++i];
 
+				// If the next token starts with -/+, then this is parameterless
 				// Switches and commands not always need a parameter
 				if ( param[0] == '-' || param[0] == '+' )
 				{
