@@ -205,7 +205,7 @@ void Console::ParseArguments( int argc, char** argv )
 				if ( param[0] == '-' || param[0] == '+' )
 				{
 					i--;
-					param = "";
+					param = "1"; // so it can be evaluated as a bool
 				}
 			}
 		}
