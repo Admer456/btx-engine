@@ -158,6 +158,23 @@ InputKeyFlags Input::GetKey( const int& key ) const
 }
 
 // ============================
+// Input::SetMouseGrab
+// ============================
+void Input::SetMouseGrab( bool grab )
+{
+	isMouseGrabbed = grab;
+	SDL_SetRelativeMouseMode( grab ? SDL_TRUE : SDL_FALSE );
+}
+
+// ============================
+// Input::IsMouseGrabbed
+// ============================
+bool Input::IsMouseGrabbed() const
+{
+	return isMouseGrabbed;
+}
+
+// ============================
 // Input::IsWindowClosing
 // ============================
 bool Input::IsWindowClosing() const

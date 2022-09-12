@@ -18,6 +18,9 @@ public:
 	InputKeyFlags GetButton( InputAxisCode::Enum button, const int& deviceId ) const override;
 	InputKeyFlags GetKey( const int& key ) const override;
 
+	void SetMouseGrab( bool grab ) override;
+	bool IsMouseGrabbed() const override;
+
 	bool IsWindowClosing() const override;
 
 	void Setup( ICore* core, IConsole* console )
@@ -37,4 +40,5 @@ private:
 	IConsole* console{ nullptr };
 
 	bool isWindowClosing = false;
+	bool isMouseGrabbed = false;
 };

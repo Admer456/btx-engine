@@ -359,6 +359,13 @@ public:
 	// @returns A key state for the given scancode
 	virtual InputKeyFlags GetKey( const int& key ) const = 0;
 
+	// If the mouse is grabbed, it will become invisible and locked to the centre of the screen.
+	// If it's not grabbed, it will behave like usual, suitable for main menus or editors.
+	virtual void SetMouseGrab( bool grab ) = 0;
+
+	// @returns Whether or not the mouse is grabbed, see SetMouseGrab
+	virtual bool IsMouseGrabbed() const = 0;
+
 	// Did the user attempt to close the window?
 	virtual bool IsWindowClosing() const = 0;
 };
