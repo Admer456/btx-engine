@@ -49,7 +49,7 @@ int Core::DevLevel() const
 // ============================
 float Core::Time() const
 {
-	return systemTimer.GetElapsed( adm::Timer::Seconds );
+	return systemTimer.GetElapsed( adm::TimeUnits::Seconds );
 }
 
 // ============================
@@ -57,7 +57,7 @@ float Core::Time() const
 // ============================
 float Core::TimeMilliseconds() const
 {
-	return systemTimer.GetElapsed( adm::Timer::Milliseconds );
+	return systemTimer.GetElapsed( adm::TimeUnits::Milliseconds );
 }
 
 // ============================

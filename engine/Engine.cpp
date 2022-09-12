@@ -146,7 +146,7 @@ bool Engine::RunFrame()
 {
 	// Synchronisation timer, works kinda like V-sync but more flexible
 	// Sync time is in microseconds
-	adm::Timer syncTimer;
+	adm::TimerPreciseDouble syncTimer;
 
 	// Update the keyboard state etc.
 	input.Update();
@@ -160,13 +160,13 @@ bool Engine::RunFrame()
 	// Normally we'd have more updating stuff here, so syncTimeElapsed would be significantly larger
 	// But, if it works, it works
 	const int syncTime = (1000.0f / engine_tickRate.GetFloat()) * 1000.0f;
-	int syncTimeElapsed = syncTimer.GetElapsed( adm::Timer::Microseconds );
+	int syncTimeElapsed = syncTimer.GetElapsed( adm::TimeUnits::Microseconds );
 	if ( syncTimeElapsed < syncTime )
 	{
 		std::this_thread::sleep_for( chrono::microseconds( syncTime - syncTimeElapsed ) );
 	}
 
-	deltaTime = syncTimer.GetElapsed( adm::Timer::Seconds );
+	deltaTime = syncTimer.GetElapsed( adm::TimeUnits::Seconds );
 	core.SetDeltaTime( deltaTime );
 
 	return !input.IsWindowClosing();
