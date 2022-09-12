@@ -17,13 +17,21 @@ public:
 	float		DeltaTime() const override;
 	// For the engine to set delta time
 	void		SetDeltaTime( const float& newDeltaTime );
+	
+	bool		IsHeadless() const override;
+	// For the engine to set headless state
+	void		SetHeadless( bool headless );
 
-	// Is this a dedicated server?
-	bool		IsDedicatedServer() const override;
-	// Is this instance a server host?
-	bool		IsHost() const override;
+	IWindow*	CreateWindow( const WindowCreateDesc& desc ) override;
+	void		DestroyWindow( IWindow* window ) override;
+	Vector<IWindow*>& GetWindows() override;
+
+	// For the engine to get the SDL2 error message, in case of failure
+	const char* GetErrorMessage() const;
 
 private:
+	bool		isHeadless{ false };
+	Vector<IWindow*> windows{};
 	adm::Timer	systemTimer;
-	float deltaTime{ 0.0f };
+	float		deltaTime{ 0.0f };
 };

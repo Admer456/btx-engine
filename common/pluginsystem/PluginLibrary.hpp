@@ -1,6 +1,8 @@
 
 #pragma once
 
+class PluginRegistry;
+
 class PluginLibrary final
 {
 public:

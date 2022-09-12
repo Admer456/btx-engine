@@ -1,7 +1,10 @@
 
+#include "SDL.h"
+
 #include "common/Precompiled.hpp"
 #include "../console/Console.hpp"
 #include "Core.hpp"
+#include "Window.hpp"
 
 CVar developer( "developer", "0", 0, "Developer mode" );
 
@@ -11,6 +14,14 @@ CVar developer( "developer", "0", 0, "Developer mode" );
 bool Core::Init()
 {
 	systemTimer.Reset();
+
+	int sdlResult = SDL_Init( SDL_INIT_VIDEO | SDL_INIT_EVENTS );
+
+	// If this somehow happens, congrats
+	if ( sdlResult < 0 )
+	{
+		return false;
+	}
 
 	return true;
 }
@@ -22,7 +33,7 @@ bool Core::Init()
 // ============================
 void Core::Shutdown()
 {
-
+	SDL_Quit();
 }
 
 // ============================
@@ -66,17 +77,90 @@ void Core::SetDeltaTime( const float& newDeltaTime )
 }
 
 // ============================
-// Core::IsDedicatedServer
+// Core::IsHeadless
 // ============================
-bool Core::IsDedicatedServer() const
-{	// No dedicated server code yet
-	return false;
+bool Core::IsHeadless() const
+{
+	return isHeadless;
 }
 
 // ============================
-// Core::IsHost
+// Core::SetHeadless
 // ============================
-bool Core::IsHost() const
-{	// For now, we only got singleplayer
-	return true;
+void Core::SetHeadless( bool headless )
+{
+	isHeadless = headless;
+}
+
+// ============================
+// Core::CreateWindow
+// ============================
+IWindow* Core::CreateWindow( const WindowCreateDesc& desc )
+{
+	int offsetX = desc.offsetX == -1 ? SDL_WINDOWPOS_CENTERED : desc.offsetX;
+	int offsetY = desc.offsetY == -1 ? SDL_WINDOWPOS_CENTERED : desc.offsetY;
+	int flags = desc.resizeable ? SDL_WINDOW_RESIZABLE : 0;
+	
+	// Fullscreen modes
+	if ( desc.startFullscreen )
+	{
+		if ( desc.borderless )
+		{
+			flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+		}
+		else
+		{
+			flags |= SDL_WINDOW_FULLSCREEN;
+		}
+	}
+	// Windowed modes
+	else
+	{
+		if ( desc.startMaximised )
+		{
+			flags |= SDL_WINDOW_MAXIMIZED;
+		}
+		else if ( desc.startMinimised )
+		{
+			flags |= SDL_WINDOW_MINIMIZED;
+		}
+	}
+
+	SDL_Window* sdlWindow = SDL_CreateWindow( desc.windowName, offsetX, offsetY, desc.width, desc.height, flags );
+	Window* windowObject = new Window( sdlWindow );
+
+	windows.push_back( windowObject );
+	return windows.back();
+}
+
+// ============================
+// Core::DestroyWindow
+// ============================
+void Core::DestroyWindow( IWindow* window )
+{
+	for ( auto it = windows.begin(); it != windows.end(); it++ )
+	{
+		if ( *it == window )
+		{
+			SDL_DestroyWindow( static_cast<SDL_Window*>( window->GetInternalPointer() ) );
+			windows.erase( it );
+			return;
+		}
+	}
+}
+
+// ============================
+// Core::GetWindows
+// ============================
+Vector<IWindow*>& Core::GetWindows()
+{
+	return windows;
+}
+
+// ============================
+// Core::GetErrorMessage
+// ============================
+const char* Core::GetErrorMessage() const
+{
+	return SDL_GetError();
 }

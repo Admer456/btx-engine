@@ -6,7 +6,6 @@
 #include "input/Input.hpp"
 #include "pluginsystem/PluginSystem.hpp"
 
-#include "SDL.h"
 #include "Engine.hpp"
 
 CVar engine_tickRate( "engine_tickRate", "144", 0, "Ticks per second, acts as a framerate cap too" );
@@ -24,25 +23,26 @@ extern "C" ADM_EXPORT IEngine* GetEngineAPI()
 // ============================
 bool Engine::Init( int argc, char** argv )
 {
-	int sdlResult = SDL_Init( SDL_INIT_VIDEO | SDL_INIT_EVENTS );
-	
 	// Timers and stuff
-	core.Init();
-
+	bool coreSuccess = core.Init();
+	
 	// Register static CVars et al
 	console.Setup( &core );
 	console.Init( argc, argv );
 	console.Print( "Initing the engine..." );
 	
 	// If this somehow happens, congrats
-	if ( sdlResult < 0 )
+	if ( !coreSuccess )
 	{
-		console.Error( adm::format( "SDL2 error: %s", SDL_GetError() ) );
-		Shutdown( "SDL2 failure" );
+		console.Error( adm::format( "Core error: %s", core.GetErrorMessage() ) );
+		Shutdown( "Core system failure" );
 		return false;
 	}
 
 	const adm::Dictionary& args = console.GetArguments();
+
+	// Let the core know if this instance is meant to be windowed or not
+	core.SetHeadless( args.GetBool( "-headless" ) );
 
 	// Load the engine config file
 	engineConfig = EngineConfig( "engineConfig.json" );
@@ -92,16 +92,15 @@ bool Engine::Init( int argc, char** argv )
 		return false;
 	}
 
-	// TODO: argument parsing & execution here
-	// Things like dedicated server switches, startup CVars etc.
-
-	// TODO: maybe move this to the rendering system
-	// TODO: custom window title pls
-	console.Print( "Creating a window..." );
-	window = SDL_CreateWindow( "BurekTech X", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
-		800, 600, SDL_WINDOW_RESIZABLE );
-
-	console.Print( "Window successfully created" );
+	if ( !core.IsHeadless() )
+	{
+		// Try creating a window
+		if ( !CreateWindow() )
+		{
+			Shutdown( "window failure" );
+			return false;
+		}
+	}
 
 	console.Print( adm::format( "Developer level: %i", core.DevLevel() ) );
 
@@ -128,8 +127,6 @@ void Engine::Shutdown( const char* why )
 	fileSystem.Shutdown();
 	console.Shutdown();
 	core.Shutdown();
-
-	SDL_Quit();
 
 	isRunning = false;
 }
@@ -212,9 +209,12 @@ void Engine::SetupAPIForExchange()
 	engineAPI.physics = nullptr;
 	engineAPI.pluginSystem = &pluginSystem;
 
-	engineAPI.audio = nullptr;
-	engineAPI.input = &input;
-	engineAPI.renderer = nullptr;
+	if ( !core.IsHeadless() )
+	{
+		engineAPI.audio = nullptr;
+		engineAPI.input = &input;
+		engineAPI.renderer = nullptr;
+	}
 }
 
 // ============================
@@ -273,5 +273,26 @@ bool Engine::InitialisePlugins()
 		}
 	}
 
+	return true;
+}
+
+// ============================
+// Engine::CreateWindow
+// ============================
+bool Engine::CreateWindow()
+{
+	WindowCreateDesc windowDesc{ fileSystem.GetCurrentGameMetadata().GetName().data(), 1024, 768};
+	windowDesc.resizeable = true;
+
+	console.Print( "Creating a window..." );
+	
+	mainWindow = core.CreateWindow( windowDesc );
+	if ( nullptr == mainWindow )
+	{
+		console.Error( adm::format( "   * Failed, with error message: '%s'", core.GetErrorMessage() ) );
+		return false;
+	}
+
+	console.Print( "Window successfully created" );
 	return true;
 }

@@ -1,6 +1,8 @@
 
 #pragma once
 
+class IConsole;
+
 using ConsoleCommandArgs = Vector<StringView>;
 using ConsoleCommandFn = bool( const ConsoleCommandArgs& args );
 

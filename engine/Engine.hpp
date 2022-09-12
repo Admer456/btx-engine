@@ -19,7 +19,8 @@ private:
 	void		SetupAPIForExchange();
 	// Once loaded, this will initialise all plugins
 	bool		InitialisePlugins();
-
+	// Creates the main application window
+	bool		CreateWindow();
 private:
 	Console		console;
 	Core		core;
@@ -33,5 +34,5 @@ private:
 	float		deltaTime{ 0.0f };
 	bool		isRunning{ false };
 
-	SDL_Window* window{ nullptr };
+	IWindow*	mainWindow{ nullptr };
 };

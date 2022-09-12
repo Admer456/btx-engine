@@ -1,6 +1,9 @@
 
 #pragma once
 
+struct WindowCreateDesc;
+class IWindow;
+
 class ICore
 {
 public:
@@ -16,11 +19,11 @@ public:
 	// Engine's delta time, from the start to the end of the last frame
 	virtual float	DeltaTime() const = 0;
 
-	// Is this a dedicated server?
-	// Usually, when this is true, the rendersystem, audiosystem
-	// and inputsystem won't be invoked
-	virtual bool	IsDedicatedServer() const = 0;
-	// Is this instance a server host? (can check for singleplayer with this)
-	// @returns false if just a client
-	virtual bool	IsHost() const = 0;
+	// Is this engine instance headless? (i.e. has no window, rendering & audio)
+	virtual bool	IsHeadless() const = 0;
+
+	// Windowing
+	virtual IWindow* CreateWindow( const WindowCreateDesc& desc ) = 0;
+	virtual void	DestroyWindow( IWindow* window ) = 0;
+	virtual Vector<IWindow*>& GetWindows() = 0;
 };

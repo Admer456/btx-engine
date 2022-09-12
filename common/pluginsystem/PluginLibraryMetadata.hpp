@@ -1,6 +1,8 @@
 
 #pragma once
 
+class IPlugin;
+
 class PluginMetadata final
 {
 public:

@@ -6,6 +6,9 @@ set( BTX_ENGINE_SOURCES
     console/Console.cpp
     core/Core.hpp
     core/Core.cpp
+    core/VideoFormat.hpp
+    core/Window.hpp
+    core/Window.cpp
     console/ConsoleBuffer.hpp
     console/ConsoleBuffer.cpp
     filesystem/FileSystem.hpp
