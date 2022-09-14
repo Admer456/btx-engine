@@ -68,6 +68,9 @@ public:
 
 	// Windowed functionality
 
+	// Raise and set focus
+	virtual void Raise() = 0;
+
 	virtual void Maximise() = 0;
 	virtual void Minimise() = 0;
 	// Todo: we need a Vec2 type real bad :(

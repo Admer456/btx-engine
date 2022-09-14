@@ -154,6 +154,14 @@ Vector<WindowVideoMode> Window::GetAvailableVideoModes() const
 }
 
 // ============================
+// Window::Raise
+// ============================
+void Window::Raise()
+{
+	SDL_RaiseWindow( window );
+}
+
+// ============================
 // Window::Maximise
 // ============================
 void Window::Maximise()

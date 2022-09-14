@@ -15,6 +15,8 @@ public:
 	WindowVideoMode GetVideoMode() const override;
 	Vector<WindowVideoMode> GetAvailableVideoModes() const override;
 
+	void Raise() override;
+
 	void Maximise() override;
 	void Minimise() override;
 	// Todo: we need a Vec2 type real bad :(
