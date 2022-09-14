@@ -188,10 +188,13 @@ void ConsoleListenerInteractive::Init( ICore* core, IConsole* console )
 void ConsoleListenerInteractive::Shutdown()
 {
 	stopListening = true;
-	screen.Post( Task( [&]
+	// If this window isn't raised, it won't respond to the SDL_QUIT event
+	// issued in Core::Shutdown. It may be better to do this inside Core itself
+	core->GetWindows()[0]->Raise();
+	screen.Post( [&]
 		{
 			screen.ExitLoopClosure()();
-		} ) );
+		} );
 	listenerThread.join();
 }
 
@@ -209,21 +212,27 @@ void ConsoleListenerInteractive::OnLog( const ConsoleMessage& message )
 void ConsoleListenerInteractive::OnUpdate()
 {
 	timeToUpdate -= core->DeltaTime();
-	if ( timeToUpdate > 0.0f )
+	if ( timeToUpdate > 0.0f || stopListening )
 	{
 		return;
 	}
 
 	screen.PostEvent( Event::Custom );
-
 	timeToUpdate = 0.1f;
 }
 
 // ============================
 // ConsoleListenerInteractive::ContainerEventHandler
+// 
+// Called on a separate thread
 // ============================
 bool ConsoleListenerInteractive::ContainerEventHandler( Event e )
 {
+	if ( stopListening )
+	{
+		return true;
+	}
+
 	if ( e == Event::ArrowUp || e == Event::PageUp || e == Event::ArrowDown ||
 		e == Event::PageDown || e == Event::Home || e == Event::End )
 	{
@@ -249,6 +258,7 @@ bool ConsoleListenerInteractive::ContainerEventHandler( Event e )
 	{
 		UpdateAutocomplete();
 		animationFrame++;
+		return true;
 	}
 
 	return false;

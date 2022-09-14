@@ -28,11 +28,18 @@ bool Core::Init()
 
 // ============================
 // Core::Shutdown
-// There's nothing to do here at the moment,
-// so shutting down the core would be the safest thing in this codebase
+// 
+// Close all windows
 // ============================
 void Core::Shutdown()
 {
+	// This will effectively close all windows
+	SDL_Event quitEvent;
+	quitEvent.type = SDL_QUIT;
+	quitEvent.quit.timestamp = SDL_GetTicks();
+	SDL_PushEvent( &quitEvent );
+	SDL_PumpEvents();
+
 	for ( auto*& window : windows )
 	{
 		DestroyWindow( window );

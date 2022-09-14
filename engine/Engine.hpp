@@ -36,6 +36,7 @@ private:
 
 	float		deltaTime{ 0.0f };
 	bool		isRunning{ false };
+	bool		shutdownRequested{ false };
 
 	IWindow*	mainWindow{ nullptr };
 };
