@@ -41,12 +41,12 @@ bool Console::Init( int argc, char** argv )
 			}
 			else if ( token == "interactive" && !alreadyDoingBasicOrInteractive )
 			{
-				AddListener( CreateListenerTUI() );
+				AddListener( CreateListenerInteractive() );
 				alreadyDoingBasicOrInteractive = true;
 			}
 			else if ( token == "fileout" && !alreadyAddedFileout )
 			{
-				AddListener( CreateListenerFile() );
+				AddListener( CreateListenerFileOut() );
 				alreadyAddedFileout = true;
 			}
 			else

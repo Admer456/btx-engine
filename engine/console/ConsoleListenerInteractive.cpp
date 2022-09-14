@@ -8,7 +8,7 @@
 // ============================
 // ConsoleListenerBasic
 // ============================
-class ConsoleListenerTUI final : public ConsoleListenerBase
+class ConsoleListenerInteractive final : public ConsoleListenerBase
 {
 public:
 	void Init( ICore* core, IConsole* console ) override;
@@ -26,7 +26,7 @@ public:
 // ============================
 // ConsoleListenerBasic::Init
 // ============================
-void ConsoleListenerTUI::Init( ICore* core, IConsole* console )
+void ConsoleListenerInteractive::Init( ICore* core, IConsole* console )
 {
 	ConsoleListenerBase::Init( core, console );
 }
@@ -34,7 +34,7 @@ void ConsoleListenerTUI::Init( ICore* core, IConsole* console )
 // ============================
 // ConsoleListenerBasic::Shutdown
 // ============================
-void ConsoleListenerTUI::Shutdown()
+void ConsoleListenerInteractive::Shutdown()
 {
 
 }
@@ -42,7 +42,7 @@ void ConsoleListenerTUI::Shutdown()
 // ============================
 // ConsoleListenerBasic:OnLog
 // ============================
-void ConsoleListenerTUI::OnLog( const ConsoleMessage& message )
+void ConsoleListenerInteractive::OnLog( const ConsoleMessage& message )
 {
 
 }
@@ -50,7 +50,7 @@ void ConsoleListenerTUI::OnLog( const ConsoleMessage& message )
 // ============================
 // ConsoleListenerBasic::OnUpdate
 // ============================
-void ConsoleListenerTUI::OnUpdate()
+void ConsoleListenerInteractive::OnUpdate()
 {
 
 }
@@ -58,7 +58,7 @@ void ConsoleListenerTUI::OnUpdate()
 // ============================
 // Console::CreateListenerTUI
 // ============================
-IConsoleListener* Console::CreateListenerTUI()
+IConsoleListener* Console::CreateListenerInteractive()
 {
-	return new ConsoleListenerTUI();
+	return new ConsoleListenerInteractive();
 }

@@ -45,12 +45,12 @@ private:
 	// ConsoleListenerBasic.cpp
 	// Non-interactive terminal output
 	static IConsoleListener* CreateListenerBasic();
-	// ConsoleListenerTUI.cpp
+	// ConsoleListenerInteractive.cpp
 	// Interactive terminal UI console
-	static IConsoleListener* CreateListenerTUI();
-	// ConsoleListenerFile.cpp
+	static IConsoleListener* CreateListenerInteractive();
+	// ConsoleListenerFileOut.cpp
 	// File logger for this console
-	static IConsoleListener* CreateListenerFile();
+	static IConsoleListener* CreateListenerFileOut();
 
 private:
 	Vector<IConsoleListener*> consoleListeners;
