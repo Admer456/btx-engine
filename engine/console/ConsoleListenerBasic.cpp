@@ -85,15 +85,13 @@ const char* ConsoleListenerBasic::GenerateTimeString( float time )
 	// mmm:ss.ssss
 	static char buffer[16];
 
-	int iTime = time;
-	int seconds = time;
-	int minutes = seconds / 60;
+	const int iTime = time;
+	const int seconds = int( time ) % 60;
+	const int minutes = iTime / 60;
 
-	seconds = seconds % 60;
+	const float flSeconds = seconds + (time - iTime);
 
-	float flSeconds = seconds + (time - iTime);
-
-	sprintf( buffer, "%03i:%06.3f", minutes, flSeconds );
+	sprintf( buffer, "%03i:%06.3f ", minutes, flSeconds );
 	return buffer;
 }
 
