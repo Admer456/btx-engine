@@ -3,7 +3,7 @@
 
 class IConsole;
 
-using ConsoleCommandArgs = Vector<StringView>;
+using ConsoleCommandArgs = Vector<String>;
 using ConsoleCommandFn = bool( const ConsoleCommandArgs& args );
 
 struct CVarFlags
@@ -60,7 +60,7 @@ public: // Construction site
 	void		SetString( StringView value );
 
 protected:
-	bool		Execute( const Vector<StringView>& args, IConsole* console );
+	bool		Execute( const ConsoleCommandArgs& args, IConsole* console );
 
 protected:
 	bool		isCommand{ false };

@@ -81,7 +81,7 @@ void CVarBase::SetString( StringView value )
 	varValue = value;
 }
 
-bool CVarBase::Execute( const Vector<StringView>& args, IConsole* console )
+bool CVarBase::Execute( const ConsoleCommandArgs& args, IConsole* console )
 {
 	if ( isCommand && nullptr != conCommand )
 	{
@@ -92,10 +92,10 @@ bool CVarBase::Execute( const Vector<StringView>& args, IConsole* console )
 	if ( args.empty() )
 	{
 		console->Print( adm::format( "CVar '%s' info:", varName.c_str() ) );
-		console->Print( adm::format( " L__Value: '%s'", varValue.c_str() ) );
+		console->Print( adm::format( "  * Value: '%s'", varValue.c_str() ) );
 		if ( !varDescription.empty() )
 		{
-			console->Print( adm::format( " L__Description: '%s'", varDescription.c_str() ) );
+			console->Print( adm::format( "  * Description: '%s'", varDescription.c_str() ) );
 		}
 		return true;
 	}

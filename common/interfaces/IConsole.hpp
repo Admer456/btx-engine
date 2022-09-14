@@ -34,9 +34,13 @@ public:
 	// Executes a console command
 	// @param command: The command or CVar name
 	// @param args: A list of arguments
-	virtual bool	Execute( StringView command, const Vector<StringView>& args ) = 0;
+	virtual bool	Execute( StringView command, const ConsoleCommandArgs& args ) = 0;
 
-	virtual CVarBase* Find( StringView name ) = 0;
+	// Finds a CVar by name
+	virtual CVarBase* Find( StringView name ) const = 0;
+
+	// @returns A list of CVars
+	virtual Vector<CVarBase*> Search( StringView nameFragment ) const = 0;
 
 	virtual const adm::Dictionary& GetArguments() const = 0;
 };

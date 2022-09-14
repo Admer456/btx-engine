@@ -162,7 +162,10 @@ bool Engine::RunFrame()
 		{
 			plugin->Update();
 		} );
-	
+
+	// Update console listeners
+	console.Update();
+
 	// Normally we'd have more updating stuff here, so syncTimeElapsed would be significantly larger
 	// But, if it works, it works
 	const int syncTime = (1000.0f / engine_tickRate.GetFloat()) * 1000.0f;

@@ -11,6 +11,9 @@ public:
 	bool		Init( int argc, char** argv ) override;
 	void		Shutdown() override;
 
+	// Called by the engine to update the listeners
+	void		Update();
+
 	void		AddListener( IConsoleListener* listener ) override;
 
 	void		Print( const char* string ) override;
@@ -22,9 +25,10 @@ public:
 	void		Unregister( CVarBase* cvar ) override;
 
 	bool		Execute( StringView command, StringView args ) override;
-	bool		Execute( StringView command, const Vector<StringView>& args ) override;
+	bool		Execute( StringView command, const ConsoleCommandArgs& args ) override;
 
-	CVarBase*	Find( StringView name ) override;
+	CVarBase*	Find( StringView name ) const override;
+	Vector<CVarBase*> Search( StringView nameFragment ) const override;
 
 	const adm::Dictionary& GetArguments() const override;
 

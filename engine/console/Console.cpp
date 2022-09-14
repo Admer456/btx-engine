@@ -76,10 +76,22 @@ void Console::Shutdown()
 
 	for ( auto*& listener : consoleListeners )
 	{
+		listener->Shutdown();
 		delete listener;
 		listener = nullptr;
 	}
 	consoleListeners.clear();
+}
+
+// ============================
+// Console::Update
+// ============================
+void Console::Update()
+{
+	for ( auto* listener : consoleListeners )
+	{
+		listener->OnUpdate();
+	}
 }
 
 // ============================
@@ -182,7 +194,7 @@ bool Console::Execute( StringView command, StringView args )
 
 	// Simple parsing
 	ConsoleCommandArgs commandArgs;
-	while ( !lex.IsEndOfFile() )
+	do
 	{
 		String token = lex.Next();
 		if ( token.empty() )
@@ -190,8 +202,8 @@ bool Console::Execute( StringView command, StringView args )
 			break;
 		}
 
-		commandArgs.push_back( lex.Next() );
-	}
+		commandArgs.push_back( token );
+	} while ( !lex.IsEndOfFile() );
 
 	CVarBase* cvar = Find( command );
 	if ( nullptr == cvar )
@@ -206,7 +218,7 @@ bool Console::Execute( StringView command, StringView args )
 // ============================
 // Console::Execute
 // ============================
-bool Console::Execute( StringView command, const Vector<StringView>& args )
+bool Console::Execute( StringView command, const ConsoleCommandArgs& args )
 {
 	CVarBase* cvar = Find( command );
 	if ( nullptr == cvar )
@@ -221,7 +233,7 @@ bool Console::Execute( StringView command, const Vector<StringView>& args )
 // ============================
 // Console::Find
 // ============================
-CVarBase* Console::Find( StringView name )
+CVarBase* Console::Find( StringView name ) const
 {
 	auto result = cvarList.find( name );
 	if ( result == cvarList.end() )
@@ -230,6 +242,22 @@ CVarBase* Console::Find( StringView name )
 	}
 
 	return result->second;
+}
+
+// ============================
+// Console::Search
+// ============================
+Vector<CVarBase*> Console::Search( StringView nameFragment ) const
+{
+	Vector<CVarBase*> cvars{};
+	for ( auto& cvarPair : cvarList )
+	{
+		if ( cvarPair.first.find( nameFragment ) != String::npos )
+		{
+			cvars.push_back( cvarPair.second );
+		}
+	}
+	return cvars;
 }
 
 // ============================
