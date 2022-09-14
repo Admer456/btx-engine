@@ -162,12 +162,15 @@ void Console::Register( CVarBase* cvar )
 	}
 
 	// Can't have duplicates
-	if ( Find( cvar->varName ) )
+	for ( auto* internalCvar : cvarList )
 	{
-		return;
+		if ( internalCvar == cvar )
+		{
+			return;
+		}
 	}
 
-	cvarList[cvar->varName] = cvar;
+	cvarList.push_back( cvar );
 }
 
 // ============================
@@ -175,13 +178,14 @@ void Console::Register( CVarBase* cvar )
 // ============================
 void Console::Unregister( CVarBase* cvar )
 {
-	// Can't have duplicates
-	if ( !Find( cvar->varName ) )
+	for ( auto it = cvarList.begin(); it != cvarList.end(); it++ )
 	{
-		return;
+		if ( *it == cvar )
+		{
+			cvarList.erase( it );
+			return;
+		}
 	}
-
-	cvarList.erase( cvar->varName );
 }
 
 // ============================
@@ -205,7 +209,7 @@ bool Console::Execute( StringView command, StringView args )
 		commandArgs.push_back( token );
 	} while ( !lex.IsEndOfFile() );
 
-	CVarBase* cvar = Find( command );
+	CVarBase* cvar = const_cast<CVarBase*>( Find( command ) );
 	if ( nullptr == cvar )
 	{
 		Warning( adm::format( "Cannot find console command/variable '%s'", command.data() ) );
@@ -220,7 +224,7 @@ bool Console::Execute( StringView command, StringView args )
 // ============================
 bool Console::Execute( StringView command, const ConsoleCommandArgs& args )
 {
-	CVarBase* cvar = Find( command );
+	CVarBase* cvar = const_cast<CVarBase*>( Find( command ) );
 	if ( nullptr == cvar )
 	{
 		Warning( adm::format( "Cannot find console command/variable '%s'", command.data() ) );
@@ -233,28 +237,30 @@ bool Console::Execute( StringView command, const ConsoleCommandArgs& args )
 // ============================
 // Console::Find
 // ============================
-CVarBase* Console::Find( StringView name ) const
+const CVarBase* Console::Find( StringView name ) const
 {
-	auto result = cvarList.find( name );
-	if ( result == cvarList.end() )
+	for ( const auto* cvar : cvarList )
 	{
-		return nullptr;
+		if ( cvar->GetName() == name )
+		{
+			return cvar;
+		}
 	}
 
-	return result->second;
+	return nullptr;
 }
 
 // ============================
 // Console::Search
 // ============================
-Vector<CVarBase*> Console::Search( StringView nameFragment ) const
+Vector<const CVarBase*> Console::Search( StringView nameFragment ) const
 {
-	Vector<CVarBase*> cvars{};
-	for ( auto& cvarPair : cvarList )
+	Vector<const CVarBase*> cvars{};
+	for ( const auto* cvar : cvarList )
 	{
-		if ( cvarPair.first.find( nameFragment ) != String::npos )
+		if ( cvar->GetName().find(nameFragment) != String::npos )
 		{
-			cvars.push_back( cvarPair.second );
+			cvars.push_back( cvar );
 		}
 	}
 	return cvars;

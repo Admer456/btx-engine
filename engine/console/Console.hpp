@@ -3,7 +3,7 @@
 
 class IConsole;
 
-using CVarMap = Map<StringView, CVarBase*>;
+using CVarList = Vector<CVarBase*>;
 
 class Console final : public IConsole
 {
@@ -27,8 +27,8 @@ public:
 	bool		Execute( StringView command, StringView args ) override;
 	bool		Execute( StringView command, const ConsoleCommandArgs& args ) override;
 
-	CVarBase*	Find( StringView name ) const override;
-	Vector<CVarBase*> Search( StringView nameFragment ) const override;
+	const CVarBase* Find( StringView name ) const override;
+	Vector<const CVarBase*> Search( StringView nameFragment ) const override;
 
 	const adm::Dictionary& GetArguments() const override;
 
@@ -58,7 +58,7 @@ private:
 
 private:
 	Vector<IConsoleListener*> consoleListeners;
-	CVarMap		cvarList;
+	CVarList	cvarList;
 	Dictionary	arguments;
 	ICore*		core{ nullptr };
 };

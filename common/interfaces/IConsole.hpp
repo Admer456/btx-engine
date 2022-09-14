@@ -37,10 +37,10 @@ public:
 	virtual bool	Execute( StringView command, const ConsoleCommandArgs& args ) = 0;
 
 	// Finds a CVar by name
-	virtual CVarBase* Find( StringView name ) const = 0;
+	virtual const CVarBase* Find( StringView name ) const = 0;
 
 	// @returns A list of CVars
-	virtual Vector<CVarBase*> Search( StringView nameFragment ) const = 0;
+	virtual Vector<const CVarBase*> Search( StringView nameFragment ) const = 0;
 
 	virtual const adm::Dictionary& GetArguments() const = 0;
 };
