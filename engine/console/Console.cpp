@@ -38,6 +38,11 @@ bool Console::Init( int argc, char** argv )
 				AddListener( CreateListenerBasic() );
 				alreadyDoingBasicOrInteractive = true;
 			}
+			else if ( token == "interactive" && !alreadyDoingBasicOrInteractive )
+			{
+				AddListener( CreateListenerTUI() );
+				alreadyDoingBasicOrInteractive = true;
+			}
 			else
 			{
 				Warning( adm::format( "  * unknown listener option '%s'", token.c_str() ) );
