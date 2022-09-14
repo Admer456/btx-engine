@@ -159,8 +159,8 @@ void ConsoleListenerInteractive::Init( ICore* core, IConsole* console )
 								// Draw the autocomplete window
 								autocompleteElement | size( WIDTH, LESS_THAN, 40 ) | size( HEIGHT, LESS_THAN, 60 )
 							} ),
-							// Move the autocomplete window 1 character to the left
-							filler() | size( Direction::WIDTH, Constraint::EQUAL, 1 )
+							// Move the autocomplete window a few characters to the left
+							filler() | size( Direction::WIDTH, Constraint::EQUAL, 8 )
 						} )
 					} ) | flex,
 
@@ -289,11 +289,81 @@ void ConsoleListenerInteractive::UpdateAutocomplete()
 	auto cvars = console->Search( GetCommandName() );
 	if ( cvars.empty() )
 	{
-		autocompleteElement = window( text( "Autocomplete" ), text( "none" ) ) | color( Color::Yellow );
+		autocompleteElement = window( 
+			text( "Autocomplete" ), 
+			text( "none" ) | center ) | color( Color::Yellow )
+			| size( HEIGHT, GREATER_THAN, 8 )
+			| size( WIDTH, GREATER_THAN, 16 );
 		return;
 	}
 
-	autocompleteElement = window( text( "Autocomplete" ), text( "Unimplemented" ) );
+	// The autocomplete view is separated into variables and commands
+	Element windowContent{};
+	Element variableBox = text( "" );
+	Element commandBox = text( "" );
+	Elements variables{};
+	Elements commands{};
+	for ( const auto* cvar : cvars )
+	{
+		if ( cvar->IsCommand() )
+		{
+			commands.emplace_back( text( String( cvar->GetName() ) ) );
+			continue;
+		}
+
+		constexpr int ValueWidth = 6;
+
+		String cvarValue = String( cvar->GetString() );
+		if ( cvarValue.size() > ValueWidth )
+		{
+			cvarValue = cvarValue.substr( 0, ValueWidth );
+			cvarValue[ValueWidth-1] = '.';
+			cvarValue[ValueWidth-2] = '.';
+			cvarValue[ValueWidth-3] = '.';
+		}
+
+		const bool readOnly = cvar->GetFlags() & CVarFlags::ReadOnly;
+		Element vtext = hbox( {
+				text( String( cvar->GetName() ) ),
+				text( readOnly ? " (read-only)" : "" ),
+				filler() | xflex_shrink,
+				text( ": " + String( cvar->GetString() ) ) | size( WIDTH, EQUAL, ValueWidth + 2 ),
+			} );
+
+		variables.push_back( std::move( vtext ) );
+	}
+
+	const bool hasVariables = !variables.empty();
+	const bool hasCommands = !commands.empty();
+
+	if ( hasVariables )
+	{
+		variableBox = vbox(
+			{
+				text( "Variables" ) | bold,
+				vbox( std::move( variables ) )
+			} ) | color( Color::Orange1 );
+	}
+	if ( hasCommands )
+	{
+		commandBox = vbox(
+			{
+				text( "Commands" ) | bold,
+				vbox( std::move( commands ) )
+			} ) | color( Color::BlueLight );
+	}
+
+	windowContent = vbox( 
+		{
+			std::move( variableBox ),
+			separatorLight(),
+			std::move( commandBox )
+		} );
+
+	autocompleteElement = window( text( "Autocomplete" ) | hcenter, std::move( windowContent ) )
+		| color( Color::Yellow )
+		| size( HEIGHT, GREATER_THAN, 8 )
+		| size( WIDTH, GREATER_THAN, 16 );
 }
 
 // ============================
