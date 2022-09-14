@@ -13,6 +13,21 @@ CVarBase::CVarBase( const char* name, ConsoleCommandFn* function, const char* de
 
 }
 
+bool CVarBase::IsCommand() const
+{
+	return isCommand && nullptr != conCommand;
+}
+
+StringView CVarBase::GetName() const
+{
+	return varName;
+}
+
+uint16_t CVarBase::GetFlags() const
+{
+	return varFlags;
+}
+
 int CVarBase::GetInt() const
 {
 	if ( varValue.empty() )

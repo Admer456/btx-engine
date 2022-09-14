@@ -45,7 +45,12 @@ public: // Construction site
 	// here. This does nothing in the game library tho'
 	friend class Console;
 
+	// @returns Whether or not this is a command
+	bool		IsCommand() const;
+
 	// Getters
+	StringView	GetName() const;
+	uint16_t	GetFlags() const;
 	int			GetInt() const;
 	float		GetFloat() const;
 	bool		GetBool() const;
