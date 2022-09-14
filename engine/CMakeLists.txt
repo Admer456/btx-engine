@@ -4,13 +4,12 @@ set( BTX_ENGINE_SOURCES
     ${BTX_COMMON_SOURCES}
     console/Console.hpp
     console/Console.cpp
+    console/ConsoleListenerBasic.cpp
     core/Core.hpp
     core/Core.cpp
     core/VideoFormat.hpp
     core/Window.hpp
     core/Window.cpp
-    console/ConsoleBuffer.hpp
-    console/ConsoleBuffer.cpp
     filesystem/FileSystem.hpp
     filesystem/FileSystem.cpp
     input/AxisHandler.hpp

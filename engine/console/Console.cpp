@@ -2,8 +2,6 @@
 #include "common/Precompiled.hpp"
 #include "Console.hpp"
 
-#include <iostream>
-
 // ============================
 // Console::Init
 // Initialises engine CVars, game CVars are initialised separately
@@ -15,9 +13,42 @@ bool Console::Init( int argc, char** argv )
 	EngineConsole = this;
 	CVar::RegisterAll();
 
-	buffer.Init();
-
 	cvarList.reserve( 1024U );
+
+	Print( "Scanning for console listeners..." );
+	String consoleListenerArguments = arguments.GetCString( "-console_listener", "" );
+
+	// The incoming string is expected to be in the format of alpha,beta,gamma
+	// So here we just split it up into tokens and add listeners based on that.
+	if ( !consoleListenerArguments.empty() )
+	{
+		// Some listeners are incompatible with each other as they will
+		// fight for the console, such as Basic and TUI
+		bool alreadyDoingBasicOrInteractive = false;
+
+		Lexer lex( consoleListenerArguments );
+		lex.SetDelimiters( "," );
+
+		while ( !lex.IsEndOfFile() )
+		{
+			String token = lex.Next();
+
+			if ( token == "basic" && !alreadyDoingBasicOrInteractive )
+			{
+				AddListener( CreateListenerBasic() );
+				alreadyDoingBasicOrInteractive = true;
+			}
+			else
+			{
+				Warning( adm::format( "  * unknown listener option '%s'", token.c_str() ) );
+			}
+		}
+	}
+	// By default, only the basic listener will be there
+	else
+	{
+		AddListener( CreateListenerBasic() );
+	}
 
 	return true;
 }
@@ -31,6 +62,30 @@ void Console::Shutdown()
 	CVar::UnregisterAll();
 	cvarList.clear();
 	arguments.Clear();
+
+	for ( auto*& listener : consoleListeners )
+	{
+		delete listener;
+		listener = nullptr;
+	}
+	consoleListeners.clear();
+}
+
+// ============================
+// Console::AddListener
+// ============================
+void Console::AddListener( IConsoleListener* listener )
+{
+	if ( nullptr == listener )
+	{
+		Warning( "Console::AddListener: listener was null" );
+		return;
+	}
+
+	listener->Init( core, this );
+	consoleListeners.push_back( listener );
+
+	Print( adm::format( "%sConsole: added listener '%s'", PrintGreen, listener->GetName() ) );
 }
 
 // ============================
@@ -38,14 +93,12 @@ void Console::Shutdown()
 // ============================
 void Console::Print( const char* string )
 {
-	char* timeString = GenerateTimeString();
+	ConsoleMessage message;
+	message.text = string;
+	message.timeSubmitted = core->Time();
+	message.date = DateTime::Now();
 
-	// This is for the dedicated server
-	Log( string, timeString );
-
-	// Console character buffer for clientside
-	// character printing
-	buffer.Write( string, core->Time() );
+	Log( message );
 }
 
 // ============================
@@ -217,31 +270,15 @@ void Console::ParseArguments( int argc, char** argv )
 
 // ============================
 // Console::LogLine
-// Filters out $rgb colours in a string
-// and prints/logs it that way
 // ============================
-void Console::LogLine( const char* string, const char* timeString )
+void Console::LogLine( const ConsoleMessage& message )
 {
-	char buffer[256];
-	size_t position = 0U;
-	size_t max = std::min( 256ULL, std::strlen( string ) );
-
-	for ( size_t i = 0U; i < max; i++ )
+	// The string still contains the colour codes,
+	// it is up to the listener to interpret those
+	for ( auto*& listener : consoleListeners )
 	{
-		// Initiate the skipping
-		if ( string[i] == PrintColorIdentifier )
-		{
-			i += 3; // skip the $rgb sequence
-			continue; // does i += 1
-		}
-		// Store the character
-		buffer[position] = string[i];
-		position++;
+		listener->OnLog( message );
 	}
-
-	buffer[position] = '\0';
-
-	std::cout << timeString << " | " << buffer << std::endl;
 }
 
 // ============================
@@ -249,35 +286,28 @@ void Console::LogLine( const char* string, const char* timeString )
 // Dissects a string into lines and prints
 // them separately with timestamps
 // ============================
-void Console::Log( const char* string, const char* timeString )
+void Console::Log( const ConsoleMessage& message )
 {
+	const char* string = message.text.c_str();
+	bool hasNewline = message.text.find( '\n' ) != String::npos;
+
+	// Save us the trouble
+	if ( !hasNewline )
+	{
+		return LogLine( message );
+	}
+
 	size_t start = 0;
 	size_t end = 0;
 
 	char buffer[256];
 	size_t max = std::min( 256ULL, std::strlen( string ) );
 
-	// TODO: turn this into adm::HasNewline
-	bool hasNewline = false;
-	for ( size_t i = 0U; i < max; i++ )
-	{
-		if ( string[i] == '\n' )
-		{
-			hasNewline = true;
-			break;
-		}
-	}
-
-	// Save us the trouble
-	if ( !hasNewline )
-	{
-		return LogLine( string, timeString );
-	}
-
 	// Divide the string by newlines, so for example:
 	// abc\ndef becomes:
 	// abc
 	// def
+	ConsoleMessage lineMessage = message;
 	for ( size_t i = 0U; i < max; i++ )
 	{
 		if ( string[i] == '\n' && !start && i < max-1 )
@@ -304,29 +334,8 @@ void Console::Log( const char* string, const char* timeString )
 
 			start = 0;
 
-			// Strip colour data here
-			LogLine( buffer, timeString );
+			lineMessage.text = buffer;
+			LogLine( lineMessage );
 		}
 	}
-}
-
-// ============================
-// Console::GenerateTimeString
-// ============================
-char* Console::GenerateTimeString()
-{
-	// mmm:ss.ssss
-	static char buffer[16];
-	const float time = core->Time();
-
-	int iTime = time;
-	int seconds = time;
-	int minutes = seconds / 60;
-
-	seconds = seconds % 60;
-
-	float flSeconds = seconds + (time - iTime);
-
-	sprintf( buffer, "%03i:%06.3f", minutes, flSeconds );
-	return buffer;
 }

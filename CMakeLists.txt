@@ -18,6 +18,7 @@ set( BTX_ROOT ${CMAKE_CURRENT_SOURCE_DIR} )
 set( BTX_COMMON_SOURCES 
     ${BTX_ROOT}/common/interfaces/ICore.hpp
     ${BTX_ROOT}/common/interfaces/IConsole.hpp
+    ${BTX_ROOT}/common/interfaces/IConsoleListener.hpp
     ${BTX_ROOT}/common/interfaces/IEngine.hpp
     ${BTX_ROOT}/common/interfaces/IFileSystem.hpp
     ${BTX_ROOT}/common/interfaces/IInput.hpp

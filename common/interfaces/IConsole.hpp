@@ -2,12 +2,16 @@
 #pragma once
 
 class CVarBase;
+class IConsoleListener;
 
 class IConsole
 {
 public:
 	virtual bool	Init( int argc, char** argv ) = 0;
 	virtual void	Shutdown() = 0;
+
+	// Look at IConsoleListener.hpp
+	virtual void	AddListener( IConsoleListener* listener ) = 0;
 
 	// Use adm::format() if you wanna format it
 	virtual void	Print( const char* string ) = 0;

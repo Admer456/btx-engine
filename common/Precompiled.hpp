@@ -32,6 +32,7 @@ inline const String NullString = "";
 
 #include "common/interfaces/ICore.hpp"
 #include "common/interfaces/IConsole.hpp"
+#include "common/interfaces/IConsoleListener.hpp"
 #include "common/interfaces/IEngine.hpp"
 #include "common/interfaces/IFileSystem.hpp"
 #include "common/interfaces/IInput.hpp"

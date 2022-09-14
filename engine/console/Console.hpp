@@ -3,8 +3,6 @@
 
 class IConsole;
 
-#include "ConsoleBuffer.hpp"
-
 using CVarMap = Map<StringView, CVarBase*>;
 
 class Console final : public IConsole
@@ -12,6 +10,8 @@ class Console final : public IConsole
 public:
 	bool		Init( int argc, char** argv ) override;
 	void		Shutdown() override;
+
+	void		AddListener( IConsoleListener* listener ) override;
 
 	void		Print( const char* string ) override;
 	void		DPrint( const char* string, int developerLevel ) override;
@@ -39,12 +39,15 @@ public:
 private:
 	void		ParseArguments( int argc, char** argv );
 
-	void		LogLine( const char* string, const char* timeString );
-	void		Log( const char* string, const char* timeString );
-	char*		GenerateTimeString();
+	void		LogLine( const ConsoleMessage& message );
+	void		Log( const ConsoleMessage& message );
+
+	// ConsoleListenerBasic.cpp
+	// Non-interactive terminal output
+	static IConsoleListener* CreateListenerBasic();
 
 private:
-	ConsoleBuffer buffer;
+	Vector<IConsoleListener*> consoleListeners;
 	CVarMap		cvarList;
 	Dictionary	arguments;
 	ICore*		core{ nullptr };
