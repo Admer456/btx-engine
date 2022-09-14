@@ -48,7 +48,7 @@ void ConsoleListenerBasic::OnLog( const ConsoleMessage& message )
 	const char* string = message.text.c_str();
 	char buffer[256];
 	size_t position = 0U;
-	size_t max = std::min( 256ULL, std::strlen( string ) );
+	size_t max = std::min( 256ULL, message.text.size() );
 
 	// Too lazy to implement colours at the moment
 	for ( size_t i = 0U; i < max; i++ )
@@ -56,7 +56,7 @@ void ConsoleListenerBasic::OnLog( const ConsoleMessage& message )
 		// Initiate the skipping
 		if ( string[i] == PrintColorIdentifier )
 		{
-			i += 1; // skip the $-colour sequence
+			i++; // skip the $-colour sequence
 			continue; // does i += 1
 		}
 		// Store the character
