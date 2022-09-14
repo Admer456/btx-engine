@@ -1,7 +1,9 @@
 [submodule "extern/adm-utils"]
 	path = extern/adm-utils
 	url = https://github.com/Admer456/adm-utils.git
+	shallow = 1
 [submodule "extern/FTXUI"]
 	path = extern/FTXUI
 	url = https://github.com/ArthurSonzogni/FTXUI.git
 	branch = master
+	shallow = 1
