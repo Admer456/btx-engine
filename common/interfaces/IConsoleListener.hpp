@@ -7,20 +7,26 @@ class IConsole;
 constexpr size_t MaxConsoleHistoryLines = 2048U;
 
 constexpr const char PrintColorIdentifier = '$';
-constexpr const char* PrintRed		= "$d44";
-constexpr const char* PrintOrange	= "$e73";
-constexpr const char* PrintYellow	= "$dc2";
-constexpr const char* PrintGreen	= "$6d5";
-constexpr const char* PrintBlue		= "$4ae";
-constexpr const char* PrintPink		= "$e8d";
-constexpr const char* PrintWhite	= "$eee";
-constexpr const char* PrintGrey		= "$aaa";
+constexpr const char* PrintRed		= "$r";
+constexpr const char* PrintOrange	= "$o";
+constexpr const char* PrintYellow	= "$y";
+constexpr const char* PrintGreen	= "$g";
+constexpr const char* PrintBlue		= "$b";
+constexpr const char* PrintPink		= "$p";
+constexpr const char* PrintWhite	= "$w";
+constexpr const char* PrintGrey		= "$g";
 
 struct ConsoleMessage
 {
-	String 		text;
-	float 		timeSubmitted;
-	DateTime	date;
+	ConsoleMessage() = default;
+	ConsoleMessage( const ConsoleMessage& message ) = default;
+	ConsoleMessage( ConsoleMessage&& message ) = default;
+	ConsoleMessage& operator=( const ConsoleMessage& message ) = default;
+	ConsoleMessage& operator=( ConsoleMessage&& message ) = default;
+
+	String 		text{};
+	float 		timeSubmitted{};
+	DateTime	date{};
 };
 
 // The idea behind console listeners is that they react to console events but also

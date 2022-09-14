@@ -62,8 +62,20 @@ endif()
 
 ## AdmUtils
 add_subdirectory( extern/adm-utils )
-set_target_properties( AdmUtils PROPERTIES
-        FOLDER "Libs" )
+set_target_properties( AdmUtils PROPERTIES FOLDER "Libs" )
+
+## FTXUI
+option( FTXUI_BUILD_TESTS OFF )
+option( FTXUI_BUILD_EXAMPLES OFF )
+option( FTXUI_BUILD_DOCS OFF )
+option( FTXUI_ENABLE_INSTALL OFF )
+
+## The engine really only needs to link against 'component' here,
+## so we don't need to link against all 3 individually
+add_subdirectory( extern/FTXUI )
+set_target_properties( screen PROPERTIES FOLDER "Libs/FTXUI" )
+set_target_properties( dom PROPERTIES FOLDER "Libs/FTXUI" )
+set_target_properties( component PROPERTIES FOLDER "Libs/FTXUI" )
 
 ## Add the engine
 add_subdirectory( engine )

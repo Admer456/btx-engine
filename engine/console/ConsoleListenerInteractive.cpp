@@ -2,11 +2,16 @@
 #include "Precompiled.hpp"
 #include "Console.hpp"
 
-// Currently not implemented
-// TODO: add FTXUI as a dependency and use it here
+#include <ftxui/component/component.hpp>
+#include <ftxui/component/component_base.hpp>
+#include <ftxui/component/screen_interactive.hpp>
+#include <ftxui/dom/elements.hpp>
+#include "ftxui/Scroller.hpp"
+
+using namespace ftxui;
 
 // ============================
-// ConsoleListenerBasic
+// ConsoleListenerInteractive
 // ============================
 class ConsoleListenerInteractive final : public ConsoleListenerBase
 {
@@ -19,40 +24,363 @@ public:
 
 	const char* GetName() override
 	{
-		return "BurekTech X CLI";
+		return "Interactive CLI";
 	}
+
+private:
+	// Handles CLI events i.e. input and scrolling
+	bool ContainerEventHandler( Event e );
+	void ConsumeCommand();
+	void UpdateAutocomplete();
+
+	bool IsInputValid() const;
+	String GetCommandName() const;
+
+	static const char* GenerateTimeString( const ConsoleMessage& message );
+	static Element ConsoleMessageToFtxElement( const ConsoleMessage& message );
+
+private:
+	bool stopListening{ false };
+	Vector<ConsoleMessage> messages{};
+
+	// TODO: replace std::thread stuff with a job system later on
+	std::thread listenerThread;
+	float timeToUpdate{ 0.1f };
+	// The user has entered a new command, jump to bottom to see the output
+	bool jumpToBottom{ false };
+
+	// User input string
+	String userInput{ "" };
+	// Element that contains the autocomplete window
+	// Is updated periodically instead of every frame
+	Element autocompleteElement = text( "" );
+
+	// The screen object where everything happens
+	ScreenInteractive screen = ScreenInteractive::Fullscreen();
+	// Frame of the little animation in the top-right corner
+	int animationFrame{ 0 };
+	// Title bar on the top
+	Component consoleTitleComponent{};
+	// Text input bar on the bottom
+	Component inputFieldComponent{};
+	// Displays the actual ConsoleMessages
+	Component messageFrameComponent{};
+	// Parent of messageFrameComponent
+	Component messageScrollerComponent{};
+	// Logical container for inputFieldComponent and messageScrollerComponent
+	Component containerComponent{};
+	// Parent of all the above
+	Component mainComponent{};
 };
 
+/*
+ Rough sketch of the console:
+ ----------------------------------------
+ | v0.1.0 |    BurekTech X CLI    | |=| |
+ |--------------------------------------|
+ | 000:01:059 | Message 1               |
+ | 000:01:060 | Message 2               |
+ | 000:01:061 | Message 3               |
+ |                                      |
+ |                                      |
+ |                                      |
+ |                                      |
+ |                                      |
+ |                                      |
+ |                                      |
+ |--------------------------------------|
+ | > [enter command here ]              |
+ ----------------------------------------
+*/
+
 // ============================
-// ConsoleListenerBasic::Init
+// ConsoleListenerInteractive::Init
 // ============================
 void ConsoleListenerInteractive::Init( ICore* core, IConsole* console )
 {
 	ConsoleListenerBase::Init( core, console );
+
+	consoleTitleComponent = Renderer( [&]
+		{
+			return hbox(
+				{
+					text( "v0.1.0" ),
+					separatorLight(),
+					text( "BurekTech X Interactive Console" ) | center | flex,
+					separatorLight(),
+					spinner( 18, animationFrame )
+				} );
+		} );
+
+	inputFieldComponent = Input( &userInput, "[enter your command here]" );
+
+	messageFrameComponent = Renderer( [&]
+		{
+			Elements consoleMessageElements{};
+			for ( const auto& message : messages )
+			{
+				consoleMessageElements.emplace_back( ConsoleMessageToFtxElement( message ) );
+			}
+			return vbox( std::move( consoleMessageElements ) );
+		} );
+	messageScrollerComponent = Scroller( messageFrameComponent );
+
+	containerComponent = Container::Vertical( { messageScrollerComponent, inputFieldComponent } );
+	containerComponent |= CatchEvent( [&]( Event e ) 
+		{ 
+			return ContainerEventHandler( e );
+		} );
+
+	mainComponent = Renderer( containerComponent, [&]
+		{
+			return vbox(
+				{
+					consoleTitleComponent->Render(),
+
+					separatorLight(),
+					// A dbox allows us to draw components *over* each other
+					// What is being rendered here is a vertical stack, and then
+					// we render a horizontal stack over it, which is used to position the autocomplete window
+					dbox(
+					{
+						vbox( 
+						{
+							messageScrollerComponent->Render(),
+							filler()
+						} ),
+						hbox( 
+						{
+							// Move the autocomplete window all the way to the left
+							filler(),
+							vbox( 
+							{
+								// Move the autocomplete window to the bottom
+								filler() | yflex_shrink,
+								// Draw the autocomplete window
+								autocompleteElement | size( WIDTH, LESS_THAN, 40 ) | size( HEIGHT, LESS_THAN, 60 )
+							} ),
+							// Move the autocomplete window 1 character to the left
+							filler() | size( Direction::WIDTH, Constraint::EQUAL, 1 )
+						} )
+					} ) | flex,
+
+					separatorLight(),
+					// Draw the input bar
+					hbox(
+					{
+						text( "> " ),
+						inputFieldComponent->Render() | focus | size( HEIGHT, EQUAL, 1 )
+					})
+				} ) | borderDouble;
+		} );
+
+	listenerThread = std::thread( [&]
+		{
+			// Don't immediately render text, wait for a little bit
+			std::this_thread::sleep_for( chrono::milliseconds( 100 ) );
+			screen.Loop( mainComponent );
+		} );
 }
 
 // ============================
-// ConsoleListenerBasic::Shutdown
+// ConsoleListenerInteractive::Shutdown
 // ============================
 void ConsoleListenerInteractive::Shutdown()
 {
-
+	stopListening = true;
+	screen.Post( Task( [&]
+		{
+			screen.ExitLoopClosure()();
+		} ) );
+	listenerThread.join();
 }
 
 // ============================
-// ConsoleListenerBasic:OnLog
+// ConsoleListenerInteractive:OnLog
 // ============================
 void ConsoleListenerInteractive::OnLog( const ConsoleMessage& message )
 {
-
+	messages.push_back( message );
 }
 
 // ============================
-// ConsoleListenerBasic::OnUpdate
+// ConsoleListenerInteractive::OnUpdate
 // ============================
 void ConsoleListenerInteractive::OnUpdate()
 {
+	timeToUpdate -= core->DeltaTime();
+	if ( timeToUpdate > 0.0f )
+	{
+		return;
+	}
 
+	screen.PostEvent( Event::Custom );
+
+	timeToUpdate = 0.1f;
+}
+
+// ============================
+// ConsoleListenerInteractive::ContainerEventHandler
+// ============================
+bool ConsoleListenerInteractive::ContainerEventHandler( Event e )
+{
+	if ( e == Event::ArrowUp || e == Event::PageUp || e == Event::ArrowDown ||
+		e == Event::PageDown || e == Event::Home || e == Event::End )
+	{
+		messageScrollerComponent->OnEvent( e );
+		return true;
+	}
+
+	if ( e == Event::Return )
+	{
+		ConsumeCommand();
+		jumpToBottom = true;
+		return true;
+	}
+	else if ( e.is_character() || e == Event::Backspace || e == Event::Tab ||
+		e == Event::ArrowLeft || e == Event::ArrowRight )
+	{
+		inputFieldComponent->OnEvent( e );
+		return true;
+	}
+
+	// It's time to update
+	if ( e == Event::Custom )
+	{
+		UpdateAutocomplete();
+		animationFrame++;
+	}
+
+	return false;
+}
+
+// ============================
+// ConsoleListenerInteractive::ConsumeCommand
+// ============================
+void ConsoleListenerInteractive::ConsumeCommand()
+{
+	if ( !IsInputValid() )
+	{
+		if ( !userInput.empty() )
+		{
+			console->Print( adm::format( "%sInvalid command '%s'", PrintYellow, userInput.c_str() ) );
+			userInput.clear();
+		}
+		return;
+	}
+
+	const String commandName = GetCommandName();
+	const String commandArgs = userInput.size() > commandName.size() ? userInput.substr( commandName.size() ) : "";
+	console->Execute( commandName, commandArgs );
+	userInput.clear();
+}
+
+// ============================
+// ConsoleListenerInteractive::UpdateAutocomplete
+// ============================
+void ConsoleListenerInteractive::UpdateAutocomplete()
+{
+	if ( !IsInputValid() )
+	{
+		autocompleteElement = text( "" );
+		return;
+	}
+
+	auto cvars = console->Search( GetCommandName() );
+	if ( cvars.empty() )
+	{
+		autocompleteElement = window( text( "Autocomplete" ), text( "none" ) ) | color( Color::Yellow );
+		return;
+	}
+
+	autocompleteElement = window( text( "Autocomplete" ), text( "Unimplemented" ) );
+}
+
+// ============================
+// ConsoleListenerInteractive::ConsoleMessageToFtxElement
+// ============================
+Element ConsoleListenerInteractive::ConsoleMessageToFtxElement( const ConsoleMessage& message )
+{
+	static Map<char, Color> ColourMap
+	{
+		{ 'r', Color::Red },
+		{ 'o', Color::Orange1 },
+		{ 'y', Color::Yellow },
+		{ 'g', Color::GreenLight },
+		{ 'b', Color::BlueLight },
+		{ 'p', Color::Pink1 },
+		{ 'w', Color::White },
+		{ 'g', Color::GrayLight }
+	};
+	//char currentColour = 'g';
+	//Elements colouredText{};
+	//for ( size_t i = 0; i < message.text.size(); i++ )
+	//{
+	//
+	//}
+
+	return hbox(
+		{
+			text( GenerateTimeString( message ) ),
+			separator(),
+			text( " " + message.text )
+		} );
+}
+
+// ============================
+// ConsoleListenerInteractive::GenerateTimeString
+// ============================
+const char* ConsoleListenerInteractive::GenerateTimeString( const ConsoleMessage& message )
+{
+	// mmm:ss.ssss 
+	static char buffer[16];
+
+	const int iTime = message.timeSubmitted;
+	const int seconds = int( message.timeSubmitted ) % 60;
+	const int minutes = iTime / 60;
+
+	const float flSeconds = seconds + (message.timeSubmitted - iTime);
+
+	sprintf( buffer, "%03i:%06.3f ", minutes, flSeconds );
+	return buffer;
+}
+
+// ============================
+// ConsoleListenerInteractive::IsInputValid
+// ============================
+bool ConsoleListenerInteractive::IsInputValid() const
+{
+	if ( userInput.empty() )
+	{
+		return false;
+	}
+
+	if ( userInput[0] == ' ' || userInput[0] == '\t' || userInput[0] == '\n' )
+	{
+		return false;
+	}
+
+	return true;
+}
+
+// ============================
+// ConsoleListenerInteractive::GetCommandName
+// ============================
+String ConsoleListenerInteractive::GetCommandName() const
+{
+	if ( !IsInputValid() )
+	{
+		return "";
+	}
+
+	// Simple, one-word command
+	const size_t firstSpace = userInput.find_first_of( " " );
+	if ( firstSpace == String::npos )
+	{
+		return userInput;
+	}
+
+	return userInput.substr( 0, firstSpace );
 }
 
 // ============================

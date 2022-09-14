@@ -7,6 +7,7 @@ set( BTX_ENGINE_SOURCES
     console/ConsoleListenerBasic.cpp
     console/ConsoleListenerInteractive.cpp
     console/ConsoleListenerFileOut.cpp
+    console/ftxui/Scroller.hpp
     core/Core.hpp
     core/Core.cpp
     core/VideoFormat.hpp
@@ -38,13 +39,13 @@ set_target_properties( BurekTechX PROPERTIES
 
 ## Includes
 target_include_directories( BurekTechX PRIVATE
-        AdmUtils
         ${SDL2_INCLUDE_DIRS}
         ${BTX_ROOT} )
 
 ## Link against SDL2 libs and others
 target_link_libraries( BurekTechX 
         AdmUtils
+        ftxui::component
         ${SDL2_LIBRARIES} )
 
 ## Precompiled headers
