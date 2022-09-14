@@ -48,6 +48,9 @@ private:
 	// ConsoleListenerTUI.cpp
 	// Interactive terminal UI console
 	static IConsoleListener* CreateListenerTUI();
+	// ConsoleListenerFile.cpp
+	// File logger for this console
+	static IConsoleListener* CreateListenerFile();
 
 private:
 	Vector<IConsoleListener*> consoleListeners;

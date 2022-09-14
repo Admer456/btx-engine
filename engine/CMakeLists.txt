@@ -5,6 +5,7 @@ set( BTX_ENGINE_SOURCES
     console/Console.hpp
     console/Console.cpp
     console/ConsoleListenerBasic.cpp
+    console/ConsoleListenerFile.cpp
     console/ConsoleListenerTUI.cpp
     core/Core.hpp
     core/Core.cpp

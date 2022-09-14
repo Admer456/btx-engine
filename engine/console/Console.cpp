@@ -25,6 +25,7 @@ bool Console::Init( int argc, char** argv )
 		// Some listeners are incompatible with each other as they will
 		// fight for the console, such as Basic and TUI
 		bool alreadyDoingBasicOrInteractive = false;
+		bool alreadyAddedFileout = false;
 
 		Lexer lex( consoleListenerArguments );
 		lex.SetDelimiters( "," );
@@ -42,6 +43,11 @@ bool Console::Init( int argc, char** argv )
 			{
 				AddListener( CreateListenerTUI() );
 				alreadyDoingBasicOrInteractive = true;
+			}
+			else if ( token == "fileout" && !alreadyAddedFileout )
+			{
+				AddListener( CreateListenerFile() );
+				alreadyAddedFileout = true;
 			}
 			else
 			{
