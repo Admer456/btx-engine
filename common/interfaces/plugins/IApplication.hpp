@@ -9,6 +9,9 @@ class IApplication : public IPlugin
 public:
 	DeclarePluginInterface( IApplication );
 
+	// Called after the engine has initialised all subsystems
+	virtual void Start() = 0;
+
 	// Called every frame
 	virtual void Update() = 0;
 };

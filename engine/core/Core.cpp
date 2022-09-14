@@ -33,6 +33,11 @@ bool Core::Init()
 // ============================
 void Core::Shutdown()
 {
+	for ( auto*& window : windows )
+	{
+		DestroyWindow( window );
+	}
+
 	SDL_Quit();
 }
 

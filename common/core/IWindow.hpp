@@ -41,7 +41,7 @@ enum class WindowVideoFormat
 	SRGBA8,
 	RGBA8,
 	SBGRA8,
-	BGRA8,
+	BGRA8
 };
 
 struct WindowVideoMode

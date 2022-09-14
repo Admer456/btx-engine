@@ -106,6 +106,12 @@ bool Engine::Init( int argc, char** argv )
 
 	isRunning = true;
 
+	// Start applications now that the engine is fully loaded
+	pluginSystem.ForEachPluginOfType<IApplication>( []( IApplication* app )
+		{
+			app->Start();
+		} );
+
 	return true;
 }
 
