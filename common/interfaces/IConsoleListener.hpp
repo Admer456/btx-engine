@@ -14,7 +14,7 @@ constexpr const char* PrintGreen	= "$g";
 constexpr const char* PrintBlue		= "$b";
 constexpr const char* PrintPink		= "$p";
 constexpr const char* PrintWhite	= "$w";
-constexpr const char* PrintGrey		= "$g";
+constexpr const char* PrintGrey		= "$G";
 
 struct ConsoleMessage
 {

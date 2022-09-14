@@ -380,20 +380,61 @@ Element ConsoleListenerInteractive::ConsoleMessageToFtxElement( const ConsoleMes
 		{ 'b', Color::BlueLight },
 		{ 'p', Color::Pink1 },
 		{ 'w', Color::White },
-		{ 'g', Color::GrayLight }
+		{ 'G', Color::GrayLight }
 	};
-	//char currentColour = 'g';
-	//Elements colouredText{};
-	//for ( size_t i = 0; i < message.text.size(); i++ )
-	//{
-	//
-	//}
+
+	char currentColour = 'w';
+	Elements colouredTexts{};
+	ElementDecorator textColour = color( ColourMap[currentColour] );
+	String string;
+	for ( size_t i = 0; i < message.text.size(); i++ )
+	{
+		if ( message.text[i] == '$' )
+		{
+			if ( !string.empty() )
+			{
+				colouredTexts.emplace_back( text( string ) | textColour );
+				string.clear();
+			}
+
+			i++;
+			if ( i >= message.text.size() )
+			{
+				break;
+			}
+
+			currentColour = message.text[i];
+
+			auto iterator = ColourMap.find( currentColour );
+			if ( iterator == ColourMap.end() )
+			{
+				textColour = color( Color::White );
+			}
+			else
+			{
+				textColour = color( iterator->second );
+			}
+
+			i++;
+			if ( i >= message.text.size() )
+			{
+				break;
+			}
+		}
+
+		string += message.text[i];
+
+		if ( i == message.text.size() - 1 )
+		{
+			colouredTexts.emplace_back( text( string ) | textColour );
+		}
+	}
 
 	return hbox(
 		{
 			text( GenerateTimeString( message ) ),
 			separator(),
-			text( " " + message.text )
+			hbox( std::move( colouredTexts ) )
 		} );
 }
 
