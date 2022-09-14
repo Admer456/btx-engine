@@ -14,6 +14,9 @@ public:
 	static bool Command_Mount( const ConsoleCommandArgs& args );
 	inline static CVar mount = CVar( "mount", Engine::Command_Mount, "Mounts a game. Usage: mount gameDirectoryName" );
 
+	static bool Command_Quit( const ConsoleCommandArgs& args );
+	inline static CVar quit = CVar( "quit", Engine::Command_Quit, "Quits the game." );
+
 private:
 	// Populates engineAPI with pointers to subsystems
 	void		SetupAPIForExchange();

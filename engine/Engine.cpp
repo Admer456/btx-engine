@@ -178,7 +178,7 @@ bool Engine::RunFrame()
 	deltaTime = syncTimer.GetElapsed( adm::TimeUnits::Seconds );
 	core.SetDeltaTime( deltaTime );
 
-	return !input.IsWindowClosing();
+	return !input.IsWindowClosing() && isRunning;
 }
 
 // ============================
@@ -198,6 +198,15 @@ bool Engine::Command_Mount( const ConsoleCommandArgs& args )
 	}
 
 	self.fileSystem.Mount( args[0] );
+	return true;
+}
+
+// ============================
+// Engine::Command_Quit
+// ============================
+bool Engine::Command_Quit( const ConsoleCommandArgs& args )
+{
+	adm::Singleton<Engine>::GetInstance().isRunning = false;
 	return true;
 }
 
