@@ -444,6 +444,7 @@ Element ConsoleListenerInteractive::ConsoleMessageToFtxElement( const ConsoleMes
 		{
 			text( GenerateTimeString( message ) ),
 			separator(),
+			text( " " ),
 			hbox( std::move( colouredTexts ) )
 		} );
 }
