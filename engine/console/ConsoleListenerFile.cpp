@@ -1,9 +1,0 @@
-
-#include "Precompiled.hpp"
-#include "Console.hpp"
-
-// The file logger is currently not implemented
-IConsoleListener* Console::CreateListenerFileOut()
-{
-	return nullptr;
-}
