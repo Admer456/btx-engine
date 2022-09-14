@@ -56,7 +56,7 @@ void ConsoleListenerBasic::OnLog( const ConsoleMessage& message )
 		// Initiate the skipping
 		if ( string[i] == PrintColorIdentifier )
 		{
-			i += 3; // skip the $rgb sequence
+			i += 1; // skip the $-colour sequence
 			continue; // does i += 1
 		}
 		// Store the character
