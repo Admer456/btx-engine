@@ -348,19 +348,11 @@ void ConsoleListenerInteractive::UpdateAutocomplete()
 
 	if ( hasVariables )
 	{
-		variableBox = vbox(
-			{
-				text( "Variables" ) | bold,
-				vbox( std::move( variables ) )
-			} ) | color( Color::Orange1 );
+		variableBox = vbox( std::move( variables ) ) | color( Color::Orange1 );
 	}
 	if ( hasCommands )
 	{
-		commandBox = vbox(
-			{
-				text( "Commands" ) | bold,
-				vbox( std::move( commands ) )
-			} ) | color( Color::BlueLight );
+		commandBox = vbox( std::move( commands ) ) | color( Color::BlueLight );
 	}
 
 	windowContent = vbox( 
