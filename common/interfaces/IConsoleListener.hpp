@@ -16,7 +16,7 @@ constexpr const char* PrintPink		= "$p";
 constexpr const char* PrintWhite	= "$w";
 constexpr const char* PrintGrey		= "$G";
 
-struct ConsoleMessage
+struct ConsoleMessage final
 {
 	ConsoleMessage() = default;
 	ConsoleMessage( const ConsoleMessage& message ) = default;
