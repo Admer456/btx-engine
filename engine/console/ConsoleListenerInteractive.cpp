@@ -258,6 +258,13 @@ bool ConsoleListenerInteractive::ContainerEventHandler( Event e )
 	{
 		UpdateAutocomplete();
 		animationFrame++;
+
+		if ( jumpToBottom )
+		{
+			screen.PostEvent( Event::End );
+			jumpToBottom = false;
+		}
+
 		return true;
 	}
 
