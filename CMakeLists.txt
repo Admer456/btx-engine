@@ -22,6 +22,9 @@ set( BTX_COMMON_SOURCES
     ${BTX_ROOT}/common/interfaces/IEngine.hpp
     ${BTX_ROOT}/common/interfaces/IFileSystem.hpp
     ${BTX_ROOT}/common/interfaces/IInput.hpp
+    ${BTX_ROOT}/common/interfaces/IMaterialManager.hpp
+    ${BTX_ROOT}/common/interfaces/IModelManager.hpp
+    ${BTX_ROOT}/common/interfaces/IRenderFrontend.hpp
     ${BTX_ROOT}/common/interfaces/IPluginSystem.hpp
     ${BTX_ROOT}/common/interfaces/plugins/IApplication.hpp
     ${BTX_ROOT}/common/interfaces/plugins/IPlugin.hpp
@@ -33,6 +36,12 @@ set( BTX_COMMON_SOURCES
     ${BTX_ROOT}/common/pluginsystem/PluginLibraryMetadata.hpp
     ${BTX_ROOT}/common/pluginsystem/PluginLibraryMetadata.cpp
     ${BTX_ROOT}/common/pluginsystem/PluginList.hpp
+    ${BTX_ROOT}/common/rendering/Common.hpp
+    ${BTX_ROOT}/common/rendering/IRenderBatch.hpp
+    ${BTX_ROOT}/common/rendering/IRenderEntity.hpp
+    ${BTX_ROOT}/common/rendering/IRenderLight.hpp
+    ${BTX_ROOT}/common/rendering/IRenderView.hpp
+    ${BTX_ROOT}/common/rendering/IRenderVolume.hpp
     ${BTX_ROOT}/common/EngineConfig.hpp
     ${BTX_ROOT}/common/EngineConfig.cpp
     ${BTX_ROOT}/common/GameMetadata.hpp

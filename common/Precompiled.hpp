@@ -21,9 +21,18 @@ inline const String NullString = "";
 
 #include "common/console/CVar.hpp"
 #include "common/core/IWindow.hpp"
+
 #include "common/pluginsystem/PluginLibraryMetadata.hpp"
 #include "common/pluginsystem/PluginLibrary.hpp"
 #include "common/pluginsystem/PluginList.hpp"
+
+#include "common/rendering/Common.hpp"
+#include "common/rendering/IRenderBatch.hpp"
+#include "common/rendering/IRenderEntity.hpp"
+#include "common/rendering/IRenderLight.hpp"
+#include "common/rendering/IRenderView.hpp"
+#include "common/rendering/IRenderVolume.hpp"
+
 #include "common/EngineConfig.hpp"
 #include "common/GameMetadata.hpp"
 
@@ -36,4 +45,7 @@ inline const String NullString = "";
 #include "common/interfaces/IEngine.hpp"
 #include "common/interfaces/IFileSystem.hpp"
 #include "common/interfaces/IInput.hpp"
+#include "common/interfaces/IMaterialManager.hpp"
+#include "common/interfaces/IModelManager.hpp"
 #include "common/interfaces/IPluginSystem.hpp"
+#include "common/interfaces/IRenderFrontend.hpp"
