@@ -26,13 +26,22 @@ struct WindowCreateDesc
 struct WindowSurfaceData
 {
 #if ADM_PLATFORM == ADM_PLATFORM_WINDOWS
+
 	HINSTANCE hInstance{};
 	HWND hWindow{};
 
-	// Todo: This assumes X11, what about Wayland?
 #elif ADM_PLATFORM == ADM_PLATFORM_LINUX
+
+#if ADM_USE_X11
 	Display* display{ nullptr };
 	Window window{};
+#endif
+
+#if ADM_USE_WAYLAND
+	wl_display* display{ nullptr };
+	wl_surface* surface{ nullptr };
+#endif
+
 #endif
 };
 

@@ -59,6 +59,7 @@ else()
 endif()
 
 ## SDL2 is being set up here so it can be referenced by both the engine executable and the game library
+## Todo: maybe build SDL2 into the engine in the future?
 
 ## AdmUtils
 add_subdirectory( extern/adm-utils )
