@@ -7,3 +7,7 @@
 	url = https://github.com/ArthurSonzogni/FTXUI.git
 	branch = master
 	shallow = 1
+[submodule "elegy-rhi"]
+	path = extern/elegy-rhi
+	url = https://github.com/Admer456/elegy-rhi.git
+	shallow = 1
