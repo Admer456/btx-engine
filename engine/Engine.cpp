@@ -150,9 +150,7 @@ const EngineAPI& Engine::GetAPI() const
 // ============================
 bool Engine::RunFrame()
 {
-	// Synchronisation timer, works kinda like V-sync but more flexible
-	// Sync time is in microseconds
-	adm::TimerPreciseDouble syncTimer;
+	syncTimer.Reset();
 
 	// Update the keyboard state etc.
 	input.Update();
@@ -168,7 +166,7 @@ bool Engine::RunFrame()
 
 	// Normally we'd have more updating stuff here, so syncTimeElapsed would be significantly larger
 	// But, if it works, it works
-	const int syncTime = (1000.0f / engine_tickRate.GetFloat()) * 1000.0f;
+	const int syncTime = (1'000'000.0f / engine_tickRate.GetFloat());
 	int syncTimeElapsed = syncTimer.GetElapsed( adm::TimeUnits::Microseconds );
 	if ( syncTimeElapsed < syncTime )
 	{

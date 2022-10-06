@@ -34,6 +34,9 @@ private:
 	EngineAPI	engineAPI;
 	EngineConfig engineConfig;
 
+	// Synchronisation timer, works kinda like V-sync but more flexible
+	// Sync time is in microseconds
+	adm::TimerPreciseDouble syncTimer;
 	float		deltaTime{ 0.0f };
 	bool		isRunning{ false };
 	bool		shutdownRequested{ false };
