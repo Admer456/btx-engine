@@ -1,6 +1,18 @@
 
 #pragma once
 
+struct AxisHandlerFlags
+{
+	enum Type
+	{
+		// Generates device IDs if this belongs to a controller
+		// One AxisHandler can thus be used for multiple controller devices
+		GenerateDeviceIds = 1 << 0,
+		// Responds to 'up' and 'down' events
+		Binary = 1 << 1
+	};
+};
+
 // I found this to be the most elegant solution for now
 // We do not have many axes, so this is fine and manageable
 using AxisHandlerFn = float( const SDL_Event& e, const int& deviceId );
@@ -14,9 +26,9 @@ struct AxisHandler
 	// How to handle the event
 	// Is null for auto-handled axes
 	AxisHandlerFn* handlerFunction{ nullptr };
-	// In case this belongs to a controller
-	bool generateDeviceIds{ false };
-
+	// Look at AxisHandlerFlags
+	int flags{ 0 };
+	
 	template<InputAxisCode::Enum code, int eventType>
 	static constexpr AxisHandler Generic( AxisHandlerFn* handler )
 	{
@@ -38,8 +50,14 @@ struct AxisHandler
 		{
 			code, SDL_MOUSEBUTTONDOWN, []( const SDL_Event& e, const int& deviceId )
 			{
-				return e.button.button == sdlButton ? 1.0f : 0.0f;
-			}
+				if ( e.button.button != sdlButton )
+				{
+					return InputAxis::InvalidValue;
+				}
+
+				return e.type == SDL_MOUSEBUTTONDOWN ? 1.0f : 0.0f;
+			},
+			AxisHandlerFlags::Binary
 		};
 	}
 
@@ -63,7 +81,7 @@ struct AxisHandler
 		{ IAC::ControllerRightTrigger, SDL_CONTROLLER_AXIS_TRIGGERRIGHT }
 	};
 
-	template<InputAxisCode::Enum code, int deviceId>
+	template<InputAxisCode::Enum code>
 	static constexpr AxisHandler ForControllerAxis()
 	{
 		static_assert(code >= IAC::ControllerLeftStickHorizontal && code <= IAC::ControllerRightTrigger,
@@ -83,7 +101,7 @@ struct AxisHandler
 
 				return e.caxis.value / 32767.0f;
 			},
-			deviceId
+			AxisHandlerFlags::GenerateDeviceIds
 		};
 	}
 
@@ -112,7 +130,7 @@ struct AxisHandler
 		{ IAC::ControllerRightShoulder, SDL_CONTROLLER_BUTTON_RIGHTSHOULDER }
 	};
 
-	template<InputAxisCode::Enum code, int deviceId>
+	template<InputAxisCode::Enum code>
 	static constexpr AxisHandler ForControllerButton()
 	{
 		static_assert(code >= IAC::ControllerLeftStickClick && code <= IAC::ControllerRightShoulder,
@@ -132,7 +150,7 @@ struct AxisHandler
 
 				return e.cbutton.state == SDL_PRESSED ? 1.0f : 0.0f;
 			},
-			deviceId
+			AxisHandlerFlags::GenerateDeviceIds | AxisHandlerFlags::Binary
 		};
 	}
 };
@@ -157,34 +175,34 @@ constexpr AxisHandler AxisHandlers[] =
 		return static_cast<float>(e.wheel.y);
 	} ),
 
-	AxisHandler::ForControllerAxis<InputAxisCode::ControllerLeftStickHorizontal, 0>(),
-	AxisHandler::ForControllerAxis<InputAxisCode::ControllerLeftStickVertical, 0>(),
-	AxisHandler::ForControllerAxis<InputAxisCode::ControllerRightStickHorizontal, 0>(),
-	AxisHandler::ForControllerAxis<InputAxisCode::ControllerRightStickVertical, 0>(),
-	AxisHandler::ForControllerAxis<InputAxisCode::ControllerLeftTrigger, 0>(),
-	AxisHandler::ForControllerAxis<InputAxisCode::ControllerRightTrigger, 0>(),
+	AxisHandler::ForControllerAxis<InputAxisCode::ControllerLeftStickHorizontal>(),
+	AxisHandler::ForControllerAxis<InputAxisCode::ControllerLeftStickVertical>(),
+	AxisHandler::ForControllerAxis<InputAxisCode::ControllerRightStickHorizontal>(),
+	AxisHandler::ForControllerAxis<InputAxisCode::ControllerRightStickVertical>(),
+	AxisHandler::ForControllerAxis<InputAxisCode::ControllerLeftTrigger>(),
+	AxisHandler::ForControllerAxis<InputAxisCode::ControllerRightTrigger>(),
 
-	AxisHandler::ForControllerButton<InputAxisCode::ControllerLeftStickClick, 0>(),
-	AxisHandler::ForControllerButton<InputAxisCode::ControllerRightStickClick, 0>(),
-	AxisHandler::ForControllerButton<InputAxisCode::ControllerDpadUp, 0>(),
-	AxisHandler::ForControllerButton<InputAxisCode::ControllerDpadDown, 0>(),
-	AxisHandler::ForControllerButton<InputAxisCode::ControllerDpadLeft, 0>(),
-	AxisHandler::ForControllerButton<InputAxisCode::ControllerDpadRight, 0>(),
-	AxisHandler::ForControllerButton<InputAxisCode::ControllerPaddle1, 0>(),
-	AxisHandler::ForControllerButton<InputAxisCode::ControllerPaddle2, 0>(),
-	AxisHandler::ForControllerButton<InputAxisCode::ControllerPaddle3, 0>(),
-	AxisHandler::ForControllerButton<InputAxisCode::ControllerPaddle4, 0>(),
-	AxisHandler::ForControllerButton<InputAxisCode::ControllerButtonStart, 0>(),
-	AxisHandler::ForControllerButton<InputAxisCode::ControllerButtonBack, 0>(),
-	AxisHandler::ForControllerButton<InputAxisCode::ControllerButtonGuide, 0>(),
-	AxisHandler::ForControllerButton<InputAxisCode::ControllerButtonTouchpad, 0>(),
-	AxisHandler::ForControllerButton<InputAxisCode::ControllerButtonMisc, 0>(),
-	AxisHandler::ForControllerButton<InputAxisCode::ControllerButtonA, 0>(),
-	AxisHandler::ForControllerButton<InputAxisCode::ControllerButtonB, 0>(),
-	AxisHandler::ForControllerButton<InputAxisCode::ControllerButtonX, 0>(),
-	AxisHandler::ForControllerButton<InputAxisCode::ControllerButtonY, 0>(),
-	AxisHandler::ForControllerButton<InputAxisCode::ControllerLeftShoulder, 0>(),
-	AxisHandler::ForControllerButton<InputAxisCode::ControllerRightShoulder, 0>()
+	AxisHandler::ForControllerButton<InputAxisCode::ControllerLeftStickClick>(),
+	AxisHandler::ForControllerButton<InputAxisCode::ControllerRightStickClick>(),
+	AxisHandler::ForControllerButton<InputAxisCode::ControllerDpadUp>(),
+	AxisHandler::ForControllerButton<InputAxisCode::ControllerDpadDown>(),
+	AxisHandler::ForControllerButton<InputAxisCode::ControllerDpadLeft>(),
+	AxisHandler::ForControllerButton<InputAxisCode::ControllerDpadRight>(),
+	AxisHandler::ForControllerButton<InputAxisCode::ControllerPaddle1>(),
+	AxisHandler::ForControllerButton<InputAxisCode::ControllerPaddle2>(),
+	AxisHandler::ForControllerButton<InputAxisCode::ControllerPaddle3>(),
+	AxisHandler::ForControllerButton<InputAxisCode::ControllerPaddle4>(),
+	AxisHandler::ForControllerButton<InputAxisCode::ControllerButtonStart>(),
+	AxisHandler::ForControllerButton<InputAxisCode::ControllerButtonBack>(),
+	AxisHandler::ForControllerButton<InputAxisCode::ControllerButtonGuide>(),
+	AxisHandler::ForControllerButton<InputAxisCode::ControllerButtonTouchpad>(),
+	AxisHandler::ForControllerButton<InputAxisCode::ControllerButtonMisc>(),
+	AxisHandler::ForControllerButton<InputAxisCode::ControllerButtonA>(),
+	AxisHandler::ForControllerButton<InputAxisCode::ControllerButtonB>(),
+	AxisHandler::ForControllerButton<InputAxisCode::ControllerButtonX>(),
+	AxisHandler::ForControllerButton<InputAxisCode::ControllerButtonY>(),
+	AxisHandler::ForControllerButton<InputAxisCode::ControllerLeftShoulder>(),
+	AxisHandler::ForControllerButton<InputAxisCode::ControllerRightShoulder>()
 };
 
 constexpr size_t NumAxisHandlers = sizeof( AxisHandlers ) / sizeof( AxisHandler );

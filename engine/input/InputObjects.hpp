@@ -26,17 +26,23 @@ public:
 	{
 		int state;
 
+		// Key is currently held down
 		if ( newPressed )
 		{
 			state = InputKeyState::Held;
-			if ( oldPressed )
+			// In the previous frame, the key was not being held
+			// Therefore, this key has become held
+			if ( !oldPressed )
 			{
 				state |= InputKeyState::BecameHeld;
 			}
 		}
+		// Key is currently released
 		else
 		{
 			state = InputKeyState::Released;
+			// In the previous frame, the key was being held
+			// Therefore, this key has become released
 			if ( oldPressed )
 			{
 				state |= InputKeyState::BecameReleased;
@@ -48,7 +54,7 @@ public:
 
 	void Update( const bool& pressed )
 	{
-		bool wasPressed = IsPressed();
+		const bool wasPressed = IsPressed();
 
 		state = GetNextState( wasPressed, pressed );
 	}
@@ -86,6 +92,11 @@ public:
 
 		value = newValue;
 		state = InputKey::GetNextState( wasPressed, newPressed );
+	}
+
+	void ClearImpulseState()
+	{
+		state &= InputKeyState::Held | InputKeyState::Released;
 	}
 
 	constexpr int GetCode() const

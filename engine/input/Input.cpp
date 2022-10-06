@@ -46,7 +46,7 @@ bool Input::Init()
 	for ( const auto& handler : AxisHandlers )
 	{
 		axes[handler.axisCode] = InputAxis( handler.axisCode );
-		if ( handler.generateDeviceIds )
+		if ( handler.flags & AxisHandlerFlags::GenerateDeviceIds )
 		{
 			for ( int i = 1; i < 4; i++ )
 			{
@@ -76,6 +76,13 @@ void Input::Update()
 {
 	// Axis updates and general event handling
 	// TODO: give the user callbacks to handle SDL events in the game DLL
+
+	// Clear BecomeHeld and BecomePressed flags
+	for ( auto& axis : axes )
+	{
+		axis.second.ClearImpulseState();
+	}
+
 	SDL_Event e;
 	while ( SDL_PollEvent( &e ) )
 	{
@@ -89,14 +96,17 @@ void Input::Update()
 		// Try finding all handlers that correspond to this event
 		for ( const auto& handler : AxisHandlers )
 		{
-			if ( handler.sdlEventCode != e.type )
-			{
-				continue;
-			}
+			// E.g. SDL_MOUSEBUTTONDOWN
+			const bool matchesPrimaryEventCode = handler.sdlEventCode == e.type;
+			// E.g. SDL_MOUSEBUTTONUP
+			const bool matchesSecondaryEventCode = (handler.flags & AxisHandlerFlags::Binary) && ((handler.sdlEventCode + 1) == e.type);
 
-			// Update the axis from the event data
-			InputAxis& axis = axes[handler.axisCode];
-			axis.Update( handler.handlerFunction( e, axis.GetDeviceId() ) );
+			if ( matchesPrimaryEventCode || matchesSecondaryEventCode )
+			{
+				// Update the axis from the event data
+				InputAxis& axis = axes[handler.axisCode];
+				axis.Update( handler.handlerFunction( e, axis.GetDeviceId() ) );
+			}
 		}
 	}
 
