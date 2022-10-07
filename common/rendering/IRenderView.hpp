@@ -35,3 +35,10 @@ struct RenderViewDesc final
 	// Objects will render if (view->renderMask & renderObject->renderMask)
 	uint32_t renderMask{ RenderMaskDefault };
 };
+
+class IRenderView
+{
+public:
+	virtual RenderViewDesc& GetDesc() = 0;
+	virtual const RenderViewDesc& GetDesc() const = 0;
+};
