@@ -21,6 +21,7 @@ class IRenderFrontend : public IPlugin
 public:
 	DeclarePluginInterface( IRenderFrontend );
 
+	virtual IRenderBackend*				GetBackend() const = 0;
 
 	virtual void						RenderView( const IRenderView* view ) = 0;
 
