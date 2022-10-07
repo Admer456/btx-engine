@@ -15,6 +15,9 @@ using File = std::fstream;
 
 inline const String NullString = "";
 
+// Render backend interfaces
+#include <nvrhi/nvrhi.h>
+
 // NO ENGINE-SPECIFIC HEADERS
 // Cuz' this is used by the game library as well
 // Include our interfaces tho'

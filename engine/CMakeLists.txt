@@ -45,6 +45,7 @@ target_include_directories( BurekTechX PRIVATE
 ## Link against SDL2 libs and others
 target_link_libraries( BurekTechX 
         AdmUtils
+        ElegyRhi
         ftxui::component
         ${SDL2_LIBRARIES} )
 

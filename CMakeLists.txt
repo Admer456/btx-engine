@@ -87,5 +87,9 @@ set_target_properties( screen PROPERTIES FOLDER "Libs/FTXUI" )
 set_target_properties( dom PROPERTIES FOLDER "Libs/FTXUI" )
 set_target_properties( component PROPERTIES FOLDER "Libs/FTXUI" )
 
+## elegy-rhi, which is currently just NVRHI but with some extras
+add_subdirectory( extern/elegy-rhi )
+set_target_properties( ElegyRhi PROPERTIES FOLDER "Libs" )
+
 ## Add the engine
 add_subdirectory( engine )
