@@ -1,7 +1,6 @@
 
 ## engine/* and commmon/*
 set( BTX_ENGINE_SOURCES 
-    ${BTX_COMMON_SOURCES}
     console/Console.hpp
     console/Console.cpp
     console/ConsoleListenerBasic.cpp
@@ -45,6 +44,7 @@ target_include_directories( BurekTechX PRIVATE
 ## Link against SDL2 libs and others
 target_link_libraries( BurekTechX 
         AdmUtils
+        BtxCommon
         ElegyRhi
         ftxui::component
         ${SDL2_LIBRARIES} )

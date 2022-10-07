@@ -14,41 +14,6 @@ set( CMAKE_CXX_STANDARD 17 )
 ## So all projects will typically add this as an include dir
 set( BTX_ROOT ${CMAKE_CURRENT_SOURCE_DIR} )
 
-## Common .hpps
-set( BTX_COMMON_SOURCES 
-    ${BTX_ROOT}/common/interfaces/ICore.hpp
-    ${BTX_ROOT}/common/interfaces/IConsole.hpp
-    ${BTX_ROOT}/common/interfaces/IConsoleListener.hpp
-    ${BTX_ROOT}/common/interfaces/IEngine.hpp
-    ${BTX_ROOT}/common/interfaces/IFileSystem.hpp
-    ${BTX_ROOT}/common/interfaces/IInput.hpp
-    ${BTX_ROOT}/common/interfaces/IMaterialManager.hpp
-    ${BTX_ROOT}/common/interfaces/IModelManager.hpp
-    ${BTX_ROOT}/common/interfaces/IRenderFrontend.hpp
-    ${BTX_ROOT}/common/interfaces/IPluginSystem.hpp
-    ${BTX_ROOT}/common/interfaces/plugins/IApplication.hpp
-    ${BTX_ROOT}/common/interfaces/plugins/IPlugin.hpp
-    ${BTX_ROOT}/common/console/CVar.hpp
-    ${BTX_ROOT}/common/console/CVar.cpp
-    ${BTX_ROOT}/common/core/IWindow.hpp
-    ${BTX_ROOT}/common/pluginsystem/PluginLibrary.hpp
-    ${BTX_ROOT}/common/pluginsystem/PluginLibrary.cpp
-    ${BTX_ROOT}/common/pluginsystem/PluginLibraryMetadata.hpp
-    ${BTX_ROOT}/common/pluginsystem/PluginLibraryMetadata.cpp
-    ${BTX_ROOT}/common/pluginsystem/PluginList.hpp
-    ${BTX_ROOT}/common/rendering/Common.hpp
-    ${BTX_ROOT}/common/rendering/IRenderBatch.hpp
-    ${BTX_ROOT}/common/rendering/IRenderEntity.hpp
-    ${BTX_ROOT}/common/rendering/IRenderLight.hpp
-    ${BTX_ROOT}/common/rendering/IRenderView.hpp
-    ${BTX_ROOT}/common/rendering/IRenderVolume.hpp
-    ${BTX_ROOT}/common/EngineConfig.hpp
-    ${BTX_ROOT}/common/EngineConfig.cpp
-    ${BTX_ROOT}/common/GameMetadata.hpp
-    ${BTX_ROOT}/common/GameMetadata.cpp
-    ${BTX_ROOT}/common/Precompiled.hpp 
-    CACHE INTERNAL "" )
-
 ## ================================
 ## Dependencies
 ## ================================
@@ -70,10 +35,6 @@ endif()
 ## SDL2 is being set up here so it can be referenced by both the engine executable and the game library
 ## Todo: maybe build SDL2 into the engine in the future?
 
-## AdmUtils
-add_subdirectory( extern/adm-utils )
-set_target_properties( AdmUtils PROPERTIES FOLDER "Libs" )
-
 ## FTXUI
 option( FTXUI_BUILD_TESTS OFF )
 option( FTXUI_BUILD_EXAMPLES OFF )
@@ -86,10 +47,6 @@ add_subdirectory( extern/FTXUI )
 set_target_properties( screen PROPERTIES FOLDER "Libs/FTXUI" )
 set_target_properties( dom PROPERTIES FOLDER "Libs/FTXUI" )
 set_target_properties( component PROPERTIES FOLDER "Libs/FTXUI" )
-
-## elegy-rhi, which is currently just NVRHI but with some extras
-add_subdirectory( extern/elegy-rhi )
-set_target_properties( ElegyRhi PROPERTIES FOLDER "Libs" )
 
 ## Add the engine
 add_subdirectory( engine )
