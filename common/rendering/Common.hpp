@@ -1,6 +1,11 @@
 
-constexpr uint8_t RenderMaskAll = 0xff;
-constexpr uint8_t RenderMaskNone = 0x00;
-constexpr uint8_t RenderMaskDefault = RenderMaskAll;
+#pragma once
 
-using IRenderBackend = nvrhi::IDevice;
+namespace Render
+{
+	constexpr uint8_t RenderMaskAll = 0xff;
+	constexpr uint8_t RenderMaskNone = 0x00;
+	constexpr uint8_t RenderMaskDefault = RenderMaskAll;
+
+	using IBackend = nvrhi::IDevice;
+}
