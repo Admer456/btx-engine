@@ -9,18 +9,18 @@ struct RenderEntityDesc;
 struct RenderLightDesc;
 struct RenderViewDesc;
 struct RenderVolumeDesc;
-
+// These are implemented by the render backend
 class IRenderBatch;
 class IRenderEntity;
 class IRenderLight;
 class IRenderView;
 class IRenderVolume;
 
-class IRenderFrontend
+class IRenderFrontend : public IPlugin
 {
 public:
-	virtual bool 						Init() = 0;
-	virtual void 						Shutdown() = 0;
+	DeclarePluginInterface( IRenderFrontend );
+
 
 	virtual void						RenderView( const IRenderView* view ) = 0;
 
