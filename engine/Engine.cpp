@@ -230,7 +230,7 @@ void Engine::SetupAPIForExchange()
 	{
 		engineAPI.audio = nullptr;
 		engineAPI.input = &input;
-		engineAPI.renderer = nullptr;
+		engineAPI.renderFrontend = nullptr;
 	}
 }
 
