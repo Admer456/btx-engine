@@ -207,6 +207,7 @@ void ConsoleListenerInteractive::OnLog( const ConsoleMessage& message )
 {
 	messages.push_back( message );
 	timeToUpdate = -1.0f; // update and scroll all the way down
+	jumpToBottom = true;
 }
 
 // ============================
