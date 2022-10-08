@@ -50,6 +50,8 @@ private:
 	float timeToUpdate{ 0.1f };
 	// The user has entered a new command, jump to bottom to see the output
 	bool jumpToBottom{ false };
+	// The user has entered a new command, execute it on the main thread
+	bool executeCommand{ false };
 
 	// User input string
 	String userInput{ "" };
@@ -215,6 +217,12 @@ void ConsoleListenerInteractive::OnLog( const ConsoleMessage& message )
 // ============================
 void ConsoleListenerInteractive::OnUpdate()
 {
+	if ( executeCommand )
+	{
+		ConsumeCommand();
+		executeCommand = false;
+	}
+
 	timeToUpdate -= core->DeltaTime();
 	if ( timeToUpdate > 0.0f || stopListening )
 	{
@@ -246,8 +254,11 @@ bool ConsoleListenerInteractive::ContainerEventHandler( Event e )
 
 	if ( e == Event::Return )
 	{
-		ConsumeCommand();
-		jumpToBottom = true;
+		if ( !userInput.empty() )
+		{
+			executeCommand = true;
+			jumpToBottom = true;
+		}
 		return true;
 	}
 	else if ( e.is_character() || e == Event::Backspace || e == Event::Tab ||
