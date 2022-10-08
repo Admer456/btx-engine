@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2022 Admer Šuko
 // SPDX-License-Identifier: MIT
 
-#include "Precompiled.hpp"
+#include "common/Precompiled.hpp"
 #include "Console.hpp"
 #include <iostream>
 

@@ -49,10 +49,6 @@ target_link_libraries( BurekTechX
         ftxui::component
         ${SDL2_LIBRARIES} )
 
-## Precompiled headers
-target_precompile_headers( BurekTechX PRIVATE 
-        ${BTX_ROOT}/common/Precompiled.hpp )
-
 if ( NOT DEFINED BTX_BIN_DIRECTORY )
         set( BTX_BIN_DIRECTORY ${BTX_ROOT}/bin )
 endif()
@@ -64,10 +60,10 @@ install( TARGETS BurekTechX
 
 if ( WIN32 )
     ## Copy SDL2.dll
-    install( FILES ${BTX_ROOT}/extern/SDL/lib/SDL2.dll 
+    install( FILES ${BTX_ROOT}/extern/SDL/lib/SDL2.dll
             DESTINATION ${BTX_BIN_DIRECTORY} )
 
     ## On Windows, place PDBs as well
-    install( FILES $<TARGET_PDB_FILE:BurekTechX> 
+    install( FILES $<TARGET_PDB_FILE:BurekTechX>
         DESTINATION ${BTX_BIN_DIRECTORY} OPTIONAL )
 endif()
