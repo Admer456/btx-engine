@@ -88,7 +88,7 @@ bool Engine::Init( int argc, char** argv )
 	// Initialise pointers for API exchange
 	SetupAPIForExchange();
 
-	// Initialise application plugins and give them the engine API
+	// Initialise plugins and give them the engine API
 	if ( !InitialisePlugins() )
 	{
 		Shutdown( "plugin failure" );
@@ -103,6 +103,23 @@ bool Engine::Init( int argc, char** argv )
 			Shutdown( "window failure" );
 			return false;
 		}
+
+		if ( !InitialiseRenderer() )
+		{
+			Shutdown( "renderer failure" );
+			return false;
+		}
+
+		// Now that the renderer is initialised, set up
+		// the API again so applications can use the renderer
+		SetupAPIForExchange();
+	}
+
+	// Initialise applications and give them the engine API
+	if ( !InitialiseApplications() )
+	{
+		Shutdown( "application failure" );
+		return false;
 	}
 
 	console.Print( adm::format( "Developer level: %i", core.DevLevel() ) );
@@ -230,7 +247,7 @@ void Engine::SetupAPIForExchange()
 	{
 		engineAPI.audio = nullptr;
 		engineAPI.input = &input;
-		engineAPI.renderFrontend = nullptr;
+		engineAPI.renderFrontend = renderFrontend;
 	}
 }
 
@@ -239,58 +256,58 @@ void Engine::SetupAPIForExchange()
 // ============================
 bool Engine::InitialisePlugins()
 {
-	// Load plugins
-	{
-		bool pluginsFailed = false;
-		String pluginErrorString = "Engine::Init: These plugins failed to initialise:\n";
-		pluginErrorString.reserve( 256U );
+	bool pluginsFailed = false;
+	String pluginErrorString = "Engine::Init: These plugins failed to initialise:\n";
+	pluginErrorString.reserve( 256U );
 
-		pluginSystem.ForEachPlugin( [&]( IPlugin* plugin )
-			{
-				if ( plugin->IsInterface<IApplication>() )
-				{
-					return;
-				}
-
-				if ( !plugin->Init( GetAPI() ) )
-				{
-					pluginErrorString += "  * " + String( plugin->GetPluginName() ) + "\n";
-					pluginsFailed = true;
-				}
-			} );
-
-		if ( pluginsFailed )
+	pluginSystem.ForEachPlugin( [&]( IPlugin* plugin )
 		{
-			pluginErrorString += "Resolve the plugin errors and try again.";
-			console.Error( pluginErrorString.c_str() );
-			return false;
-		}
-	}
-
-	// Now that base plugins have loaded, it's time to initialise any applications/games
-	{
-		bool applicationPluginsFailed = false;
-		String applicationPluginErrorString = "Engine::Init: These applications failed to initialise:\n";
-		applicationPluginErrorString.reserve( 256U );
-
-		pluginSystem.ForEachPluginOfType<IApplication>( [&]( IApplication* plugin )
+			if ( plugin->IsInterface<IApplication>() )
 			{
-				if ( !plugin->Init( GetAPI() ) )
-				{
-					applicationPluginErrorString += "  * " + String( plugin->GetPluginName() ) + "\n";
-					applicationPluginsFailed = true;
-				}
-			} );
+				return;
+			}
 
-		if ( applicationPluginsFailed )
-		{
-			applicationPluginErrorString += "Resolve the application errors and try again.";
-			console.Error( applicationPluginErrorString.c_str() );
-			return false;
-		}
+			if ( !plugin->Init( GetAPI() ) )
+			{
+				pluginErrorString += "  * " + String( plugin->GetPluginName() ) + "\n";
+				pluginsFailed = true;
+			}
+		} );
+
+	if ( pluginsFailed )
+	{
+		pluginErrorString += "Resolve the plugin errors and try again.";
+		console.Error( pluginErrorString.c_str() );
+		return false;
 	}
-
+	
 	return true;
+}
+
+// ============================
+// Engine::InitialiseApplications
+// ============================
+bool Engine::InitialiseApplications()
+{
+	bool applicationPluginsFailed = false;
+	String applicationPluginErrorString = "Engine::Init: These applications failed to initialise:\n";
+	applicationPluginErrorString.reserve( 256U );
+
+	pluginSystem.ForEachPluginOfType<IApplication>( [&]( IApplication* plugin )
+		{
+			if ( !plugin->Init( GetAPI() ) )
+			{
+				applicationPluginErrorString += "  * " + String( plugin->GetPluginName() ) + "\n";
+				applicationPluginsFailed = true;
+			}
+		} );
+
+	if ( applicationPluginsFailed )
+	{
+		applicationPluginErrorString += "Resolve the application errors and try again.";
+		console.Error( applicationPluginErrorString.c_str() );
+		return false;
+	}
 }
 
 // ============================
@@ -298,7 +315,7 @@ bool Engine::InitialisePlugins()
 // ============================
 bool Engine::CreateWindow()
 {
-	WindowCreateDesc windowDesc{ fileSystem.GetCurrentGameMetadata().GetName().data(), 1024, 768};
+	WindowCreateDesc windowDesc{ fileSystem.GetCurrentGameMetadata().GetName().data(), 1024, 768 };
 	windowDesc.resizeable = true;
 
 	console.Print( "Creating a window..." );

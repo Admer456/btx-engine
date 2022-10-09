@@ -22,7 +22,8 @@ set( BTX_ENGINE_SOURCES
     pluginsystem/PluginSystem.hpp
     pluginsystem/PluginSystem.cpp
     Engine.hpp
-    Engine.cpp )
+    Engine.cpp 
+    Engine.Render.cpp )
 
 ## Folder organisation
 source_group( TREE ${BTX_ROOT} FILES ${BTX_ENGINE_SOURCES} )
@@ -46,6 +47,7 @@ target_link_libraries( BurekTechX
         AdmUtils
         BtxCommon
         ElegyRhi
+        Vulkan-Headers
         ftxui::component
         ${SDL2_LIBRARIES} )
 

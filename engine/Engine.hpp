@@ -3,6 +3,11 @@
 
 #pragma once
 
+namespace nvrhi::app
+{
+	class DeviceManager;
+}
+
 class Engine final : public IEngine
 {
 public:
@@ -24,14 +29,27 @@ private:
 	void		SetupAPIForExchange();
 	// Once loaded, this will initialise all plugins
 	bool		InitialisePlugins();
+	// Initialise IApplication plugins
+	bool		InitialiseApplications();
 	// Creates the main application window
 	bool		CreateWindow();
+
+private: // Renderer backend stuff (Engine.Render.cpp)
+	// Initialises the render frontend plugin
+	// Not called in headless mode
+	bool		InitialiseRenderer();
+	// Creates a swapchain for mainWindow
+	// Not in headless mode
+	bool		CreateDeviceAndSwapchain();
+
 private:
 	Console		console;
 	Core		core;
 	FileSystem	fileSystem;
 	Input		input;
 	PluginSystem pluginSystem;
+	IRenderFrontend* renderFrontend{ nullptr };
+	nvrhi::app::DeviceManager* renderBackendManager{ nullptr };
 
 	EngineAPI	engineAPI;
 	EngineConfig engineConfig;
