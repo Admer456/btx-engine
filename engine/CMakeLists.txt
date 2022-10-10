@@ -22,7 +22,8 @@ set( BTX_ENGINE_SOURCES
     pluginsystem/PluginSystem.hpp
     pluginsystem/PluginSystem.cpp
     Engine.hpp
-    Engine.cpp 
+    Engine.cpp
+    Engine.Commands.cpp
     Engine.Render.cpp )
 
 ## Folder organisation
