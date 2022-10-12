@@ -1,30 +1,34 @@
 
 ## engine/* and commmon/*
-set( BTX_ENGINE_SOURCES 
-    console/Console.hpp
-    console/Console.cpp
-    console/ConsoleListenerBasic.cpp
-    console/ConsoleListenerInteractive.cpp
-    console/ConsoleListenerFileOut.cpp
-    console/ftxui/Scroller.hpp
-    core/Core.hpp
-    core/Core.cpp
-    core/VideoFormat.hpp
-    core/Window.hpp
-    core/Window.cpp
-    filesystem/FileSystem.hpp
-    filesystem/FileSystem.cpp
-    input/AxisHandler.hpp
-    input/AxisWithDeviceId.hpp
-    input/Input.hpp
-    input/Input.cpp
-    input/InputObjects.hpp
-    pluginsystem/PluginSystem.hpp
-    pluginsystem/PluginSystem.cpp
-    Engine.hpp
-    Engine.cpp
-    Engine.Commands.cpp
-    Engine.Render.cpp )
+set( BTX_ENGINE_SOURCES
+        assetmanager/Model.hpp
+        assetmanager/Model.cpp
+        assetmanager/ModelManager.hpp
+        assetmanager/ModelManager.cpp
+        console/Console.hpp
+        console/Console.cpp
+        console/ConsoleListenerBasic.cpp
+        console/ConsoleListenerInteractive.cpp
+        console/ConsoleListenerFileOut.cpp
+        console/ftxui/Scroller.hpp
+        core/Core.hpp
+        core/Core.cpp
+        core/VideoFormat.hpp
+        core/Window.hpp
+        core/Window.cpp
+        filesystem/FileSystem.hpp
+        filesystem/FileSystem.cpp
+        input/AxisHandler.hpp
+        input/AxisWithDeviceId.hpp
+        input/Input.hpp
+        input/Input.cpp
+        input/InputObjects.hpp
+        pluginsystem/PluginSystem.hpp
+        pluginsystem/PluginSystem.cpp
+        Engine.hpp
+        Engine.cpp
+        Engine.Commands.cpp
+        Engine.Render.cpp )
 
 ## Folder organisation
 source_group( TREE ${BTX_ROOT} FILES ${BTX_ENGINE_SOURCES} )

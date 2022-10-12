@@ -7,6 +7,7 @@
 #include "core/Core.hpp"
 #include "filesystem/FileSystem.hpp"
 #include "input/Input.hpp"
+#include "assetmanager/ModelManager.hpp"
 #include "pluginsystem/PluginSystem.hpp"
 
 #include "Engine.hpp"
@@ -209,7 +210,7 @@ void Engine::SetupAPIForExchange()
 	engineAPI.console = &console;
 	engineAPI.fileSystem = &fileSystem;
 	engineAPI.materialManager = nullptr;
-	engineAPI.modelManager = nullptr;
+	engineAPI.modelManager = &modelManager;
 	engineAPI.pluginSystem = &pluginSystem;
 
 	if ( !core.IsHeadless() )

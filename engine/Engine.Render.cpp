@@ -7,6 +7,7 @@
 #include "core/Core.hpp"
 #include "filesystem/FileSystem.hpp"
 #include "input/Input.hpp"
+#include "assetmanager/ModelManager.hpp"
 #include "pluginsystem/PluginSystem.hpp"
 
 #include "elegy-rhi/DeviceManager.hpp"

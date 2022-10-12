@@ -43,6 +43,7 @@ private:
 	Core				core;
 	FileSystem			fileSystem;
 	Input				input;
+	ModelManager		modelManager;
 	PluginSystem		pluginSystem;
 	IRenderFrontend*	renderFrontend{ nullptr };
 	RenderBackend*		renderBackendManager{ nullptr };
