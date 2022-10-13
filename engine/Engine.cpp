@@ -278,6 +278,8 @@ bool Engine::InitialiseApplications()
 		console.Error( applicationPluginErrorString.c_str() );
 		return false;
 	}
+
+	return true;
 }
 
 // ============================
