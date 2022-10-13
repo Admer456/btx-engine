@@ -11,7 +11,10 @@
 #include "pluginsystem/PluginSystem.hpp"
 
 #include "elegy-rhi/DeviceManager.hpp"
+
+#if USE_VK
 #include <vulkan/vulkan.h>
+#endif
 
 #include "Engine.hpp"
 
@@ -24,6 +27,7 @@ namespace Utilities
 		return *(reinterpret_cast<const nvrhi::app::WindowSurfaceData*>(&engineWindowSurface));
 	}
 
+#if USE_VK
 	// This is truly not necessary, could just use SDL_Vulkan_GetInstanceExtensions, 
 	// but I'm doing this for the sake of GoldSRC Half-Life support, cuz' there's an ancient version of SDL2 in there
 	static void FillRequiredVulkanExtensions( Vector<String>& extensions )
@@ -44,6 +48,7 @@ namespace Utilities
 #endif
 #endif
 	}
+#endif
 
 	static void SynchroniseVideoFormat( IWindow* window, nvrhi::Format targetFormat )
 	{
@@ -74,7 +79,11 @@ namespace Utilities
 			return nvrhi::GraphicsAPI::D3D11;
 		}
 
+#if USE_VK
 		return nvrhi::GraphicsAPI::VULKAN;
+#else
+		return nvrhi::GraphicsAPI::D3D12;
+#endif
 	}
 }
 
