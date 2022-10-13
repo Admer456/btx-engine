@@ -52,9 +52,12 @@ target_link_libraries( BurekTechX
         AdmUtils
         BtxCommon
         ElegyRhi
-        Vulkan-Headers
         ftxui::component
         ${SDL2_LIBRARIES} )
+
+if ( NVRHI_WITH_VULKAN )
+        target_link_libraries( BurekTechX Vulkan-Headers )
+endif()
 
 if ( NOT DEFINED BTX_BIN_DIRECTORY )
         set( BTX_BIN_DIRECTORY ${BTX_ROOT}/bin )
