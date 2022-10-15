@@ -8,7 +8,7 @@
 #include "Core.hpp"
 #include "Window.hpp"
 
-CVar developer( "developer", "0", 0, "Developer mode" );
+CVar developer( "developer", "1", 0, "Developer mode" );
 
 // ============================
 // Core::Init
