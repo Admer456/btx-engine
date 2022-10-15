@@ -15,6 +15,8 @@ public:
 
 	// Called by the engine to update the listeners
 	void		Update();
+	// Called by the engine to execute launch arguments
+	void		ExecuteLaunchArguments();
 
 	void		AddListener( IConsoleListener* listener ) override;
 

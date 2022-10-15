@@ -127,12 +127,15 @@ bool Engine::Init( int argc, char** argv )
 
 	console.Print( adm::format( "Developer level: %i", core.DevLevel() ) );
 
-	
 	// Start applications now that the engine is fully loaded
 	pluginSystem.ForEachPluginOfType<IApplication>( []( IApplication* app )
 		{
 			app->Start();
 		} );
+
+	// Now that everything is started, we can execute any launch parameters
+	// e.g. +developer 1
+	console.ExecuteLaunchArguments();
 
 	return true;
 }

@@ -97,6 +97,24 @@ void Console::Update()
 }
 
 // ============================
+// Console::ExecuteLaunchArguments
+// ============================
+void Console::ExecuteLaunchArguments()
+{
+	for ( const auto& pair : arguments )
+	{
+		const auto& parameterName = pair.first;
+		const auto& parameterValue = pair.second;
+
+		if ( parameterName[0] == '+' )
+		{
+			ConsoleCommandArgs args{ parameterValue };
+			Execute( parameterName.substr( 1U ), args );
+		}
+	}
+}
+
+// ============================
 // Console::AddListener
 // ============================
 void Console::AddListener( IConsoleListener* listener )
