@@ -27,6 +27,8 @@ extern "C" ADM_EXPORT IEngine* GetEngineAPI()
 // ============================
 bool Engine::Init( int argc, char** argv )
 {
+	hasBeenShutdown = false;
+
 	// Timers and stuff
 	bool coreSuccess = core.Init();
 	
@@ -125,8 +127,7 @@ bool Engine::Init( int argc, char** argv )
 
 	console.Print( adm::format( "Developer level: %i", core.DevLevel() ) );
 
-	isRunning = true;
-
+	
 	// Start applications now that the engine is fully loaded
 	pluginSystem.ForEachPluginOfType<IApplication>( []( IApplication* app )
 		{
@@ -142,7 +143,7 @@ bool Engine::Init( int argc, char** argv )
 // ============================
 void Engine::Shutdown( const char* why )
 {
-	if ( !isRunning )
+	if ( hasBeenShutdown )
 	{
 		return;
 	}
@@ -155,7 +156,7 @@ void Engine::Shutdown( const char* why )
 	console.Shutdown();
 	core.Shutdown();
 
-	isRunning = false;
+	hasBeenShutdown = true;
 }
 
 // ============================

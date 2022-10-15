@@ -55,8 +55,10 @@ private:
 	// Sync time is in microseconds
 	TimerPreciseDouble	syncTimer;
 	float				deltaTime{ 0.0f };
-	bool				isRunning{ false };
+	// The application requested a shutdown, so Shutdown will be called
 	bool				shutdownRequested{ false };
+	// Shutdown could be potentially called twice, so this prevents it
+	bool				hasBeenShutdown{ false };
 
 	IWindow*			mainWindow{ nullptr };
 };
