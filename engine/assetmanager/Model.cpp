@@ -4,7 +4,7 @@
 #include "common/Precompiled.hpp"
 #include "Model.hpp"
 
-using namespace Render;
+using namespace Assets;
 
 Model::Model( const ModelDesc& modelDesc )
 	: desc( modelDesc )
@@ -17,7 +17,7 @@ StringView Model::GetName() const
 	return desc.modelData.name;
 }
 
-const Data::Model& Model::GetModelData() const
+const RenderData::Model& Model::GetModelData() const
 {
 	return desc.modelData;
 }

@@ -2,10 +2,9 @@
 // SPDX-License-Identifier: MIT
 
 #include "common/Precompiled.hpp"
-#include "Model.hpp"
 #include "ModelManager.hpp"
 
-using namespace Render;
+using namespace Assets;
 
 bool ModelManager::Init()
 {
@@ -17,12 +16,13 @@ void ModelManager::Shutdown()
 	models.clear();
 }
 
-void ModelManager::Setup( ICore* core, IConsole* console, IPluginSystem* pluginSystem, IFileSystem* fileSystem )
+void ModelManager::Setup( ICore* core, IConsole* console, IPluginSystem* pluginSystem, IFileSystem* fileSystem, IRenderFrontend* renderFrontend )
 {
 	Core = core;
 	Console = console;
 	PluginSystem = pluginSystem;
 	FileSystem = fileSystem;
+	Renderer = renderFrontend;
 }
 
 IModel* ModelManager::CreateModel( const ModelDesc& desc )
@@ -49,7 +49,7 @@ bool ModelManager::UpdateModel( IModel* model, const ModelDesc& desc )
 	return false;
 }
 
-void ModelManager::DestroyModel( Render::IModel* model )
+void ModelManager::DestroyModel( IModel* model )
 {
 	for ( auto it = models.begin(); it != models.end(); it++ )
 	{

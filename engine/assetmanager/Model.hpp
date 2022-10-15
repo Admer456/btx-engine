@@ -3,7 +3,7 @@
 
 #pragma once
 
-namespace Render
+namespace Assets
 {
 	class Model : public IModel
 	{
@@ -17,7 +17,7 @@ namespace Render
 		Model& operator= ( Model&& model ) = default;
 
 		StringView			GetName() const override;
-		const Data::Model&	GetModelData() const override;
+		const RenderData::Model& GetModelData() const override;
 
 		ModelDesc&			GetDesc() override;
 		const ModelDesc&	GetDesc() const override;
