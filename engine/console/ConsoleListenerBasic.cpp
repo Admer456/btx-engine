@@ -84,7 +84,7 @@ void ConsoleListenerBasic::OnUpdate()
 // ============================
 const char* ConsoleListenerBasic::GenerateTimeString( float time )
 {
-	// mmm:ss.ssss
+	// mmm:ss.sss
 	static char buffer[16];
 
 	const int iTime = time;
@@ -93,7 +93,7 @@ const char* ConsoleListenerBasic::GenerateTimeString( float time )
 
 	const float flSeconds = seconds + (time - iTime);
 
-	sprintf( buffer, "%03i:%06.3f ", minutes, flSeconds );
+	sprintf( buffer, "%03i:%06.3f", minutes, flSeconds );
 	return buffer;
 }
 
