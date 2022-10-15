@@ -20,6 +20,36 @@
 
 namespace Utilities
 {
+	class BtxNvrhiMessageCallback final : public nvrhi::IMessageCallback
+	{
+	public:
+		void Setup( IConsole* console )
+		{
+			Console = console;
+		}
+
+		void message( nvrhi::MessageSeverity severity, const char* messageText )
+		{
+			switch ( severity )
+			{
+			case nvrhi::MessageSeverity::Info:
+				Console->DPrint( format( "[nvrhi] %s%s", PrintGreen, messageText ), 1 );
+				break;
+			case nvrhi::MessageSeverity::Warning:
+				Console->Warning( format( "[nvrhi] %s", messageText ) );
+				break;
+			case nvrhi::MessageSeverity::Fatal:
+				Console->Error( "====== FATAL ======" );
+			case nvrhi::MessageSeverity::Error:
+				Console->Error( format( "[nvrhi] %s", messageText ) );
+				break;
+			}
+		}
+
+	private:
+		IConsole* Console;
+	};
+
 	// This gross hack is due to some lack of thought, but I'd still rather do this than #ifdefs for different platforms
 	// nvrhi::app::WindowSurfaceData and WindowSurfaceData are basically the same in memory, so this is not an issue
 	static nvrhi::app::WindowSurfaceData ConvertWindowSurfaceData( const WindowSurfaceData& engineWindowSurface )
@@ -141,6 +171,10 @@ bool Engine::CreateDeviceAndSwapchain()
 #endif
 	Utilities::SynchroniseVideoFormat( mainWindow, dcp.swapChainFormat );
 
+	auto* callback = Singleton<Utilities::BtxNvrhiMessageCallback>::GetInstancePtr();
+	callback->Setup( &console );
+	dcp.messageCallback = callback;
+	
 	renderBackendManager = nvrhi::app::DeviceManager::Create( Utilities::GetGraphicsApiFromArguments( console.GetArguments() ) );
 	if ( nullptr == renderBackendManager )
 	{
