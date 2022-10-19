@@ -166,6 +166,9 @@ bool Engine::CreateDeviceAndSwapchain()
 	// SDL2 seems to be fine with this format
 	dcp.swapChainFormat = nvrhi::Format::BGRA8_UNORM;
 
+	dcp.enableCopyQueue = true;
+	dcp.enableComputeQueue = true;
+
 #if USE_VK
 	Utilities::FillRequiredVulkanExtensions( dcp.requiredVulkanInstanceExtensions );
 #endif
