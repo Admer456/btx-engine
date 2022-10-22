@@ -145,9 +145,9 @@ adm::Optional<Path> FileSystem::GetPathTo( Path destination, const uint8_t& filt
 	}
 
 	// Find it in the engine
-	if ( ExistsInternal( basePath / destination, filterFlags ) )
+	if ( ExistsInternal( basePath/enginePath/ destination, filterFlags ) )
 	{
-		return basePath / destination;
+		return basePath/enginePath/destination;
 	}
 
 	// We didn't find it
