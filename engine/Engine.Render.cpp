@@ -148,7 +148,7 @@ bool Engine::InitialiseRenderer()
 	}
 
 	// renderBackendManager is considered valid at this point, we can obtain the render device from it
-	return renderFrontend->PostInit( renderBackendManager->GetDevice(), mainWindow );
+	return renderFrontend->PostInit( renderBackendManager, mainWindow );
 }
 
 // ============================
@@ -168,6 +168,9 @@ bool Engine::CreateDeviceAndSwapchain()
 
 	dcp.enableCopyQueue = true;
 	dcp.enableComputeQueue = true;
+
+	dcp.enableDebugRuntime = true;
+	dcp.enableNvrhiValidationLayer = true;
 
 #if USE_VK
 	Utilities::FillRequiredVulkanExtensions( dcp.requiredVulkanInstanceExtensions );
