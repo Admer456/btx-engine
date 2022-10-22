@@ -47,10 +47,12 @@ void ConsoleListenerBasic::Shutdown()
 // ============================
 void ConsoleListenerBasic::OnLog( const ConsoleMessage& message )
 {
+	constexpr size_t MaxMessageLength = 1024;
+	const size_t max = std::min( MaxMessageLength, message.text.size() );
+
 	const char* string = message.text.c_str();
-	char buffer[256];
+	char buffer[MaxMessageLength];
 	size_t position = 0U;
-	size_t max = std::min( 256ULL, message.text.size() );
 
 	// Too lazy to implement colours at the moment
 	for ( size_t i = 0U; i < max; i++ )
