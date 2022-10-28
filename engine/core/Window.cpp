@@ -183,7 +183,7 @@ void Window::Minimise()
 // ============================
 // Window::Resize
 // ============================
-void Window::Resize( adm::Vec3 size )
+void Window::Resize( adm::Vec2 size )
 {
 	SDL_SetWindowSize( window, int( size.x ), int( size.y ) );
 	gotResized = true;
@@ -192,14 +192,14 @@ void Window::Resize( adm::Vec3 size )
 // ============================
 // Window::Resize
 // ============================
-void Window::Resize( adm::Vec3 topLeft, adm::Vec3 bottomRight )
+void Window::Resize( adm::Vec2 topLeft, adm::Vec2 bottomRight )
 {
 	if ( topLeft.x > bottomRight.x )
 	{
 		std::swap( topLeft, bottomRight );
 	}
 
-	adm::Vec3 size = bottomRight - topLeft;
+	adm::Vec2 size = bottomRight - topLeft;
 	size.y = std::abs( size.y );
 
 	return Resize( size );
@@ -216,23 +216,23 @@ bool Window::HasResized() const
 // ============================
 // Window::GetSize
 // ============================
-adm::Vec3 Window::GetSize() const
+adm::Vec2 Window::GetSize() const
 {
 	int x, y;
 	SDL_GetWindowSize( window, &x, &y );
 
-	return { float( x ), float( y ) , 0.0f };
+	return { float( x ), float( y ) };
 }
 
 // ============================
 // Window::GetPosition
 // ============================
-adm::Vec3 Window::GetPosition() const
+adm::Vec2 Window::GetPosition() const
 {
 	int x, y;
 	SDL_GetWindowPosition( window, &x, &y );
 
-	return { float( x ), float( y ), 0.0f };
+	return { float( x ), float( y ) };
 }
 
 // ============================

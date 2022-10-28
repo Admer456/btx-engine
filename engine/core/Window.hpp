@@ -21,13 +21,12 @@ public:
 
 	void Maximise() override;
 	void Minimise() override;
-	// Todo: we need a Vec2 type real bad :(
-	void Resize( adm::Vec3 size ) override;
-	void Resize( adm::Vec3 topLeft, adm::Vec3 bottomRight ) override;
+	void Resize( adm::Vec2 size ) override;
+	void Resize( adm::Vec2 topLeft, adm::Vec2 bottomRight ) override;
 	bool HasResized() const override;
 	
-	adm::Vec3 GetSize() const override;
-	adm::Vec3 GetPosition() const override;
+	adm::Vec2 GetSize() const override;
+	adm::Vec2 GetPosition() const override;
 	
 	void* GetInternalPointer() const override;
 
