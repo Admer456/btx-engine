@@ -353,6 +353,8 @@ void Console::LogLine( const ConsoleMessage& message )
 // ============================
 void Console::Log( const ConsoleMessage& message )
 {
+	constexpr size_t MaxCharacters = 1024ULL;
+
 	const char* string = message.text.c_str();
 	bool hasNewline = message.text.find( '\n' ) != String::npos;
 
@@ -365,8 +367,8 @@ void Console::Log( const ConsoleMessage& message )
 	size_t start = 0;
 	size_t end = 0;
 
-	char buffer[256];
-	size_t max = std::min( 256ULL, std::strlen( string ) );
+	char buffer[MaxCharacters];
+	size_t max = std::min( MaxCharacters, std::strlen( string ) );
 
 	// Divide the string by newlines, so for example:
 	// abc\ndef becomes:
